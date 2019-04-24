@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import java.lang.*?>
@@ -18,20 +19,29 @@
             </VBox>
             <VBox alignment="TOP_RIGHT" prefHeight="562.0" prefWidth="215.0">
                <children>
-                  <Label fx:id="hueStartLabel" text="Label" />
+                  <Label fx:id="hueStartLabel" text="Hue start" />
                   <Slider fx:id="hueStart" />
-                  <Label fx:id="hueEndLabel" text="Label" />
+                  <Label fx:id="hueEndLabel" text="Hue end" />
                   <Slider fx:id="hueEnd" />
-                  <Label fx:id="SaturationStartLabel" text="Label" />
+                  <Label fx:id="SaturationStartLabel" text="Saturation start" />
                   <Slider fx:id="SaturationStart" />
-                  <Label fx:id="SaturationEndLabel" text="Label" />
+                  <Label fx:id="SaturationEndLabel" text="Saturation end" />
                   <Slider fx:id="SaturationEnd" />
-                  <Label fx:id="ValueStartLabel" text="Label" />
+                  <Label fx:id="ValueStartLabel" text="Value start" />
                   <Slider fx:id="ValueStart" />
-                  <Label fx:id="ValueEndLabel" text="Label" />
+                  <Label fx:id="ValueEndLabel" text="Value end" />
                   <Slider fx:id="ValueEnd" />
-                  <Label fx:id="BlurValueLabel" text="Label" />
+                  <Label fx:id="BlurValueLabel" text="Blur value" />
                   <Slider fx:id="BlurValue" />
+                  <Label fx:id="MinSizeLabel" text="Min size" />
+                  <Slider fx:id="MinSize" />
+                  <Label fx:id="MaxSizeLabel" text="Max size" />
+                  <Slider fx:id="MaxSize" />
+                  <TextArea fx:id="bugValues" prefHeight="200.0" prefWidth="200.0">
+                     <VBox.margin>
+                        <Insets top="50.0" />
+                     </VBox.margin>
+                  </TextArea>
                </children>
             </VBox>
          </children>
