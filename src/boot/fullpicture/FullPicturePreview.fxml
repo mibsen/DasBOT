@@ -1,8 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.GridPane?>
 
-<GridPane xmlns:fx="http://javafx.com/fxml/1">
-	<!-- TODO Add Nodes -->
-</GridPane>
-
+<TitledPane text="FullPicture preview" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fullpicture.FullPicturePreviewController">
+   <content>
+      <HBox prefHeight="555.0" prefWidth="768.0">
+         <children>
+            <VBox alignment="TOP_CENTER" prefHeight="555.0" prefWidth="552.0">
+               <children>
+                  <ImageView fitHeight="281.0" fitWidth="395.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fitHeight="281.0" fitWidth="395.0" pickOnBounds="true" preserveRatio="true" />
+               </children>
+            </VBox>
+            <VBox prefHeight="562.0" prefWidth="215.0">
+               <children>
+                  <Label text="Label" />
+                  <Slider />
+                  <Label text="Label" />
+                  <Slider />
+                  <Label text="Label" />
+                  <Slider />
+                  <Label text="Label" />
+                  <Slider />
+                  <Label text="Label" />
+                  <Slider />
+                  <Label text="Label" />
+                  <Slider />
+                  <Label text="Label" />
+                  <Slider />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </content>
+</TitledPane>
