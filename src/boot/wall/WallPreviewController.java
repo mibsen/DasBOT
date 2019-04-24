@@ -1,4 +1,4 @@
-package wall;
+package boot.wall;
 
 public class WallPreviewController {
 

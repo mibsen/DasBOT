@@ -1,4 +1,4 @@
-package ball;
+package boot.ball;
 
 public class BallPreviewController {
 

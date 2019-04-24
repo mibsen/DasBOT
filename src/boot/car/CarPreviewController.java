@@ -1,4 +1,4 @@
-package car;
+package boot.car;
 
 public class CarPreviewController {
 
