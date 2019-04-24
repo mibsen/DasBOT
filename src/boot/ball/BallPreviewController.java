@@ -18,7 +18,7 @@ public class BallPreviewController extends BaseController{
 	@FXML
 	public void initialize() {
 		
-		if(!this.camera.init()) {
+		if(this.camera.init()) {
 			this.imageViewProperties(ContourImage, 500);
 			this.imageViewProperties(TransformedImage, 500);
 			
