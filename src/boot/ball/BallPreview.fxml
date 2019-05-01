@@ -32,7 +32,7 @@
                   <Label fx:id="ValueEndLabel" text="Value end" />
                   <Slider fx:id="valueStop" blockIncrement="1" max="255" min="0" />
                   <Label fx:id="BlurValueLabel" text="Blur value" />
-                  <Slider fx:id="blur" blockIncrement="1" max="50" min="0" />
+                  <Slider fx:id="blur" blockIncrement="1" max="50" min="1" />
                   <Label fx:id="MinSizeLabel" text="Min size" />
                   <Slider fx:id="min" blockIncrement="1" max="1000" min="0"  />
                   <Label fx:id="MaxSizeLabel" text="Max size" />

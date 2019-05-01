@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.GridPane?>
 
-<TitledPane text="Car preview" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="car.CarPreviewController">
+<TitledPane text="Car preview" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="boot.car.CarPreviewController">
       <content>
       <HBox prefHeight="555.0" prefWidth="768.0">
          <children>
@@ -18,24 +18,31 @@
             </VBox>
             <VBox alignment="TOP_RIGHT" prefHeight="562.0" prefWidth="215.0">
                <children>
-                  <Label fx:id="hueStartLabel" text="Label" />
-                  <Slider fx:id="hueStart" />
-                  <Label fx:id="hueEndLabel" text="Label" />
-                  <Slider fx:id="hueEnd" />
-                  <Label fx:id="SaturationStartLabel" text="Label" />
-                  <Slider fx:id="SaturationStart" />
-                  <Label fx:id="SaturationEndLabel" text="Label" />
-                  <Slider fx:id="SaturationEnd" />
-                  <Label fx:id="ValueStartLabel" text="Label" />
-                  <Slider fx:id="ValueStart" />
-                  <Label fx:id="ValueEndLabel" text="Label" />
-                  <Slider fx:id="ValueEnd" />
-                  <Label fx:id="BlurValueLabel" text="Label" />
-                  <Slider fx:id="BlurValue" />
-                  <Label fx:id="MinSizeLabel" text="Label" />
-                  <Slider fx:id="MinSize" />
-                  <Label fx:id="MaxSizeLabel" text="Label" />
-                  <Slider fx:id="MaxSize" />
+                  <Label fx:id="hueStartLabel" text="Hue start"  />
+                  <Slider fx:id="hueStart" blockIncrement="1" max="180" min="0" />
+                  <Label fx:id="hueEndLabel" text="Hue end" />
+                  <Slider fx:id="hueStop" blockIncrement="1" max="180" min="0" />
+                  <Label fx:id="SaturationStartLabel" text="Saturation start" />
+                  <Slider fx:id="saturationStart" blockIncrement="1" max="255" min="0" />
+                  <Label fx:id="SaturationEndLabel" text="Saturation end" />
+                  <Slider fx:id="saturationStop" blockIncrement="1" max="255" min="0" />
+                  <Label fx:id="ValueStartLabel" text="Value start" />
+                  <Slider fx:id="valueStart" blockIncrement="1" max="255" min="0" />
+                  <Label fx:id="ValueEndLabel" text="Value end" />
+                  <Slider fx:id="valueStop" blockIncrement="1" max="255" min="0" />
+                  <Label fx:id="BlurValueLabel" text="Blur value" />
+                  <Slider fx:id="blur" blockIncrement="1" max="50" min="1" />
+                  <Label fx:id="BackMinSizeLabel" text="Back min size" />
+                  <Slider fx:id="backMin" blockIncrement="1" max="1000" min="0"  />
+                  <Label fx:id="BackMaxSizeLabel" text="Back max size" />
+                  <Slider fx:id="backMax" blockIncrement="1" max="1000" min="0" />
+                  <Label fx:id="FrontMinSizeLabel" text="Fron min size" />
+                  <Slider fx:id="frontMin" blockIncrement="1" max="1000" min="0" />
+                  <Label fx:id="FrontMaxSizeLabel" text="Fron max size" />
+                  <Slider fx:id="frontMax" blockIncrement="1" max="1000" min="0" />
+                   <Button onAction="#saveClick" text="save and next" />
+                  <TextArea fx:id="bugValues" prefHeight="200.0" prefWidth="200.0">
+                  </TextArea>
                </children>
             </VBox>
          </children>

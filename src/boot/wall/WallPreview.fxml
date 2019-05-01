@@ -18,25 +18,28 @@
             </VBox>
             <VBox alignment="TOP_RIGHT" prefHeight="562.0" prefWidth="215.0">
                <children>
-                  <Label fx:id="hueStartLabel" text="Label" />
-                  <Slider fx:id="hueStart" />
-                  <Label fx:id="hueEndLabel" text="Label" />
-                  <Slider fx:id="hueEnd" />
-                  <Label fx:id="SaturationStartLabel" text="Label" />
-                  <Slider fx:id="SaturationStart" />
-                  <Label fx:id="SaturationEndLabel" text="Label" />
-                  <Slider fx:id="SaturationEnd" />
-                  <Label fx:id="ValueStartLabel" text="Label" />
-                  <Slider fx:id="ValueStart" />
-                  <Label fx:id="ValueEndLabel" text="Label" />
-                  <Slider fx:id="ValueEnd" />
-                  <Label fx:id="BlurValueLabel" text="Label" />
-                  <Slider fx:id="BlurValue" />
-                  <Label fx:id="MinSizeLabel" text="Label" />
-                  <Slider fx:id="MinSize" />
-                  <Label fx:id="MaxSizeLabel" text="Label" />
-                  <Slider fx:id="MaxSize" />
-                  <Button onAction="#saveClick" text="save and next" />
+                  <Label fx:id="hueStartLabel" text="Hue start"  />
+                  <Slider fx:id="hueStart" blockIncrement="1" max="180" min="0" />
+                  <Label fx:id="hueEndLabel" text="Hue end" />
+                  <Slider fx:id="hueStop" blockIncrement="1" max="180" min="0" />
+                  <Label fx:id="SaturationStartLabel" text="Saturation start" />
+                  <Slider fx:id="saturationStart" blockIncrement="1" max="255" min="0" />
+                  <Label fx:id="SaturationEndLabel" text="Saturation end" />
+                  <Slider fx:id="saturationStop" blockIncrement="1" max="255" min="0" />
+                  <Label fx:id="ValueStartLabel" text="Value start" />
+                  <Slider fx:id="valueStart" blockIncrement="1" max="255" min="0" />
+                  <Label fx:id="ValueEndLabel" text="Value end" />
+                  <Slider fx:id="valueStop" blockIncrement="1" max="255" min="0" />
+                  <Label fx:id="BlurValueLabel" text="Blur value" />
+                  <Slider fx:id="blur" blockIncrement="1" max="50" min="1" />
+                  <Label fx:id="MinSizeLabel" text="Min size" />
+                  <Slider fx:id="threshold1" blockIncrement="1" max="1000" min="0"  />
+                  <Label fx:id="MaxSizeLabel" text="Max size" />
+                  <Slider fx:id="threshold2" blockIncrement="1" max="1000" min="0" />
+                   <Button onAction="#saveClick" text="save and next" />
+                  <TextArea fx:id="bugValues" prefHeight="200.0" prefWidth="200.0">
+
+                  </TextArea>
                </children>
             </VBox>
          </children>

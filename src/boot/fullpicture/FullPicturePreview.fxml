@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.GridPane?>
 
-<TitledPane text="FullPicture preview" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fullpicture.FullPicturePreviewController">
+<TitledPane text="FullPicture preview" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="boot.fullpicture.FullPicturePreviewController">
       <content>
       <HBox prefHeight="555.0" prefWidth="768.0">
          <children>
@@ -16,28 +16,25 @@
                   <ImageView fx:id="TransformedImage" fitHeight="281.0" fitWidth="395.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </VBox>
-            <VBox alignment="TOP_RIGHT" prefHeight="562.0" prefWidth="215.0">
-               <children>
-                  <Label fx:id="hueStartLabel" text="Label" />
-                  <Slider fx:id="hueStart" />
-                  <Label fx:id="hueEndLabel" text="Label" />
-                  <Slider fx:id="hueEnd" />
-                  <Label fx:id="SaturationStartLabel" text="Label" />
-                  <Slider fx:id="SaturationStart" />
-                  <Label fx:id="SaturationEndLabel" text="Label" />
-                  <Slider fx:id="SaturationEnd" />
-                  <Label fx:id="ValueStartLabel" text="Label" />
-                  <Slider fx:id="ValueStart" />
-                  <Label fx:id="ValueEndLabel" text="Label" />
-                  <Slider fx:id="ValueEnd" />
-                  <Label fx:id="BlurValueLabel" text="Label" />
-                  <Slider fx:id="BlurValue" />
-                  <Label fx:id="MinSizeLabel" text="Label" />
-                  <Slider fx:id="MinSize" />
-                  <Label fx:id="MaxSizeLabel" text="Label" />
-                  <Slider fx:id="MaxSize" />
-               </children>
-            </VBox>
+            <content>
+		      	<HBox prefHeight="555.0" prefWidth="768.0">
+		        		<children>
+		            		<VBox prefHeight="555.0" prefWidth="552.0">
+		               		<children>
+		                  		<ImageView id="ContourImage" fx:id="ContourImage" fitHeight="281.0" fitWidth="395.0" pickOnBounds="true" preserveRatio="true" />
+		                  		<ImageView fx:id="TransformedImage" fitHeight="281.0" fitWidth="395.0" pickOnBounds="true" preserveRatio="true" />
+		               		</children>
+		            		</VBox>
+		            		<VBox alignment="TOP_RIGHT" prefHeight="562.0" prefWidth="215.0">
+		               		<children>
+		               			<Button onAction="#saveClick" text="save and next" />
+		                			<TextArea fx:id="bugValues" prefHeight="200.0" prefWidth="200.0">
+		                			</TextArea>
+		               		</children>
+		            		</VBox>
+		         	</children>
+		      	</HBox>
+		   	</content>
          </children>
       </HBox>
    </content>

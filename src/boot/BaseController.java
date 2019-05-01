@@ -66,6 +66,8 @@ public class BaseController {
 	}
 
 	public void save() {
+		
+		camera.release();
 
 		if (onSaveCallable != null) {
 			try {

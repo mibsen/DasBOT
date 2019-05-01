@@ -28,7 +28,7 @@ public class Boot extends Application {
 	public void setScene(Stage primaryStage) throws IOException {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(steps.poll()));
 		TitledPane root = (TitledPane) loader.load();
-		Scene scene = new Scene(root, 1000, 800);
+		Scene scene = new Scene(root, 1200, 800);
 		primaryStage.setScene(scene);
 		primaryStage.show();
 
@@ -40,14 +40,14 @@ public class Boot extends Application {
 			public Object call() throws Exception {
 
 				// We are done!
-				if(steps.peek() == null) {
+				if (steps.peek() == null) {
 					controller.setClosed();
 					primaryStage.close();
 					after.call();
-					
+
 					return null;
 				}
-				
+
 				setScene(primaryStage);
 
 				return null;
@@ -70,6 +70,8 @@ public class Boot extends Application {
 			steps = new LinkedList<>();
 			steps.add("./ball/BallPreview.fxml");
 			steps.add("./wall/WallPreview.fxml");
+			steps.add("./car/CarPreview.fxml");
+			//steps.add("./fullpicture/FullPicturePreview.fxml");
 		}
 
 		try {
@@ -85,9 +87,9 @@ public class Boot extends Application {
 	}
 
 	public void after(Callable callable) {
-		
+
 		after = callable;
-		
+
 	}
 
 }

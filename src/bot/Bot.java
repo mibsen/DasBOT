@@ -4,7 +4,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 
 import boot.Utils;
@@ -18,8 +17,8 @@ import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import services.BallService;
 import services.CarService;
@@ -93,7 +92,7 @@ public class Bot extends Application implements ResponseReceiver {
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setTitle("DATBOT 0.1");
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("bot.fxml"));
-		BorderPane root = (BorderPane) loader.load();
+		TitledPane root = (TitledPane) loader.load();
 		Scene scene = new Scene(root, 1000, 800);
 		primaryStage.setScene(scene);
 		primaryStage.show();
