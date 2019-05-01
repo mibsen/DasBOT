@@ -11,37 +11,36 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
+import models.Car;
 import models.ImageSettings;
 import models.Wall;
+import models.WallSettings;
 
 public class WallService {
 
-	private ImageSettings settings;
+	private WallSettings settings;
 
-	public WallService(ImageSettings settings) {
+	public WallService(WallSettings settings) {
 		this.settings = settings;
 	}
 
-	
 	public Wall getWall(Mat f) {
-		
+
 		Mat frame = getWallFrame(f);
-		
+
 		return getWallsFromFrame(frame);
-		
+
 	}
-	
+
 	public Mat getWallFrame(Mat f) {
 
-
-
-		double hueStart = settings.hueStart;
-		double hueStop = settings.hueStop;
-		double saturationStart = settings.saturationStart;
-		double saturationStop = settings.saturationStop;
-		double valueStart = settings.valueStart;
-		double valueStop = settings.valueStop;
-		double blur = settings.blur;
+		double hueStart = settings.image.hue.start;
+		double hueStop = settings.image.hue.stop;
+		double saturationStart = settings.image.saturation.start;
+		double saturationStop = settings.image.saturation.stop;
+		double valueStart = settings.image.value.start;
+		double valueStop = settings.image.value.stop;
+		double blur = settings.image.blur;
 
 		Mat frame = f.clone();
 
@@ -72,63 +71,66 @@ public class WallService {
 		Mat hierarchy = new Mat();
 
 		// Imgproc.Canny(wallFrame, wallFrame, 300, 1000);
-		Imgproc.Canny(wallFrame, wallFrame, 100, 1000);
+		Imgproc.Canny(wallFrame, wallFrame, settings.threshold1, settings.threshold2);
 
 		// find contours
 		Imgproc.findContours(wallFrame, contours, hierarchy, Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
 
-
-		if(contours.size()== 0) {
+		if (contours.size() == 0) {
 			System.out.println("COULD NOT LOCATE WALL");
 			return null;
 		}
-		
+
 		MatOfPoint c = contours.get(0);
 
 		// Potentielt noget filter!
-		//double area = Imgproc.contourArea(c);
+		// double area = Imgproc.contourArea(c);
 
-		
 		Wall w = new Wall(c);
 
 		return w;
 
 	}
-	
+
 	public void drawWall(Mat frame, Wall wall) {
-		
+
 		Point p1 = wall.points[0];
-		
+
 		for (int i = 1; i < wall.points.length; i++) {
 			Imgproc.line(frame, p1, wall.points[i], new Scalar(0, 250, 0));
 			p1 = wall.points[i];
 		}
-		
+
 		Imgproc.line(frame, p1, wall.points[0], new Scalar(0, 250, 0));
-		
+
 		for (Point point : wall.points) {
 			Imgproc.drawMarker(frame, point, new Scalar(0, 250, 0), 3);
 		}
-		
-	//	Imgproc.drawContours(frame, contours, 0, new Scalar(0, 250, 0), 3);		
+
+		// Imgproc.drawContours(frame, contours, 0, new Scalar(0, 250, 0), 3);
 	}
-	
-	public static void drawWall(Mat frame, Wall wall,Point center) {
-		
+
+	public static void drawWall(Mat frame, Wall wall, Point center) {
+		drawWall(frame, wall, center, new Scalar(0, 250, 0), 1);
+	}
+
+	public static void drawWall(Mat frame, Wall wall, Point center, Scalar color, int size) {
+
 		Point p1 = wall.points[0];
-		
+
 		for (int i = 1; i < wall.points.length; i++) {
-			Imgproc.line(frame, new Point(p1.x+center.x,p1.y+center.y), new Point(wall.points[i].x+center.x, wall.points[i].y+center.y), new Scalar(0, 250, 0));
+			Imgproc.line(frame, new Point(p1.x + center.x, p1.y + center.y),
+					new Point(wall.points[i].x + center.x, wall.points[i].y + center.y), color, size);
 			p1 = wall.points[i];
 		}
-		
-		Imgproc.line(frame, new Point(p1.x+center.x,p1.y+center.y), new Point(wall.points[0].x+center.x, wall.points[0].y+center.y), new Scalar(0, 250, 0));
-		
+
+		Imgproc.line(frame, new Point(p1.x + center.x, p1.y + center.y),
+				new Point(wall.points[0].x + center.x, wall.points[0].y + center.y), color, size);
+
 		for (Point point : wall.points) {
-			Imgproc.drawMarker(frame, new Point(point.x+center.x,point.y+center.y), new Scalar(0, 250, 0), 3);
+			Imgproc.drawMarker(frame, new Point(point.x + center.x, point.y + center.y), color, 3, size);
 		}
-		
-	//	Imgproc.drawContours(frame, contours, 0, new Scalar(0, 250, 0), 3);		
+
 	}
 
 }

@@ -41,9 +41,9 @@ public class FullPicturePreviewController extends BaseController{
 				@Override
 				public void run() {
 
-					BallService ballService = new BallService(new ImageSettings(0, 180, 0, 63, 205, 255, 7), 450, 650);
-					CarService carService = new CarService(new ImageSettings(0, 180, 0, 63, 205, 255, 7), 450, 650, 100, 200);
-					WallService wallService = new WallService(new ImageSettings(0, 180, 0, 63, 205, 255, 7));
+			//		BallService ballService = new BallService(new ImageSettings(0, 180, 0, 63, 205, 255, 7), 450, 650);
+			//		CarService carService = new CarService(new ImageSettings(0, 180, 0, 63, 205, 255, 7), 450, 650, 100, 200);
+			//		WallService wallService = new WallService(new ImageSettings(0, 180, 0, 63, 205, 255, 7));
 
 					Mat frame = camera.grabFrame();
 					updateImageView(ContourImage, frame);

@@ -19,25 +19,27 @@
             </VBox>
             <VBox alignment="TOP_RIGHT" prefHeight="562.0" prefWidth="215.0">
                <children>
-                  <Label fx:id="hueStartLabel" text="Hue start" />
-                  <Slider fx:id="hueStart" />
+                  <Label fx:id="hueStartLabel" text="Hue start"  />
+                  <Slider fx:id="hueStart" blockIncrement="1" max="180" min="0" />
                   <Label fx:id="hueEndLabel" text="Hue end" />
-                  <Slider fx:id="hueEnd" />
+                  <Slider fx:id="hueStop" blockIncrement="1" max="180" min="0" />
                   <Label fx:id="SaturationStartLabel" text="Saturation start" />
-                  <Slider fx:id="SaturationStart" />
+                  <Slider fx:id="saturationStart" blockIncrement="1" max="255" min="0" />
                   <Label fx:id="SaturationEndLabel" text="Saturation end" />
-                  <Slider fx:id="SaturationEnd" />
+                  <Slider fx:id="saturationStop" blockIncrement="1" max="255" min="0" />
                   <Label fx:id="ValueStartLabel" text="Value start" />
-                  <Slider fx:id="ValueStart" />
+                  <Slider fx:id="valueStart" blockIncrement="1" max="255" min="0" />
                   <Label fx:id="ValueEndLabel" text="Value end" />
-                  <Slider fx:id="ValueEnd" />
+                  <Slider fx:id="valueStop" blockIncrement="1" max="255" min="0" />
                   <Label fx:id="BlurValueLabel" text="Blur value" />
-                  <Slider fx:id="BlurValue" />
+                  <Slider fx:id="blur" blockIncrement="1" max="50" min="0" />
                   <Label fx:id="MinSizeLabel" text="Min size" />
-                  <Slider fx:id="MinSize" />
+                  <Slider fx:id="min" blockIncrement="1" max="1000" min="0"  />
                   <Label fx:id="MaxSizeLabel" text="Max size" />
-                  <Slider fx:id="MaxSize" />
+                  <Slider fx:id="max" blockIncrement="1" max="1000" min="0" />
+                   <Button onAction="#saveClick" text="save and next" />
                   <TextArea fx:id="bugValues" prefHeight="200.0" prefWidth="200.0">
+                 
                      <VBox.margin>
                         <Insets top="50.0" />
                      </VBox.margin>

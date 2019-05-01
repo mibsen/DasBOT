@@ -1,11 +1,13 @@
 package boot;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.opencv.core.Mat;
 
-import camera.Camera;
+import camera.CameraFake;
+import camera.CameraInterface;
 import javafx.scene.image.ImageView;
 
 public class BaseController {
@@ -15,7 +17,9 @@ public class BaseController {
 	// a flag to change the button behavior
 	public boolean cameraActive;
 
-	public Camera camera = new Camera();
+	public CameraInterface camera = new CameraFake();
+
+	public Callable onSaveCallable;
 
 	public void imageViewProperties(ImageView image, int dimension) {
 		// set a fixed width for the given ImageView
@@ -56,4 +60,25 @@ public class BaseController {
 			this.camera.release();
 		}
 	}
+
+	public void initialize() {
+
+	}
+
+	public void save() {
+
+		if (onSaveCallable != null) {
+			try {
+				onSaveCallable.call();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void onSave(Callable callable) {
+		onSaveCallable = callable;
+	}
+
 }

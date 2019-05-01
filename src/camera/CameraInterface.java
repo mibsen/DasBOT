@@ -9,5 +9,7 @@ public interface CameraInterface {
 	public void release();
 	
 	public Mat grabFrame();
+
+	public boolean init();
 	
 }

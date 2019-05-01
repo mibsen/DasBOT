@@ -28,7 +28,7 @@ public class CameraFake  implements CameraInterface{
 	public Mat grabFrame() {
 
 		if(frame != null) {
-			return frame;
+			return frame.clone();
 		}
 		
 		
@@ -37,14 +37,13 @@ public class CameraFake  implements CameraInterface{
 		String path = this.getClass().getResource("/map2.jpg").getPath();
 		path = new File(path).getPath();
 		
-		//capture.read(frame);
 		frame = Imgcodecs.imread(path);
 
 		if (frame.empty()) {
 			return null;
 		}
 
-		return frame;
+		return frame.clone();
 
 	}
 }

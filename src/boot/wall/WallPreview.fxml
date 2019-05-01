@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.GridPane?>
 
-<TitledPane text="Wall preview" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="wall.WallPreviewController">
+<TitledPane text="Wall preview" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="boot.wall.WallPreviewController">
       <content>
       <HBox prefHeight="555.0" prefWidth="768.0">
          <children>
@@ -36,6 +36,7 @@
                   <Slider fx:id="MinSize" />
                   <Label fx:id="MaxSizeLabel" text="Label" />
                   <Slider fx:id="MaxSize" />
+                  <Button onAction="#saveClick" text="save and next" />
                </children>
             </VBox>
          </children>

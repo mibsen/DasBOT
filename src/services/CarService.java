@@ -14,23 +14,15 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import models.Car;
-import models.ImageSettings;
+import models.CarSettings;
 
 public class CarService {
 
-	private ImageSettings settings;
-	private double frontMin;
-	private double frontMax;
-	private double backMin;
-	private double backMax;
+	private CarSettings settings;
 	public boolean debug;
 
-	public CarService(ImageSettings settings, double frontMin, double frontMax, double backMin, double backMax) {
+	public CarService(CarSettings settings) {
 		this.settings = settings;
-		this.frontMin = frontMin;
-		this.frontMax = frontMax;
-		this.backMin = backMin;
-		this.backMax = backMax;
 	}
 
 	public Car getCar(Mat f) {
@@ -42,18 +34,20 @@ public class CarService {
 
 	public Mat getCarFrame(Mat f) {
 
-		double hueStart = settings.hueStart;
-		double hueStop = settings.hueStop;
-		double saturationStart = settings.saturationStart;
-		double saturationStop = settings.saturationStop;
-		double valueStart = settings.valueStart;
-		double valueStop = settings.valueStop;
-		double blur = settings.blur;
+		double hueStart = settings.image.hue.start;
+		double hueStop = settings.image.hue.stop;
+		double saturationStart = settings.image.saturation.start;
+		double saturationStop = settings.image.saturation.stop;
+		double valueStart = settings.image.value.start;
+		double valueStop = settings.image.value.stop;
+		double blur = settings.image.blur;
 
 		Mat frame = f.clone();
 
 		// remove some noise
-		Imgproc.blur(frame, frame, new Size(blur, blur));
+		if (blur > 0) {
+			Imgproc.blur(frame, frame, new Size(blur, blur));
+		}
 
 		// convert the frame to HSV
 		Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2HSV);
@@ -95,11 +89,11 @@ public class CarService {
 					n++;
 				}
 
-				if ((area < backMax && area > backMin)) {
+				if ((area > settings.back.start && area < settings.back.stop)) {
 					RotatedRect box = Imgproc.minAreaRect(new MatOfPoint2f(c.toArray()));
 					Point cordinate = new Point(box.center.x, box.center.y);
 					back = cordinate;
-				} else if ((area > frontMin && area < frontMax)) {
+				} else if ((area > settings.front.start && area < settings.front.stop)) {
 					RotatedRect box = Imgproc.minAreaRect(new MatOfPoint2f(c.toArray()));
 					Point cordinate = new Point(box.center.x, box.center.y);
 					front = cordinate;
@@ -126,18 +120,22 @@ public class CarService {
 
 	}
 
-	public static void drawCar(Mat frame, Car car, Point center) {
+	public static void drawCar(Mat frame, Car car, Point center, Scalar color, int size) {
 
 		if (car == null) {
 			return;
 		}
 
-		Imgproc.drawMarker(frame, new Point(car.front.x + center.x, car.front.y + center.y), new Scalar(0, 250, 250),2);
-		Imgproc.drawMarker(frame, new Point(car.back.x + center.x, car.back.y + center.y), new Scalar(0, 250, 250));
-		Imgproc.drawMarker(frame, new Point(car.center.x + center.x, car.center.y + center.y), new Scalar(0, 250, 250));
+		Imgproc.drawMarker(frame, new Point(car.front.x + center.x, car.front.y + center.y), color,1, size);
+		Imgproc.drawMarker(frame, new Point(car.back.x + center.x, car.back.y + center.y), color,1, size);
+		Imgproc.drawMarker(frame, new Point(car.center.x + center.x, car.center.y + center.y), color,1, size);
 		Imgproc.line(frame, new Point(car.front.x + center.x, car.front.y + center.y),
-				new Point(car.back.x + center.x, car.back.y + center.y), new Scalar(0, 250, 250)); 
+				new Point(car.back.x + center.x, car.back.y + center.y), color, size);
+	}
 
+	public static void drawCar(Mat frame, Car car, Point center) {
+
+		drawCar(frame, car, center, new Scalar(0, 250, 250), 2);
 	}
 
 }

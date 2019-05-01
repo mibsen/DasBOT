@@ -39,7 +39,7 @@ public class CarPreviewController extends BaseController{
 				@Override
 				public void run() {
 
-					CarService carService = new CarService(new ImageSettings(0, 180, 0, 63, 205, 255, 7), 450, 650, 100, 200);
+				//	CarService carService = new CarService(new ImageSettings(0, 180, 0, 63, 205, 255, 7), 450, 650, 100, 200);
 
 					Mat frame = camera.grabFrame();
 					updateImageView(ContourImage, frame);

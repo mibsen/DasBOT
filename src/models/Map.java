@@ -65,7 +65,7 @@ public class Map {
 
 		for (Ball ball : balls) {
 
-			this.balls.add(new Ball(new Point(ball.point.x - origo.x, ball.point.y - origo.y)));
+			this.balls.add(new Ball(new Point(ball.point.x - origo.x, ball.point.y - origo.y),ball.area));
 		}
 
 		BallService.drawBalls(this.frame, this.balls, this.center);
@@ -91,6 +91,10 @@ public class Map {
 
 	}
 
+	public Wall getWall() {
+		return this.wall;
+	}
+	
 	public void corrected() {
 
 		this.radian = Math.atan2(this.car.front.y, this.car.front.x);
@@ -99,19 +103,19 @@ public class Map {
 
 		if (this.car != null) {
 			this.car = new Car(rotatePoint(this.car.front), rotatePoint(this.car.back));
-			CarService.drawCar(this.frame, this.car, this.center);
+	//		CarService.drawCar(this.frame, this.car, this.center);
 		}
 
 		ArrayList<Ball> temp = new ArrayList<Ball>();
 		if (this.balls.size() > 0) {
 
 			for (Ball ball : this.balls) {
-				temp.add(new Ball(rotatePoint(ball.point)));
+				temp.add(new Ball(rotatePoint(ball.point),ball.area));
 			}
 
 			this.balls = temp;
 
-			BallService.drawBalls(frame, this.balls, center);
+	//		BallService.drawBalls(frame, this.balls, center);
 		}
 
 		if (this.wall != null) {
@@ -125,10 +129,20 @@ public class Map {
 			}
 
 			this.wall = new Wall(new MatOfPoint(wtemp));
-			WallService.drawWall(this.frame, this.wall, this.center);
+	//		WallService.drawWall(this.frame, this.wall, this.center);
 
 		}
 
+	}
+
+	public void drawCar(Scalar color, int size) {
+		CarService.drawCar(this.frame, this.car, this.center,color,size);
+		
+	}
+	
+	public void drawWall(Scalar color, int size) {
+		WallService.drawWall(this.frame, this.wall, this.center,color,size);
+		
 	}
 
 }
