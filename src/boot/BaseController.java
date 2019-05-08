@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.opencv.core.Mat;
 
+import camera.Camera;
 import camera.CameraFake;
 import camera.CameraInterface;
 import javafx.scene.image.ImageView;
@@ -17,7 +18,7 @@ public class BaseController {
 	// a flag to change the button behavior
 	public boolean cameraActive;
 
-	public CameraInterface camera = new CameraFake();
+	public CameraInterface camera = new Camera();
 
 	public Callable onSaveCallable;
 

@@ -8,6 +8,8 @@ import bot.Bot;
 public class Main {
 	
 	public static void main(String[] args) {
+		
+		
 		Boot b = new Boot();
 		
 		b.after(new Callable() {
@@ -23,5 +25,12 @@ public class Main {
 		});
 		
 		b.load();
+		
+		
+		/*
+		Bot bot = new Bot();
+		bot.load();
+		*/
+		
 	}
 }

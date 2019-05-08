@@ -14,7 +14,7 @@ public class Camera implements CameraInterface {
 
 	public boolean init() {
 
-		this.capture.open(0);
+		this.capture.open(4);
 
 		return this.capture.isOpened();
 

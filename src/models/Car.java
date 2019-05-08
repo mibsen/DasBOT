@@ -8,7 +8,8 @@ public class Car {
 	public Point back;
 	public Point center;
 	public Double  width;
-
+	public static float widthInCM = 20.5F;
+	
 	public Car(Point front, Point back) {
 		this.front = front;
 		this.back = back;

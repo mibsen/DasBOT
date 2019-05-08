@@ -4,6 +4,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
 
 import boot.Utils;
@@ -19,6 +20,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import services.BallService;
 import services.CarService;
@@ -49,16 +51,16 @@ public class Bot extends Application implements ResponseReceiver {
 		state = new RandomDrive(carService, ballService, wallService);
 
 		// Create Connection
-		connection = new Connection("localhost", 4444);
+		connection = new Connection("192.168.43.142", 4444);
 
 		// Listen for communication from the CAR
 		connection.onResponse(this);
 
 		//
-		// connection.connect();
+		connection.connect();
 
 		// Start Image Loop
-		CameraInterface camera = new CameraFake();
+		final CameraInterface camera = new CameraFake();
 
 		camera.init();
 
@@ -101,13 +103,16 @@ public class Bot extends Application implements ResponseReceiver {
 	public void load() {
 
 		try {
-			 start(new Stage());
+			start(new Stage());
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
+		/*
+		 * System.loadLibrary(Core.NATIVE_LIBRARY_NAME); launch();
+		 */
 	}
 
 	public void updateImageView(ImageView view, Mat image) {

@@ -18,6 +18,13 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import bot.Connection;
+import bot.actions.ActionList;
+import bot.actions.StartCollectionAction;
+import bot.actions.StopCollectionAction;
+import bot.actions.TestAction;
+import bot.actions.WaitAction;
+import bot.actions.WayPointAction;
 import bot.messages.Messages;
 import models.Ball;
 import models.Car;
@@ -47,8 +54,8 @@ public class RandomDrive extends State {
 	@Override
 	public State process(Mat frame) {
 
-		Mat f = frame;
-		
+		final Mat f = frame;
+
 		// We need car Position and Wall
 		ExecutorService executor = Executors.newFixedThreadPool(3);
 		Future<Wall> wFuture = executor.submit(new Callable<Wall>() {
@@ -94,7 +101,7 @@ public class RandomDrive extends State {
 
 		// We are not yet driving lets schedule some new stuff
 		if (running == null) {
-			
+
 			System.out.println("PLANNING NEW PATH");
 			running = LocalTime.now();
 
@@ -103,10 +110,9 @@ public class RandomDrive extends State {
 			Mat m = map.getFrame();
 
 			System.out.println(center);
-			System.out.println("rows:" + m.rows()); // ROW = y 
+			System.out.println("rows:" + m.rows()); // ROW = y
 			System.out.println("cols:" + m.cols()); // CCOLS = x
-			System.out.println(new Scalar(m.get((int) center.y, (int) center.x)).toString());
-			
+
 			Scalar c = new Scalar(m.get((int) center.y, (int) center.x));
 
 			// We could be in danger ZONE ! drive back into safety
@@ -150,22 +156,19 @@ public class RandomDrive extends State {
 				// We start By going UP !! (which is following the X axes
 				Point p = center.clone();
 
-				int x = (int)(p.y + (car.width/2)+5);
-				int y = (int)(p.x);
-				
-				
+				int x = (int) (p.x + (car.width / 2) + 5);
+				int y = (int) (p.y);
+
 				// We should go up ! M
-				if (!new Scalar(m.get(x, y)).equals(new Scalar(255, 250, 0))) {
+				if (!new Scalar(m.get(y, x)).equals(new Scalar(255, 250, 0))) {
 
 					System.out.println("UP!");
-					
-					while (Math.abs(center.y - x) < max) {
 
-						x += 5;
+					while (Math.abs(center.x - x) < max) {
 
-						System.out.println(x);
-						
-						c = new Scalar(m.get(x+5, y));
+						x += steps;
+
+						c = new Scalar(m.get(y, x + 5));
 
 						// We have reached our destinations
 						if (c.equals(new Scalar(255, 250, 0))) {
@@ -174,14 +177,24 @@ public class RandomDrive extends State {
 
 					}
 
-					target = new Point(y,x);
+					target = new Point(x, y);
 
 				}
 
 				// We now have a target!
-	
 				System.out.println("PLANNED NEW PATH: " + target);
 				// Send Action to robot!
+
+				
+				// Recalculate into the correct length
+				ActionList list = new ActionList();
+				
+				float nx = (float) (x/Car.widthInCM);
+				float ny = (float) (y/car.widthInCM);
+				list.add(new WayPointAction(nx, ny));
+				list.add(new WaitAction(10000));
+				list.add(new TestAction("-DONE-"));
+				Connection.SendActions(list);
 			}
 		}
 
@@ -201,7 +214,7 @@ public class RandomDrive extends State {
 		// We have a planned PATH Lets draw verify and return that visual
 
 		Imgproc.line(frame, map.center, target, new Scalar(88, 214, 141));
-		
+
 		return this;
 	}
 

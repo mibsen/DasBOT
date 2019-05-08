@@ -19,7 +19,7 @@ public class Connection {
 	private String ip;
 	private int port;
 	private Socket socket;
-	private ObjectInputStream inputStream;
+	private DataInputStream inputStream;
 	private ObjectOutputStream outputStream;
 	private ResponseReceiver responseReceiver;
 
@@ -37,7 +37,7 @@ public class Connection {
 			socket = new Socket(ip, port);
 			System.out.println("Client connected");
 
-			inputStream = new ObjectInputStream(socket.getInputStream());
+			inputStream = new DataInputStream(socket.getInputStream());
 			outputStream = new ObjectOutputStream(socket.getOutputStream());
 
 			Runnable inputGrabber = new Runnable() {
@@ -45,12 +45,10 @@ public class Connection {
 				@Override
 				public void run() {
 
-					DataInputStream dataInputStream = new DataInputStream(inputStream);
-
 					while (true) {
 
 						try {
-							String message = dataInputStream.readUTF();
+							String message = inputStream.readUTF();
 
 							new Thread(() -> {
 								responseReceiver.receive(message);
