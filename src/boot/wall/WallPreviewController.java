@@ -53,10 +53,14 @@ public class WallPreviewController extends BaseController{
 	
 	@FXML
 	TextArea bugValues;
+	
+	@FXML
+	Slider minArea;
 
 	private WallSettings settings;
 
 	private Config config;
+	
 	
 	@FXML
 	public void initialize() {
@@ -78,6 +82,8 @@ public class WallPreviewController extends BaseController{
 
 		threshold1.setValue(settings.threshold1);
 		threshold2.setValue(settings.threshold2);
+		
+		minArea.setValue(settings.minArea);
 
 		if (this.camera.init()) {
 			// set a fixed width for all the image to show and preserve image ratio
@@ -104,14 +110,17 @@ public class WallPreviewController extends BaseController{
 					settings.threshold1 = threshold1.getValue();
 					settings.threshold2 = threshold2.getValue();
 
+					settings.minArea = minArea.getValue();
+					
 					WallService wallService = new WallService(settings);
-
+				
 					Mat frame = camera.grabFrame();
 					
 					updateImageView(TransformedImage, wallService.getWallFrame(frame));
 					
 					
 					Wall wall = wallService.getWall(frame);
+				
 					if(wall != null) {
 						wallService.drawWall(frame, wall);
 					}
@@ -121,7 +130,7 @@ public class WallPreviewController extends BaseController{
 					for (Ball ball : balls) {
 						text += ball.point.x + ", "+ ball.point.y + ": " + ball.area+"\n";
 					}*/
-					bugValues.setText(threshold1.getValue() + "\n" + threshold2.getValue());
+					bugValues.setText(minArea.getValue() + "");
 				};
 			};
 			this.timer = Executors.newSingleThreadScheduledExecutor();

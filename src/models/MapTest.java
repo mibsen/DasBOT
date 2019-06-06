@@ -1,7 +1,5 @@
 package models;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -11,7 +9,7 @@ import config.Config;
 import services.CarService;
 
 class MapTest {
-
+	/*
 	@BeforeAll
 	static void beforeAll() {
 		System.loadLibrary( Core.NATIVE_LIBRARY_NAME );		
@@ -48,5 +46,6 @@ class MapTest {
 		
 		
 	}
+	*/
 
 }

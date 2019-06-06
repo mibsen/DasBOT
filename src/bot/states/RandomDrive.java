@@ -24,6 +24,7 @@ import bot.actions.ActionList;
 import bot.actions.StartCollectionAction;
 import bot.actions.StopCollectionAction;
 import bot.actions.TestAction;
+import bot.actions.TurnAction;
 import bot.actions.WaitAction;
 import bot.actions.WayPointAction;
 import bot.messages.Messages;
@@ -38,7 +39,7 @@ import services.WallService;
 public class RandomDrive extends State {
 
 	private LocalTime running;
-	int timeout = 30;
+	int timeout = 5;
 	private CarService carService;
 	private BallService ballService;
 	private WallService wallService;
@@ -56,6 +57,10 @@ public class RandomDrive extends State {
 	public State process(Mat oframe) {
 
 		final Mat f = oframe.clone();
+		
+		//Point ballPoint = ballService.getBalls(f).get(0).point;
+		
+		//System.out.println("Ballpoint: " + ballPoint);
 
 		// We need car Position and Wall
 		ExecutorService executor = Executors.newFixedThreadPool(3);
@@ -98,7 +103,7 @@ public class RandomDrive extends State {
 
 		map.drawCar(new Scalar(0, 250, 250), 1);
 
-		map.drawWall(new Scalar(255, 250, 0), car.width.intValue());
+		map.drawWall(new Scalar(255, 250, 0), car.width.intValue()*3);
 		map.drawWall(new Scalar(0, 250, 0), car.width.intValue() / 2);
 		map.drawWall(new Scalar(250, 250, 250), 1);
 
@@ -186,7 +191,18 @@ public class RandomDrive extends State {
 					target = map.getOriginalPoint( new Point(x - center.x, y - center.y));
 					System.out.println("TARGET: " + target.toString());
 
-				}
+			} else {
+				
+				System.out.println("TURN ME ROUND ROUND");
+				
+				ActionList list = new ActionList();
+				list.add(new TurnAction(180));
+				
+				if(!Bot.test)
+					Connection.SendActions(list);
+				
+				return this;
+			}
 
 				Point correctedTarget = new Point(x - center.x, y - center.y);
 				
@@ -203,9 +219,9 @@ public class RandomDrive extends State {
 				System.out.println(car.width);
 				System.out.println("Driving to: " +  nx + " : " + ny);
 				
-				list.add(new StartCollectionAction());
+	//			list.add(new StartCollectionAction());
 				list.add(new WayPointAction(nx, ny));
-				list.add(new StopCollectionAction());
+	//			list.add(new StopCollectionAction());
 				list.add(new TestAction("-DONE-"));
 				
 				if(!Bot.test)
@@ -247,6 +263,10 @@ public class RandomDrive extends State {
 
 	@Override
 	public Mat getFrame() {
+		
+		if(map == null) {
+			return null;
+		}
 		return map.getFrame();
 	}
 }

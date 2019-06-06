@@ -19,6 +19,8 @@ import models.WallSettings;
 public class WallService {
 
 	private WallSettings settings;
+	public Wall temp;
+	public boolean cache = true;
 
 	public WallService(WallSettings settings) {
 		this.settings = settings;
@@ -28,8 +30,18 @@ public class WallService {
 
 		Mat frame = getWallFrame(f);
 
-		return getWallsFromFrame(frame);
-
+		Wall w = getWallsFromFrame(frame);
+		
+		if (!cache) {
+			return  w;
+		}
+		if (w != null) {
+			temp = w;
+			return w;
+		}
+		else {
+			return temp;
+		}
 	}
 
 	public Mat getWallFrame(Mat f) {
@@ -80,6 +92,11 @@ public class WallService {
 			System.out.println("COULD NOT LOCATE WALL");
 			return null;
 		}
+		else if(Imgproc.contourArea(contours.get(0)) < settings.minArea) {
+			System.out.println("Wall is too small :-)");
+			return null;
+		}
+		
 
 		MatOfPoint c = contours.get(0);
 

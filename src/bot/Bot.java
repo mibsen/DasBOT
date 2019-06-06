@@ -92,7 +92,10 @@ public class Bot extends Application implements ResponseReceiver {
 
 				Mat f = state.process(frame).getFrame();
 
+				if(f != null)
 				updateImageView(originalFrame, f);
+				
+				
 				updateImageView(maskImage, frame);
 
 			}

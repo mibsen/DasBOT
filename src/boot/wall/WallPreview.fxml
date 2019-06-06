@@ -18,7 +18,7 @@
             </VBox>
             <VBox alignment="TOP_RIGHT" prefHeight="562.0" prefWidth="215.0">
                <children>
-                  <Label fx:id="hueStartLabel" text="Hue start"  />
+                  <Label fx:id="hueStartLabel" text="Hue start" />
                   <Slider fx:id="hueStart" blockIncrement="1" max="180" min="0" />
                   <Label fx:id="hueEndLabel" text="Hue end" />
                   <Slider fx:id="hueStop" blockIncrement="1" max="180" min="0" />
@@ -33,9 +33,11 @@
                   <Label fx:id="BlurValueLabel" text="Blur value" />
                   <Slider fx:id="blur" blockIncrement="1" max="50" min="1" />
                   <Label fx:id="MinSizeLabel" text="Min size" />
-                  <Slider fx:id="threshold1" blockIncrement="1" max="1000" min="0"  />
+                  <Slider fx:id="threshold1" blockIncrement="1" max="1000" min="0" />
                   <Label fx:id="MaxSizeLabel" text="Max size" />
                   <Slider fx:id="threshold2" blockIncrement="1" max="1000" min="0" />
+                  <Label fx:id="MinAreaLabel" text="Min area" />
+                  <Slider fx:id="minArea" blockIncrement="100" max="500000" min="0" />
                    <Button onAction="#saveClick" text="save and next" />
                   <TextArea fx:id="bugValues" prefHeight="200.0" prefWidth="200.0">
 
