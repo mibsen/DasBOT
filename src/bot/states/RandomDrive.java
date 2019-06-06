@@ -18,6 +18,7 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import bot.Bot;
 import bot.Connection;
 import bot.actions.ActionList;
 import bot.actions.StartCollectionAction;
@@ -52,9 +53,9 @@ public class RandomDrive extends State {
 	}
 
 	@Override
-	public State process(Mat frame) {
+	public State process(Mat oframe) {
 
-		final Mat f = frame;
+		final Mat f = oframe.clone();
 
 		// We need car Position and Wall
 		ExecutorService executor = Executors.newFixedThreadPool(3);
@@ -82,12 +83,16 @@ public class RandomDrive extends State {
 		try {
 			wall = wFuture.get();
 			car = cFuture.get();
+			
+			if(car == null) {
+				return this;
+			}
 		} catch (InterruptedException | ExecutionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		map = new Map(car, frame);
+		map = new Map(car, f);
 		map.addWall(wall);
 		map.corrected();
 
@@ -97,7 +102,7 @@ public class RandomDrive extends State {
 		map.drawWall(new Scalar(0, 250, 0), car.width.intValue() / 2);
 		map.drawWall(new Scalar(250, 250, 250), 1);
 
-		frame = map.getFrame();
+		Mat frame = map.getFrame();
 
 		// We are not yet driving lets schedule some new stuff
 		if (running == null) {
@@ -150,7 +155,7 @@ public class RandomDrive extends State {
 			} else {
 				System.out.println("LETS find a PAth");
 				// Lets find somewhere to drive!
-				int max = 1000;
+				int max = (int) (car.width * 20);
 				int steps = 1;
 
 				// We start By going UP !! (which is following the X axes
@@ -177,23 +182,33 @@ public class RandomDrive extends State {
 
 					}
 
-					target = new Point(x, y);
+					System.out.println("THIS! " + x + ": " + y);
+					target = map.getOriginalPoint( new Point(x - center.x, y - center.y));
+					System.out.println("TARGET: " + target.toString());
 
 				}
 
+				Point correctedTarget = new Point(x - center.x, y - center.y);
+				
 				// We now have a target!
-				System.out.println("PLANNED NEW PATH: " + target);
+				System.out.println("PLANNED NEW PATH: " + correctedTarget);
 				// Send Action to robot!
-
 				
 				// Recalculate into the correct length
 				ActionList list = new ActionList();
 				
-				float nx = (float) (x/Car.widthInCM);
-				float ny = (float) (y/car.widthInCM);
+				double ratio = car.widthInCM / car.width;
+				float nx = (float) (correctedTarget.x*ratio);
+				float ny = (float) (correctedTarget.y*ratio);
+				System.out.println(car.width);
+				System.out.println("Driving to: " +  nx + " : " + ny);
+				
+				list.add(new StartCollectionAction());
 				list.add(new WayPointAction(nx, ny));
-				list.add(new WaitAction(10000));
+				list.add(new StopCollectionAction());
 				list.add(new TestAction("-DONE-"));
+				
+				if(!Bot.test)
 				Connection.SendActions(list);
 			}
 		}
@@ -213,8 +228,11 @@ public class RandomDrive extends State {
 
 		// We have a planned PATH Lets draw verify and return that visual
 
-		Imgproc.line(frame, map.center, target, new Scalar(88, 214, 141));
+		Imgproc.line(frame, map.center, map.correctPoint(target), new Scalar(88, 214, 141));
+		
+		Imgproc.line(oframe, car.center, target, new Scalar(88, 214, 141));
 
+		
 		return this;
 	}
 

@@ -120,6 +120,7 @@ public class CarPreviewController extends BaseController{
 					settings.front.stop = frontMax.getValue();
 
 					CarService carService = new CarService(settings);
+					carService.debug = true;
 
 					Mat frame = camera.grabFrame();
 
@@ -142,7 +143,7 @@ public class CarPreviewController extends BaseController{
 				};
 			};
 			this.timer = Executors.newSingleThreadScheduledExecutor();
-			this.timer.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MILLISECONDS);
+			this.timer.scheduleAtFixedRate(frameGrabber, 0, 200, TimeUnit.MILLISECONDS);
 
 		} else {
 

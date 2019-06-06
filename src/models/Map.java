@@ -19,11 +19,12 @@ public class Map {
 	private Mat frame;
 	public Mat originalframe;
 
-	private Car car;
+	public Car car;
 	public List<Ball> balls = new ArrayList<Ball>();
 
 	public Point center;
 	private Point origo;
+	
 	private Wall wall;
 	private double radian;
 
@@ -44,6 +45,7 @@ public class Map {
 				new Point(car.back.x - origo.x, car.back.y - origo.y));
 
 		CarService.drawCar(this.frame, this.car, this.center);
+		
 	}
 
 	public void drawAxis() {
@@ -65,7 +67,7 @@ public class Map {
 
 		for (Ball ball : balls) {
 
-			this.balls.add(new Ball(new Point(ball.point.x - origo.x, ball.point.y - origo.y),ball.area));
+			this.balls.add(new Ball(new Point(ball.point.x - origo.x, ball.point.y - origo.y), ball.area));
 		}
 
 		BallService.drawBalls(this.frame, this.balls, this.center);
@@ -91,10 +93,23 @@ public class Map {
 
 	}
 
+	private Point derotatePoint(Point p) {
+
+		double s = Math.sin(-radian);
+		double c = Math.cos(-radian);
+
+		double x = p.x * c + p.y * s;
+		double y = -1 * p.x * s + p.y * c;
+
+		Point p2 = new Point(x, y);
+
+		return p2;
+	}
+
 	public Wall getWall() {
 		return this.wall;
 	}
-	
+
 	public void corrected() {
 
 		this.radian = Math.atan2(this.car.front.y, this.car.front.x);
@@ -103,19 +118,20 @@ public class Map {
 
 		if (this.car != null) {
 			this.car = new Car(rotatePoint(this.car.front), rotatePoint(this.car.back));
-	//		CarService.drawCar(this.frame, this.car, this.center);
+			// CarService.drawCar(this.frame, this.car, this.center);
 		}
-
+	
+		
 		ArrayList<Ball> temp = new ArrayList<Ball>();
 		if (this.balls.size() > 0) {
 
 			for (Ball ball : this.balls) {
-				temp.add(new Ball(rotatePoint(ball.point),ball.area));
+				temp.add(new Ball(rotatePoint(ball.point), ball.area));
 			}
 
 			this.balls = temp;
 
-	//		BallService.drawBalls(frame, this.balls, center);
+			// BallService.drawBalls(frame, this.balls, center);
 		}
 
 		if (this.wall != null) {
@@ -129,20 +145,41 @@ public class Map {
 			}
 
 			this.wall = new Wall(new MatOfPoint(wtemp));
-	//		WallService.drawWall(this.frame, this.wall, this.center);
+			// WallService.drawWall(this.frame, this.wall, this.center);
 
 		}
 
 	}
 
 	public void drawCar(Scalar color, int size) {
-		CarService.drawCar(this.frame, this.car, this.center,color,size);
-		
+		CarService.drawCar(this.frame, this.car, this.center, color, size);
+
 	}
-	
+
 	public void drawWall(Scalar color, int size) {
-		WallService.drawWall(this.frame, this.wall, this.center,color,size);
+		WallService.drawWall(this.frame, this.wall, this.center, color, size);
+
+	}
+
+	public Point getOriginalPoint(Point front) {
+
 		
+		
+		Point d = derotatePoint(front);
+
+		System.out.println(d.toString());
+
+		return new Point(d.x + origo.x, d.y + origo.y);
+	}
+
+	public Point correctPoint(Point p) {
+
+		p = new Point(p.x - origo.x, p.y - origo.y);
+		
+		p  = rotatePoint(p);
+		
+		return new Point(p.x + center.x, p.y + center.y);
+
 	}
 
 }

@@ -2,6 +2,7 @@ package camera;
 
 import java.io.File;
 
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
@@ -30,7 +31,6 @@ public class CameraFake  implements CameraInterface{
 		if(frame != null) {
 			return frame.clone();
 		}
-		
 		
 		frame = new Mat();
 

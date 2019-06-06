@@ -1,6 +1,8 @@
 package camera;
 
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 
 public class Camera implements CameraInterface {
@@ -14,8 +16,8 @@ public class Camera implements CameraInterface {
 
 	public boolean init() {
 
-		this.capture.open(4);
 
+		this.capture.open(1);	
 		return this.capture.isOpened();
 
 	}
@@ -37,6 +39,9 @@ public class Camera implements CameraInterface {
 		if (frame.empty()) {
 			return null;
 		}
+		
+		Size sz = new Size(frame.width()/2,frame.height()/2);
+		Imgproc.resize( frame, frame, sz );
 
 		return frame;
 

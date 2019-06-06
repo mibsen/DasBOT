@@ -11,6 +11,7 @@ import boot.Utils;
 import bot.messages.ResponseReceiver;
 import bot.states.RandomDrive;
 import bot.states.State;
+import camera.Camera;
 import camera.CameraFake;
 import camera.CameraInterface;
 import config.Config;
@@ -20,7 +21,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import services.BallService;
 import services.CarService;
@@ -37,6 +37,19 @@ public class Bot extends Application implements ResponseReceiver {
 	private State state;
 	private Connection connection;
 
+	CameraInterface camera;
+
+	public static boolean test = false;
+
+	public boolean skip = false;
+
+	public Bot(boolean skip) {
+		this.skip = skip;
+	}
+	
+	public Bot() {
+	}
+
 	@FXML
 	public void initialize() {
 
@@ -50,20 +63,26 @@ public class Bot extends Application implements ResponseReceiver {
 		// Build first State
 		state = new RandomDrive(carService, ballService, wallService);
 
-		// Create Connection
-		connection = new Connection("192.168.43.142", 4444);
+		System.out.println("Initializing BOT TEST:" + test);
+		
+		if (!test) {
+			// Create Connection
+			connection = new Connection("192.168.43.142", 4444);
 
-		// Listen for communication from the CAR
-		connection.onResponse(this);
+			// Listen for communication from the CAR
+			connection.onResponse(this);
 
-		//
-		connection.connect();
+			//
+			connection.connect();
+			camera = new Camera();
+			camera.init();
+
+		} else {
+			camera = new CameraFake();
+			camera.init();
+		}
 
 		// Start Image Loop
-		final CameraInterface camera = new CameraFake();
-
-		camera.init();
-
 		Runnable frameGrabber = new Runnable() {
 
 			@Override
@@ -102,17 +121,22 @@ public class Bot extends Application implements ResponseReceiver {
 
 	public void load() {
 
-		try {
-			start(new Stage());
+		System.out.println("Loading BOT Frame SKIP:"+skip);
+		
+		if (!skip) {
+			try {
+				start(new Stage());
 
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+
+			System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+			launch();
+
 		}
-
-		/*
-		 * System.loadLibrary(Core.NATIVE_LIBRARY_NAME); launch();
-		 */
 	}
 
 	public void updateImageView(ImageView view, Mat image) {
