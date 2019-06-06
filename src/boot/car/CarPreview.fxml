@@ -36,10 +36,10 @@
                   <Slider fx:id="backMin" blockIncrement="1" max="2000" min="0"  />
                   <Label fx:id="BackMaxSizeLabel" text="Back max size" />
                   <Slider fx:id="backMax" blockIncrement="1" max="2000" min="0" />
-                  <Label fx:id="FrontMinSizeLabel" text="Fron min size" />
-                  <Slider fx:id="frontMin" blockIncrement="1" max="2000" min="0" />
-                  <Label fx:id="FrontMaxSizeLabel" text="Fron max size" />
-                  <Slider fx:id="frontMax" blockIncrement="1" max="2000" min="0" />
+                  <Label fx:id="FrontMinSizeLabel" text="Front min size" />
+                  <Slider fx:id="frontMin" blockIncrement="1" max="10000" min="0" />
+                  <Label fx:id="FrontMaxSizeLabel" text="Front max size" />
+                  <Slider fx:id="frontMax" blockIncrement="1" max="10000" min="0" />
                    <Button onAction="#saveClick" text="save and next" />
                   <TextArea fx:id="bugValues" prefHeight="200.0" prefWidth="200.0">
                   </TextArea>
