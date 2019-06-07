@@ -54,7 +54,6 @@ public class CollectBalls extends State {
 	@Override
 	public State process(Mat frame) {
 
-		final Mat f = frame.clone();
 
 		// We need car Position and Wall
 
@@ -72,15 +71,15 @@ public class CollectBalls extends State {
 			return this;
 		}
 
-		map = new Map(car, f);
+		map = new Map(car, frame);
 		map.addBalls(balls);
 		map.addWall(wall);
 
 		map.corrected();
 
 		map.drawCar(new Scalar(0, 250, 250), 1);
-		map.drawWall(new Scalar(250, 250, 250), (int) (car.width * 2));
 		map.drawBalls(new Scalar(0, 250, 250), 1);
+		map.drawWall(new Scalar(250, 250, 250), (int) (car.width * 2));
 
 		Mat m = map.getFrame();
 
@@ -97,22 +96,26 @@ public class CollectBalls extends State {
 
 			// Close - Not to close
 			// We do not want balls to close!
-			double distance = Double.MAX_VALUE;
 			double minDistance = car.width * 2;
 
+			ArrayList<Ball> tb = new ArrayList<Ball>();
+			
 			// Remove close balls and balls close to border
 			for (Ball b : map.balls) {
 
 				double d = Math.sqrt(Math.pow(b.point.x, 2) + Math.pow(b.point.y, 2));
 
 				if (d <= minDistance) {
-					map.balls.remove(b);
+					
 				} else if (new Scalar(m.get((int) (b.point.y), (int) (b.point.x))).equals(new Scalar(250, 250, 250))) {
-					map.balls.remove(b);
+					
+				} else {
+					tb.add(b);
+					
 				}
 			}
 
-			if (map.balls.size() == 0) {
+			if (tb.size() == 0) {
 
 				System.out.println("THERE IS NO BALLS TO COLLECT!!!");
 				return this;
@@ -122,7 +125,7 @@ public class CollectBalls extends State {
 
 			// Sort Balls by distance to car
 
-			Collections.sort(map.balls, new Comparator<Ball>() {
+			Collections.sort(tb, new Comparator<Ball>() {
 
 				@Override
 				public int compare(Ball o1, Ball o2) {
@@ -157,7 +160,7 @@ public class CollectBalls extends State {
 			 */
 			activeBalls = new ArrayList<Ball>();
 
-			for (Ball b : map.balls) {
+			for (Ball b : tb) {
 				activeBalls.add(new Ball(map.getOriginalPoint(b.point), b.area));
 			}
 
@@ -166,14 +169,14 @@ public class CollectBalls extends State {
 
 			// Drive through while motor is running
 
-			System.out.println("Driving to first ball: " + map.balls.get(0).point.toString());
+			System.out.println("Driving to first ball: " + tb.get(0).point.toString());
 
 			double ratio = car.widthInCM / car.width;
 
 			ActionList list = new ActionList();
 			list.add(new StartCollectionAction());
 
-			for (Ball ball : map.balls) {
+			for (Ball ball : tb) {
 				float nx = (float) (ball.point.x * ratio);
 				float ny = (float) (-1 * ball.point.y * ratio);
 				System.out.println("Driving to: " + nx + " : " + ny);
@@ -204,7 +207,6 @@ public class CollectBalls extends State {
 
 		// Draw robot frame
 		Ball first = activeBalls.get(0);
-		Imgproc.line(m, map.center, map.correctPoint(first.point), new Scalar(88, 214, 141));
 
 		for (int i = 1; i < activeBalls.size(); i++) {
 			Ball sec = activeBalls.get(i);
@@ -214,7 +216,6 @@ public class CollectBalls extends State {
 
 		// Draw original frame
 		first = activeBalls.get(0);
-		Imgproc.line(frame, car.center, first.point, new Scalar(88, 214, 141));
 
 		for (int i = 1; i < activeBalls.size(); i++) {
 			Ball sec = activeBalls.get(i);

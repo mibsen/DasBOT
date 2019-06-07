@@ -1,19 +1,17 @@
 package bot.states;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import org.junit.jupiter.api.Test;
 import org.opencv.core.Point;
 
 import models.Ball;
 
 class CollectBallsTest {
 
-	@Test
+	//@Test
 	void test() {
 		
 		ArrayList<Ball> balls = new ArrayList<Ball>();

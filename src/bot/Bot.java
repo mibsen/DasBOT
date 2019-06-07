@@ -88,9 +88,10 @@ public class Bot extends Application implements ResponseReceiver {
 
 			@Override
 			public void run() {
-
+				System.out.println("WHAT ?");
 				Mat frame = camera.grabFrame();
 
+				System.out.println("WHAT ? pt 2");
 				Mat f = state.process(frame).getFrame();
 
 				if (f != null)
