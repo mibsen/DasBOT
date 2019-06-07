@@ -9,6 +9,7 @@ import org.opencv.core.Mat;
 
 import boot.Utils;
 import bot.messages.ResponseReceiver;
+import bot.states.CollectBalls;
 import bot.states.RandomDrive;
 import bot.states.State;
 import camera.Camera;
@@ -61,13 +62,13 @@ public class Bot extends Application implements ResponseReceiver {
 		CarService carService = new CarService(c.loadCar());
 
 		// Build first State
-		state = new RandomDrive(carService, ballService, wallService);
+		state = new CollectBalls(carService, ballService, wallService);
 
 		System.out.println("Initializing BOT TEST:" + test);
 
 		if (!test) {
 			// Create Connection
-			connection = new Connection("192.168.43.142", 4444);
+			connection = new Connection("172.20.10.5", 4444);
 
 			// Listen for communication from the CAR
 			connection.onResponse(this);

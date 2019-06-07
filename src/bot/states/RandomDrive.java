@@ -2,18 +2,13 @@ package bot.states;
 
 import java.time.Duration;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import javax.xml.ws.handler.MessageContext;
-
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
@@ -21,14 +16,10 @@ import org.opencv.imgproc.Imgproc;
 import bot.Bot;
 import bot.Connection;
 import bot.actions.ActionList;
-import bot.actions.StartCollectionAction;
-import bot.actions.StopCollectionAction;
 import bot.actions.TestAction;
 import bot.actions.TurnAction;
-import bot.actions.WaitAction;
 import bot.actions.WayPointAction;
 import bot.messages.Messages;
-import models.Ball;
 import models.Car;
 import models.Map;
 import models.Wall;
@@ -58,12 +49,9 @@ public class RandomDrive extends State {
 
 		final Mat f = oframe.clone();
 		
-		//Point ballPoint = ballService.getBalls(f).get(0).point;
-		
-		//System.out.println("Ballpoint: " + ballPoint);
 
 		// We need car Position and Wall
-		ExecutorService executor = Executors.newFixedThreadPool(3);
+		ExecutorService executor = Executors.newFixedThreadPool(2);
 		Future<Wall> wFuture = executor.submit(new Callable<Wall>() {
 
 			@Override
@@ -125,39 +113,6 @@ public class RandomDrive extends State {
 
 			Scalar c = new Scalar(m.get((int) center.y, (int) center.x));
 
-			// We could be in danger ZONE ! drive back into safety
-			if (c.equals(new Scalar(0, 250, 0))) {
-				System.out.println("We are in the danger zone");
-				// Create wall points
-				MatOfPoint2f p2f = new MatOfPoint2f(map.getWall().contour);
-
-				// Locate new point not inside danger zone and max 2 times car width away
-				Random random = new Random();
-				while (true) {
-					// Trying
-					System.out.println("trying to loate safe spot");
-
-					int x = (int) (random.nextInt((int) (car.width + 1 + car.width)) - car.width);
-					int y = (int) (random.nextInt((int) (car.width + 1 + car.width)) - car.width);
-
-					Point p = new Point(x, y);
-					// Verify point
-					if (!(new Scalar(m.get((int) center.y, (int) center.x)).equals(new Scalar(0, 250, 0)))
-							&& Imgproc.pointPolygonTest(p2f, p, false) > 0) {
-
-						// This is Save
-						target = p;
-						break;
-
-					} else {
-						// Tried point
-						Imgproc.drawMarker(m, p, new Scalar(250, 215, 160));
-						System.out.println("tried: " + p);
-					}
-
-				}
-
-			} else {
 				System.out.println("LETS find a PAth");
 				// Lets find somewhere to drive!
 				int max = (int) (car.width * 20);
@@ -227,7 +182,7 @@ public class RandomDrive extends State {
 				if(!Bot.test)
 				Connection.SendActions(list);
 			}
-		}
+		
 
 		// Verify the Timeout
 		if (Duration.between(running, LocalTime.now()).getSeconds() > timeout) {
@@ -252,14 +207,6 @@ public class RandomDrive extends State {
 		return this;
 	}
 
-	@Override
-	public void handle(String message) {
-
-		// We are done and we are ready for new work!
-		if (message.equals(Messages.DONE)) {
-			running = null;
-		}
-	}
 
 	@Override
 	public Mat getFrame() {

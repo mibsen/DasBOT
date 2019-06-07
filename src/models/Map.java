@@ -161,6 +161,11 @@ public class Map {
 
 	}
 
+	public void drawBalls(Scalar color, int size) {
+		BallService.drawBalls(frame, balls, center);
+
+	}
+	
 	public Point getOriginalPoint(Point front) {
 
 		
