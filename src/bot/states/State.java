@@ -15,12 +15,6 @@ public abstract class State {
 
 		// We are done and we are ready for new work!
 		if (message.equals(Messages.DONE)) {
-			
-			
-			// Wait for response
-			System.out.println("Received DONE. Press enter to continue");
-			new Scanner(System.in).nextLine(); 
-			System.out.println("Running again");
 						
 			running = null;
 		}

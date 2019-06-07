@@ -1,5 +1,7 @@
 package bot.states;
 
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
@@ -20,6 +22,7 @@ import bot.actions.StopCollectionAction;
 import bot.actions.TestAction;
 import bot.actions.WaitAction;
 import bot.actions.WayPointAction;
+import bot.messages.Messages;
 import models.Ball;
 import models.Car;
 import models.Map;
@@ -31,12 +34,11 @@ import services.WallService;
 public class CollectBalls extends State {
 
 	private CarService carService;
+	int timeout = 30;
 	private BallService ballService;
 	private WallService wallService;
 	private Map map;
-	private ExecutorService executor = Executors.newFixedThreadPool(3);
 	private Ball activeBall = null;
-	private boolean waitForNextFrame = false;
 	
 	
 	public CollectBalls(CarService carService, BallService ballService, WallService wallService) {
@@ -49,55 +51,25 @@ public class CollectBalls extends State {
 	@Override
 	public State process(Mat frame) {
 
-		final Mat f = frame.clone();
-
-		// We need car Position and Wall
-
-		Future<Wall> wFuture = executor.submit(new Callable<Wall>() {
-
-			@Override
-			public Wall call() throws Exception {
-				return wallService.getWall(f);
-			}
-
-		});
-
-		Future<Car> cFuture = executor.submit(new Callable<Car>() {
-
-			@Override
-			public Car call() throws Exception {
-				return carService.getCar(f);
-			}
-
-		});
-
-		Future<List<Ball>> bFuture = executor.submit(new Callable<List<Ball>>() {
-
-			@Override
-			public List<Ball> call() throws Exception {
-				return ballService.getBalls(f);
-			}
-
-		});
-
+		
 		Wall wall = null;
 		Car car = null;
 		List<Ball> balls = null;
 
-		try {
-			wall = wFuture.get();
-			car = cFuture.get();
-			balls = bFuture.get();
+		
+	 wall = wallService.getWall(frame);
+			
 
-			if (car == null || wall == null) {
-				return this;
-			}
-		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	    car = carService.getCar(frame);
 
-		map = new Map(car, f);
+				balls = ballService.getBalls(frame);
+	
+				if(wall == null || car == null) {
+					return this;
+				}
+
+
+		map = new Map(car, frame);
 		map.addBalls(balls);
 		map.addWall(wall);
 
@@ -110,18 +82,7 @@ public class CollectBalls extends State {
 		Mat m = map.getFrame();
 
 		if (running == null) {
-
-			// Wait for response
-			System.out.println("Press enter to start");
-			new Scanner(System.in).nextLine();
-			System.out.println("Running again");
 			
-			if(waitForNextFrame) {
-				waitForNextFrame = false;
-				return this;
-			}
-
-			waitForNextFrame = true;
 			
 			// Locate A Ball
 
@@ -144,7 +105,7 @@ public class CollectBalls extends State {
 				if (d <= distance && d >= minDistance) {
 
 					// Not against Wall
-					if (new Scalar(m.get((int) (b.point.y), (int) (b.point.x))).equals(new Scalar(250, 250, 250))) {
+					if (new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x))).equals(new Scalar(250, 250, 250))) {
 						System.out.println("THIS BALL IS TO CLOSE TO THE BORDER!");
 					} else {
 						distance = d;
@@ -158,12 +119,13 @@ public class CollectBalls extends State {
 				System.out.println("COULD NOT LOCATE BALL");
 				return this;
 			}
+			
+			running = LocalTime.now();
 
 			// Save the located active ball
 			activeBall = new Ball(map.getOriginalPoint(ball.point), ball.area);
 
-			// Drive through while motor is running
-
+			
 			System.out.println("Driving to: " + ball.point.toString());
 
 			
@@ -177,13 +139,27 @@ public class CollectBalls extends State {
 			ActionList list = new ActionList();
 			list.add(new StartCollectionAction());
 			list.add(new WayPointAction(nx, ny, 0.01F));
-			list.add(new WaitAction(5000));
+			list.add(new WaitAction(3000));
 			list.add(new StopCollectionAction());
 			list.add(new TestAction("-DONE-"));
 			
 			if(!Bot.test)
 			Connection.SendActions(list);
 
+		}
+		
+		
+		// Verify the Timeout
+		if (Duration.between(running, LocalTime.now()).getSeconds() > timeout) {
+
+			// We have timed out
+			System.out.println("DRIVING TIMEOUT");
+
+			// TODO: Send HARDBREAK ACTION
+
+			running = null;
+
+			return this;
 		}
 
 		Imgproc.line(m, map.center, map.correctPoint(activeBall.point), new Scalar(88, 214, 141));
@@ -201,4 +177,13 @@ public class CollectBalls extends State {
 		return map.getFrame();
 	}
 
+	
+	public void handle(String message) {
+
+		// We are done and we are ready for new work!
+		if (message.equals(Messages.DONE)) {
+			activeBall = null;
+			running = null;
+		}
+	}
 }
