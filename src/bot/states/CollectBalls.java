@@ -176,7 +176,7 @@ public class CollectBalls extends State {
 			
 			ActionList list = new ActionList();
 			list.add(new StartCollectionAction());
-			list.add(new WayPointAction(nx, ny));
+			list.add(new WayPointAction(nx, ny, 0.01F));
 			list.add(new WaitAction(5000));
 			list.add(new StopCollectionAction());
 			list.add(new TestAction("-DONE-"));

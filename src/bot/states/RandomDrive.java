@@ -175,7 +175,7 @@ public class RandomDrive extends State {
 				System.out.println("Driving to: " +  nx + " : " + ny);
 				
 	//			list.add(new StartCollectionAction());
-				list.add(new WayPointAction(nx, ny));
+				list.add(new WayPointAction(nx, ny, 0.5F));
 	//			list.add(new StopCollectionAction());
 				list.add(new TestAction("-DONE-"));
 				
