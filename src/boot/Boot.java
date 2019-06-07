@@ -43,7 +43,6 @@ public class Boot extends Application {
 				if (steps.peek() == null) {
 					controller.setClosed();
 					primaryStage.close();
-					after.call();
 
 					return null;
 				}
@@ -71,7 +70,6 @@ public class Boot extends Application {
 			steps.add("./ball/BallPreview.fxml");
 			steps.add("./wall/WallPreview.fxml");
 			steps.add("./car/CarPreview.fxml");
-			//steps.add("./fullpicture/FullPicturePreview.fxml");
 		}
 
 		try {

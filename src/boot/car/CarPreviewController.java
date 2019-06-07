@@ -15,8 +15,7 @@ import models.Car;
 import models.CarSettings;
 import services.CarService;
 
-public class CarPreviewController extends BaseController{
-
+public class CarPreviewController extends BaseController {
 
 	@FXML
 	ImageView ContourImage;
@@ -47,30 +46,29 @@ public class CarPreviewController extends BaseController{
 
 	@FXML
 	Slider backMin;
-	
+
 	@FXML
 	Slider backMax;
-	
+
 	@FXML
 	Slider frontMin;
 
 	@FXML
 	Slider frontMax;
-	
+
 	@FXML
 	TextArea bugValues;
 
 	private CarSettings settings;
 
 	private Config config;
-	
+
 	@FXML
 	public void initialize() {
 
 		config = new Config();
 		settings = config.loadCar();
 
-		
 		saturationStart.setValue(settings.image.saturation.start);
 		saturationStop.setValue(settings.image.saturation.stop);
 
@@ -81,14 +79,14 @@ public class CarPreviewController extends BaseController{
 		valueStop.setValue(settings.image.value.stop);
 
 		blur.setValue(settings.image.blur);
-		
+
 		backMin.setValue(settings.back.start);
 		backMax.setValue(settings.back.stop);
-		
+
 		frontMin.setValue(settings.front.start);
 		frontMax.setValue(settings.front.stop);
 
-		//set front and back
+		// set front and back
 
 		if (this.camera.init()) {
 
@@ -107,12 +105,12 @@ public class CarPreviewController extends BaseController{
 
 					settings.image.saturation.start = saturationStart.getValue();
 					settings.image.saturation.stop = saturationStop.getValue();
-					
+
 					settings.image.value.start = valueStart.getValue();
 					settings.image.value.stop = valueStop.getValue();
 
 					settings.image.blur = blur.getValue();
-					
+
 					settings.back.start = backMin.getValue();
 					settings.back.stop = backMax.getValue();
 
@@ -125,20 +123,19 @@ public class CarPreviewController extends BaseController{
 					Mat frame = camera.grabFrame();
 
 					updateImageView(TransformedImage, carService.getCarFrame(frame));
-					
+
 					Car car = carService.getCar(frame);
-					
+
 					String text = "";
-					
-					if(car != null) {
+
+					if (car != null) {
 						carService.drawCar(frame, car);
-						
-						text = "Back: " + car.back.x + ", " + car.back.y + "\n" 
-								+ "Center: " + car.center.x + ", " + car.center.y + "\n"
-								+ "Front: " + car.front.x + ", " + car.front.y;
+
+						text = "Back: " + car.back.x + ", " + car.back.y + "\n" + "Center: " + car.center.x + ", "
+								+ car.center.y + "\n" + "Front: " + car.front.x + ", " + car.front.y;
 					}
 					updateImageView(ContourImage, frame);
-					
+
 					bugValues.setText(text);
 				};
 			};
@@ -154,8 +151,7 @@ public class CarPreviewController extends BaseController{
 
 		}
 	}
-	
-	
+
 	@FXML
 	private void saveClick() {
 		config.saveCar(settings);

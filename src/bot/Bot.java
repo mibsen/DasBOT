@@ -46,7 +46,7 @@ public class Bot extends Application implements ResponseReceiver {
 	public Bot(boolean skip) {
 		this.skip = skip;
 	}
-	
+
 	public Bot() {
 	}
 
@@ -64,7 +64,7 @@ public class Bot extends Application implements ResponseReceiver {
 		state = new RandomDrive(carService, ballService, wallService);
 
 		System.out.println("Initializing BOT TEST:" + test);
-		
+
 		if (!test) {
 			// Create Connection
 			connection = new Connection("192.168.43.142", 4444);
@@ -92,10 +92,9 @@ public class Bot extends Application implements ResponseReceiver {
 
 				Mat f = state.process(frame).getFrame();
 
-				if(f != null)
-				updateImageView(originalFrame, f);
-				
-				
+				if (f != null)
+					updateImageView(originalFrame, f);
+
 				updateImageView(maskImage, frame);
 
 			}
@@ -124,22 +123,10 @@ public class Bot extends Application implements ResponseReceiver {
 
 	public void load() {
 
-		System.out.println("Loading BOT Frame SKIP:"+skip);
-		
-		if (!skip) {
-			try {
-				start(new Stage());
+		System.out.println("Loading BOT Frame SKIP:" + skip);
 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-
-			System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-			launch();
-
-		}
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+		launch();
 	}
 
 	public void updateImageView(ImageView view, Mat image) {
