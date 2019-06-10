@@ -11,37 +11,37 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-import models.Car;
-import models.ImageSettings;
+import models.ObstacleSettings;
 import models.Wall;
 import models.WallSettings;
 
 public class WallService {
 
 	private WallSettings settings;
-	public Wall temp;
+	private ObstacleSettings obstacleSettings;
+	public Wall wall;
+	public Wall obstacle;
 	public boolean cache = true;
 
-	public WallService(WallSettings settings) {
+	public WallService(WallSettings settings, ObstacleSettings obstacleSettings) {
 		this.settings = settings;
+		this.obstacleSettings = obstacleSettings;
 	}
 
-	public Wall getWall(Mat f) {
+	public Wall getWall() {
+		return wall;
+	}
+
+	public Wall getObstacle() {
+		return obstacle;
+	}
+
+	public void locateWalls(Mat f) {
 
 		Mat frame = getWallFrame(f);
 
-		Wall w = getWallsFromFrame(frame);
-		
-		if (!cache) {
-			return  w;
-		}
-		if (w != null) {
-			temp = w;
-			return w;
-		}
-		else {
-			return temp;
-		}
+
+		getWallsFromFrame(frame);
 	}
 
 	public Mat getWallFrame(Mat f) {
@@ -76,7 +76,7 @@ public class WallService {
 
 	// https://www.programcreek.com/java-api-examples/?class=org.opencv.imgproc.Imgproc&method=HoughLinesP
 	// https://blog.ayoungprogrammer.com/2013/04/tutorial-detecting-multiple-rectangles.html/
-	public Wall getWallsFromFrame(Mat wallFrame) {
+	public void getWallsFromFrame(Mat wallFrame) {
 		// TODO Auto-generated method stub
 
 		List<MatOfPoint> contours = new ArrayList<>();
@@ -89,27 +89,56 @@ public class WallService {
 		Imgproc.findContours(wallFrame, contours, hierarchy, Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
 
 		if (contours.size() == 0) {
-			System.out.println("COULD NOT LOCATE WALL");
-			return null;
+			System.out.println("COULD NOT LOCATE WALL OR OBSTACLE");
+			return;
 		}
-		else if(Imgproc.contourArea(contours.get(0)) < settings.minArea) {
-			System.out.println("Wall is too small :-)");
-			return null;
+
+		MatOfPoint[] c = new MatOfPoint[2];
+
+		for (MatOfPoint temp : contours) {
+			if (Imgproc.contourArea(temp) > settings.minArea) {
+
+				if (c[0] != null) {
+					if (Imgproc.contourArea(c[0]) > Imgproc.contourArea(temp)) {
+						wall = new Wall(temp);
+						c[0] = temp;
+					}
+
+				} else {
+					c[0] = temp;
+					wall = new Wall(temp);
+				}
+
+			} else if (Imgproc.contourArea(temp) > obstacleSettings.minArea
+					&& Imgproc.contourArea(temp) < obstacleSettings.maxArea) {
+				c[1] = temp;
+				obstacle = new Wall(temp);
+			}
 		}
 		
 
-		MatOfPoint c = contours.get(0);
+		System.out.println("Wall size: " + (c[0] != null ? Imgproc.contourArea(c[0]) : ""));
+		System.out.println("Obstacle size: " + (c[1] != null ? Imgproc.contourArea(c[1]) : ""));
+
+		if (c[0] == null) {
+			System.out.println("Wall is too small :-)");
+			return;
+		}
+		if (c[1] == null) {
+			System.out.println("Obstacle can't be found :-)");
+			return;
+		}
 
 		// Potentielt noget filter!
 		// double area = Imgproc.contourArea(c);
-
-		Wall w = new Wall(c);
-
-		return w;
-
+		
 	}
 
 	public void drawWall(Mat frame, Wall wall) {
+
+		if (wall == null) {
+			return;
+		}
 
 		Point p1 = wall.points[0];
 

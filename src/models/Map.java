@@ -25,7 +25,7 @@ public class Map {
 	public Point center;
 	private Point origo;
 	
-	private Wall wall;
+	private Wall wall, obstacle;
 	private double radian;
 
 	public Map(Car car, Mat frame) {
@@ -73,10 +73,13 @@ public class Map {
 		BallService.drawBalls(this.frame, this.balls, this.center);
 	}
 
-	public void addWall(Wall wall) {
+	public void addWall(Wall wall, Wall obstacle) {
 
 		this.wall = Wall.copyWithOrigo(wall, this.origo);
-		WallService.drawWall(this.frame, this.wall, this.center);
+		this.obstacle = Wall.copyWithOrigo(obstacle, this.origo);
+		
+		WallService.drawWall(this.frame, this.wall, this.center);		
+		WallService.drawWall(this.frame, this.obstacle, this.center);
 	}
 
 	public Point rotatePoint(Point p) {
@@ -106,8 +109,15 @@ public class Map {
 		return p2;
 	}
 
+	/*
+	 * First wall is outer wall and second wall is obstacle
+	 */
 	public Wall getWall() {
 		return this.wall;
+	}
+	
+	public Wall getObstacle() {
+		return this.obstacle;
 	}
 
 	public void corrected() {
@@ -148,6 +158,21 @@ public class Map {
 			// WallService.drawWall(this.frame, this.wall, this.center);
 
 		}
+		
+		if (this.obstacle != null) {
+
+			Point[] otemp = new Point[this.obstacle.points.length];
+
+			for (int i = 0; i < this.obstacle.points.length; i++) {
+
+				otemp[i] = rotatePoint(this.obstacle.points[i]);
+
+			}
+
+			this.obstacle = new Wall(new MatOfPoint(otemp));
+			// WallService.drawWall(this.frame, this.wall, this.center);
+
+		}
 
 	}
 
@@ -158,6 +183,7 @@ public class Map {
 
 	public void drawWall(Scalar color, int size) {
 		WallService.drawWall(this.frame, this.wall, this.center, color, size);
+		WallService.drawWall(this.frame, this.obstacle, this.center, color, size);
 
 	}
 

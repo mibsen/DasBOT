@@ -8,6 +8,7 @@ import java.util.Properties;
 
 import models.BallSettings;
 import models.CarSettings;
+import models.ObstacleSettings;
 import models.WallSettings;
 
 public class Config {
@@ -53,6 +54,11 @@ public class Config {
 		bs.save(props);
 		saveConfig();
 	}
+	
+	public ObstacleSettings loadObstacle() {
+		ObstacleSettings os = new ObstacleSettings(props);
+		return os;
+	}
 
 	public WallSettings loadWall() {
 		WallSettings ws = new WallSettings(props);
@@ -76,5 +82,10 @@ public class Config {
 		cs.save(props);
 		saveConfig();
 
+	}
+
+	public void saveObstacle(ObstacleSettings obstacleSettings) {
+		obstacleSettings.save(props);
+		saveConfig();
 	}
 }

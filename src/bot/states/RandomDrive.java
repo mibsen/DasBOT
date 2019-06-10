@@ -56,7 +56,16 @@ public class RandomDrive extends State {
 
 			@Override
 			public Wall call() throws Exception {
-				return wallService.getWall(f);
+				return wallService.getWall();
+			}
+
+		});
+		
+		Future<Wall> oFuture = executor.submit(new Callable<Wall>() {
+
+			@Override
+			public Wall call() throws Exception {
+				return wallService.getObstacle();
 			}
 
 		});
@@ -71,10 +80,12 @@ public class RandomDrive extends State {
 		});
 
 		Wall wall = null;
+		Wall obstacle = null;
 		Car car = null;
 
 		try {
 			wall = wFuture.get();
+			obstacle = oFuture.get();
 			car = cFuture.get();
 			
 			if(car == null) {
@@ -86,7 +97,7 @@ public class RandomDrive extends State {
 		}
 
 		map = new Map(car, f);
-		map.addWall(wall);
+		map.addWall(wall, obstacle);
 		map.corrected();
 
 		map.drawCar(new Scalar(0, 250, 250), 1);

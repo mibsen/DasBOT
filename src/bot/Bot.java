@@ -58,7 +58,7 @@ public class Bot extends Application implements ResponseReceiver {
 		Config c = new Config();
 
 		BallService ballService = new BallService(c.loadBall());
-		WallService wallService = new WallService(c.loadWall());
+		WallService wallService = new WallService(c.loadWall(), c.loadObstacle());
 		CarService carService = new CarService(c.loadCar());
 
 		// Build first State
@@ -88,10 +88,8 @@ public class Bot extends Application implements ResponseReceiver {
 
 			@Override
 			public void run() {
-				System.out.println("WHAT ?");
 				Mat frame = camera.grabFrame();
 
-				System.out.println("WHAT ? pt 2");
 				Mat f = state.process(frame).getFrame();
 
 				if (f != null)

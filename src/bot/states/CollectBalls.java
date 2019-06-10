@@ -42,6 +42,7 @@ public class CollectBalls extends State {
 	private Map map;
 	private boolean waitForNextFrame = false;
 	private ArrayList<Ball> activeBalls = new ArrayList<Ball>();
+	private Ball activeBall = null;
 	private long timeout = 120;
 
 	public CollectBalls(CarService carService, BallService ballService, WallService wallService) {
@@ -58,22 +59,25 @@ public class CollectBalls extends State {
 		// We need car Position and Wall
 
 		Wall wall = null;
+		Wall obstacle = null;
 		Car car = null;
 		List<Ball> balls = null;
 
-		wall = wallService.getWall(frame);
+		wallService.locateWalls(frame);
+		wall = wallService.getWall();
+		obstacle = wallService.getObstacle();
 
 		car = carService.getCar(frame);
 
 		balls = ballService.getBalls(frame);
 
-		if (wall == null || car == null) {
+		if (wall == null || car == null || obstacle == null) {
 			return this;
 		}
 
 		map = new Map(car, frame);
 		map.addBalls(balls);
-		map.addWall(wall);
+		map.addWall(wall, obstacle);
 
 		map.corrected();
 
@@ -82,6 +86,7 @@ public class CollectBalls extends State {
 		map.drawWall(new Scalar(250, 250, 250), (int) (car.width * 2));
 
 		Mat m = map.getFrame();
+
 
 		if (running == null) {
 
@@ -107,11 +112,10 @@ public class CollectBalls extends State {
 
 				if (d <= minDistance) {
 					
-				} else if (new Scalar(m.get((int) (b.point.y), (int) (b.point.x))).equals(new Scalar(250, 250, 250))) {
-					
+				} else if (new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x))).equals(new Scalar(250, 250, 250))) {
+					System.out.println("Removed Ball - to close to border");
 				} else {
 					tb.add(b);
-					
 				}
 			}
 
@@ -140,49 +144,22 @@ public class CollectBalls extends State {
 				}
 			});
 
-			/*
-			 * for (Ball b : map.balls) {
-			 * 
-			 * double d = Math.sqrt(Math.pow(b.point.x, 2) + Math.pow(b.point.y, 2));
-			 * 
-			 * if (d <= distance && d >= minDistance) {
-			 * 
-			 * // Not against Wall if (new Scalar(m.get((int) (b.point.y), (int)
-			 * (b.point.x))).equals(new Scalar(250, 250, 250))) {
-			 * System.out.println("THIS BALL IS TO CLOSE TO THE BORDER!"); } else { distance
-			 * = d; ball = b; } }
-			 * 
-			 * }
-			 * 
-			 * if (ball == null) { System.out.println("COULD NOT LOCATE BALL"); return this;
-			 * }
-			 * 
-			 */
-			activeBalls = new ArrayList<Ball>();
+			Ball ball = tb.get(0);	
+			activeBall = new Ball(map.getOriginalPoint(ball.point),ball.area); 
 
-			for (Ball b : tb) {
-				activeBalls.add(new Ball(map.getOriginalPoint(b.point), b.area));
-			}
-
-			// Save the located active ball
-			// activeBalls = new Ball(map.getOriginalPoint(ball.point), ball.area);
-
-			// Drive through while motor is running
-
-			System.out.println("Driving to first ball: " + tb.get(0).point.toString());
+			System.out.println("Driving to  ball: " + ball.point.toString());
 
 			double ratio = car.widthInCM / car.width;
 
 			ActionList list = new ActionList();
 			list.add(new StartCollectionAction());
 
-			for (Ball ball : tb) {
+			
 				float nx = (float) (ball.point.x * ratio);
 				float ny = (float) (-1 * ball.point.y * ratio);
 				System.out.println("Driving to: " + nx + " : " + ny);
 				list.add(new WayPointAction(nx, ny, 0.80F));
-			}
-
+			
 			list.add(new WaitAction(3000));
 			list.add(new StopCollectionAction());
 			list.add(new TestAction("-DONE-"));
@@ -206,22 +183,10 @@ public class CollectBalls extends State {
 		}
 
 		// Draw robot frame
-		Ball first = activeBalls.get(0);
-
-		for (int i = 1; i < activeBalls.size(); i++) {
-			Ball sec = activeBalls.get(i);
-			Imgproc.line(m, map.correctPoint(first.point), map.correctPoint(sec.point), new Scalar(88, 214, 141));
-			first = sec;
-		}
-
-		// Draw original frame
-		first = activeBalls.get(0);
-
-		for (int i = 1; i < activeBalls.size(); i++) {
-			Ball sec = activeBalls.get(i);
-			Imgproc.line(frame, first.point, sec.point, new Scalar(88, 214, 141));
-			first = sec;
-		}
+		Ball first = activeBall;
+		
+			Imgproc.line(m, map.center, map.correctPoint(first.point), new Scalar(88, 214, 141));
+			Imgproc.line(frame, car.center, first.point, new Scalar(88, 214, 141));
 
 		return this;
 	}

@@ -38,6 +38,10 @@
                   <Slider fx:id="threshold2" blockIncrement="1" max="1000" min="0" />
                   <Label fx:id="MinWallAreaLabel" text="Min wall area" />
                   <Slider fx:id="minWallArea" blockIncrement="100" max="500000" min="0" />
+                  <Label fx:id="MinObstacleAreaLabel" text="Min obstacle area" />
+                  <Slider fx:id="minObstacleArea" blockIncrement="10" max="5000" min="0" />
+                  <Label fx:id="MaxObstacleAreaLabel" text="Max obstacle area" />
+                  <Slider fx:id="maxObstacleArea" blockIncrement="10" max="5000" min="0" />
                    <Button onAction="#saveClick" text="save and next" />
                   <TextArea fx:id="bugValues" prefHeight="200.0" prefWidth="200.0">
 

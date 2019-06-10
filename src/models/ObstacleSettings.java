@@ -29,7 +29,7 @@ public class ObstacleSettings {
 		props.setProperty(key + ".canny.threshold2", ""+threshold2);
 
 		props.setProperty(key + ".minArea", "" + minArea);
-		props.setProperty(key + ".maxArea", "" + minArea);
+		props.setProperty(key + ".maxArea", "" + maxArea);
 		
 		image.save(props);
 		
