@@ -77,7 +77,7 @@ public class DriveObstacle extends State {
 
 		map.drawCar(new Scalar(0, 250, 250), 1);
 		map.drawBalls(new Scalar(0, 250, 250), 1);
-		map.drawWall(new Scalar(250, 250, 250), (int) (car.width * 2));
+		map.drawWall(new Scalar(250, 250, 250), (int) (car.width * 3));
 
 		Mat m = map.getFrame();
 
@@ -147,7 +147,7 @@ public class DriveObstacle extends State {
 
 			running = LocalTime.now();
 
-			double ratio = car.widthInCM / car.width;
+			double ratio = Car.widthInCM / car.width;
 
 			float nx = (float) (p.x * ratio);
 			float ny = (float) (-1 * p.y * ratio);

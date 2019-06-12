@@ -99,7 +99,7 @@ public class Bot extends Application implements ResponseReceiver {
 			camera.init();
 
 		} else {
-			camera = new Camera();
+			camera = new CameraFake();
 			camera.init();
 		}
 
