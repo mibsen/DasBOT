@@ -156,7 +156,7 @@ public class WallService {
 		MatOfPoint2f dst = new MatOfPoint2f(points);
 		Mat warp = Imgproc.getPerspectiveTransform(src, dst);
 
-		//Imgproc.warpPerspective(frame, frame, warp, frame.size());
+		Imgproc.warpPerspective(frame, frame, warp, frame.size());
 
 		wall = new Wall(new MatOfPoint(p));
 		wall = wall.substractBorder();
