@@ -19,6 +19,7 @@ import bot.actions.StartCollectionAction;
 import bot.actions.StopCollectionAction;
 import bot.actions.WaitAction;
 import bot.actions.WayPointAction;
+import bot.messages.Messages;
 import models.Ball;
 import models.Car;
 import models.Map;
@@ -64,6 +65,7 @@ public class DriveObstacle extends State {
 		balls = ballService.getBalls(frame);
 
 		if (wall == null || car == null || obstacle == null) {
+			isDone = true;
 			return this;
 		}
 
@@ -132,6 +134,12 @@ public class DriveObstacle extends State {
 		Imgproc.line(frame, car.center, nearestWaypoint, new Scalar(0, 0, 250));
 
 		if (running == null) {
+			
+			if(isDone) {
+				isDone = false;
+				return this;
+			}
+			
 
 			Point p = map.rotatePoint(new Point(nearestWaypoint.x - car.center.x, nearestWaypoint.y - car.center.y));
 
@@ -164,9 +172,10 @@ public class DriveObstacle extends State {
 
 			running = null;
 
+			
 			return this;
 		}
-
+		
 		return this;
 	}
 
@@ -177,5 +186,16 @@ public class DriveObstacle extends State {
 			return null;
 		}
 		return map.getFrame();
+	}
+	
+	public void handle(String message) {
+
+		isDone = true;
+		
+		// We are done and we are ready for new work!
+		if (message.equals(Messages.DONE)) {
+						
+			running = null;
+		}
 	}
 }

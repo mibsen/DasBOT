@@ -35,9 +35,8 @@ public class EasyCollect extends State {
 	private WallService wallService;
 	private Map map;
 	private boolean waitForNextFrame = false;
-	private ArrayList<Ball> activeBalls = new ArrayList<Ball>();
 	private Ball activeBall = null;
-	private long timeout = 10;
+	private long timeout = 120;
 
 	public EasyCollect(CarService carService, BallService ballService, WallService wallService) {
 
@@ -82,11 +81,14 @@ public class EasyCollect extends State {
 		Mat m = map.getFrame();
 
 		if (running == null) {
+			
+			isDone = false;
 
 			// Locate A Ball
 
 			if (map.balls.size() == 0) {
 				System.out.println("THERE IS NO BALLS IN MAP TO COLLECT!!!");
+				isDone = true;
 				return this;
 			}
 
@@ -112,13 +114,13 @@ public class EasyCollect extends State {
 					//System.out.println("Removed Ball - hiding behind obstacle");
 				} else {
 					tb.add(b);
-					activeBalls.add(b);
 				}
 			}
 
 			if (tb.size() == 0) {
 
 				System.out.println("THERE IS NO BALLS IN TB TO COLLECT!!!");
+				isDone = true;
 				return this;
 			}
 
@@ -243,7 +245,6 @@ public class EasyCollect extends State {
 
 		// We are done and we are ready for new work!
 		if (message.equals(Messages.DONE)) {
-			activeBalls = new ArrayList<Ball>();
 			running = null;
 		}
 	}

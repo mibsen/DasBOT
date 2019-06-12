@@ -10,6 +10,7 @@ import bot.messages.Messages;
 public abstract class State {
 
 	protected LocalTime running;
+	public boolean isDone = false;
 	
 	public void handle(String message) {
 
@@ -18,6 +19,12 @@ public abstract class State {
 						
 			running = null;
 		}
+	}
+	
+
+	@Override
+	public String toString() {
+		return this.getClass().getName();
 	}
 
 	public abstract State process(Mat frame);

@@ -1,5 +1,9 @@
 package bot;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -52,6 +56,12 @@ public class Bot extends Application implements ResponseReceiver {
 
 	public Bot() {
 	}
+	
+	LinkedList<State> collectBallsState = new LinkedList<State>();
+
+	private EasyCollect easyCollectState;
+	private DriveObstacle driveObstacleState;
+	private CollectBalls collectBallState;
 
 	@FXML
 	public void initialize() {
@@ -64,11 +74,16 @@ public class Bot extends Application implements ResponseReceiver {
 		CarService carService = new CarService(c.loadCar());
 
 		// Build first State
-		//state = new CollectBalls(carService, ballService, wallService);
-		//state = new DriveObstacle(carService, ballService, wallService);
-		state = new EasyCollect(carService, ballService, wallService);
+		collectBallState = new CollectBalls(carService, ballService, wallService);
+		driveObstacleState = new DriveObstacle(carService, ballService, wallService);
+		easyCollectState = new EasyCollect(carService, ballService, wallService);
 
-
+		state = easyCollectState;
+		
+		collectBallsState.add(easyCollectState);
+		collectBallsState.add(driveObstacleState);
+		
+		
 		System.out.println("Initializing BOT TEST:" + test);
 
 		if (!test) {
@@ -94,9 +109,15 @@ public class Bot extends Application implements ResponseReceiver {
 			@Override
 			public void run() {
 				Mat frame = camera.grabFrame();
+				
+				System.out.println("State: " + state.toString());
 
 				Mat f = state.process(frame).getFrame();
 
+				if (state.isDone) {
+					state = nextState();
+				}
+				
 				if (f != null)
 					updateImageView(originalFrame, f);
 
@@ -108,6 +129,15 @@ public class Bot extends Application implements ResponseReceiver {
 		ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
 		timer.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MILLISECONDS);
 
+	}
+
+	protected State nextState() {
+		if(collectBallsState.indexOf(state) + 1 > collectBallsState.size()) {
+			return collectBallsState.getFirst();
+		}
+		else {
+			return collectBallsState.get(collectBallsState.indexOf(state)+1);
+		}
 	}
 
 	@Override
