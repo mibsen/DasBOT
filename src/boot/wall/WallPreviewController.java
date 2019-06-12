@@ -4,10 +4,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.Point;
-import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
@@ -127,71 +123,16 @@ public class WallPreviewController extends BaseController {
 
 					updateImageView(TransformedImage, wallService.getWallFrame(frame));
 
-					wallService.locateWalls(frame);
+					frame  = wallService.locateWallsAndCorrectFrame(frame);
 					Wall wall = wallService.getWall();
-
-					if (wall != null) {
-						
-						/*
-						Point[] srcP = new Point[] { wall.corners[0], wall.corners[0], wall.corners[0],
-								wall.corners[0] };
-
-						MatOfPoint2f src = new MatOfPoint2f(wall.corners);
-
-						for (Point point : wall.corners) {
-
-							if (point.x < wall.center.x && point.y < wall.center.y) {
-								srcP[0] = point;
-							}
-
-							if (point.x > wall.center.x && point.y < wall.center.y) {
-								srcP[1] = point;
-							}
-
-							if (point.x < wall.center.x && point.y > wall.center.y) {
-								srcP[2] = point;
-							}
-
-							if (point.x > wall.center.x && point.y > wall.center.y) {
-								srcP[3] = point;
-							}
-						}
-
-						for (Point point2 : srcP) {
-							System.out.println(point2);
-						}
-						*/
-						
-						MatOfPoint2f src = new MatOfPoint2f(getRightOrder(frame,wall.corners));
-						
-						RotatedRect box = Imgproc.minAreaRect(src);
-						Point[] p = new Point[4];
-						box.points(p);
-			
-						Point[] points = getRightOrder(frame, p);
-						
-						/*			
-						MatOfPoint2f dst = new MatOfPoint2f(new Point(0, 0), new Point(frame.width() - 1, 0),
-								new Point(0, frame.height() - 1), new Point(frame.width() - 1, frame.height() - 1));
-	*/
-		
-						MatOfPoint2f dst = new MatOfPoint2f(points);
-						Mat warp = Imgproc.getPerspectiveTransform(src, dst);
-
-						Imgproc.warpPerspective(frame, frame, warp, frame.size());
-
-						
-						wall = new Wall(new MatOfPoint(p));
-						wall = wall.substractBorder(wall);
-					}
 
 					Wall obstacle = wallService.getObstacle();
 					// Obstacle obstacle = obstacleService.getObstacle(frame);
 
 					if (wall != null) {
 						wallService.drawWall(frame, wall);
-						Imgproc.drawMarker(frame, WallService.imageCenter, new Scalar(255, 255, 0));
-						Imgproc.drawMarker(frame, wall.center, new Scalar(255, 0, 0));
+						Imgproc.drawMarker(frame, WallService.imageCenter, new Scalar(255, 255, 0),10);
+						Imgproc.drawMarker(frame, wall.center, new Scalar(255, 0, 0),10);
 					}
 
 					if (obstacle != null)
@@ -222,38 +163,7 @@ public class WallPreviewController extends BaseController {
 		}
 	}
 	
-	
-	private Point[] getRightOrder(Mat frame, Point[] points) {
 
-		if(points.length < 4) {
-			return points;
-		}
-		
-		Point[] result = new Point[4];
-		
-		Point center = new Point(frame.width()/2, frame.height()/2);
-		
-		for (Point point : points) {
-
-			if (point.x < center.x && point.y < center.y) {
-				result[0] = point;
-			}
-
-			if (point.x > center.x && point.y < center.y) {
-				result[1] = point;
-			}
-
-			if (point.x < center.x && point.y > center.y) {
-				result[2] = point;
-			}
-
-			if (point.x > center.x && point.y > center.y) {
-				result[3] = point;
-			}
-		}
-	
-		return result;
-	}
 
 	@FXML
 	private void saveClick() {

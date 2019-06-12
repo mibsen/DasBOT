@@ -18,8 +18,7 @@ public class Wall {
 
 	public Wall(MatOfPoint c) {
 
-	
-		//c = substractBorder(c);
+		// c = substractBorder(c);
 
 		locateCorners(c);
 		locateCenter(c);
@@ -29,27 +28,25 @@ public class Wall {
 
 	}
 
-	public Wall substractBorder(Wall w) {
-		
-		return new Wall(substractBorder(w.contour));
+	public Wall substractBorder() {
+		return new Wall(substractBorder(this.contour));
 	}
-	
-	
-	
-	
+
 	private MatOfPoint substractBorder(MatOfPoint c) {
 
-		double factor = borderHeight / WallService.camHeight;		
+		double factor = borderHeight / WallService.camHeight;
 		Point[] tmp = c.toArray();
 		Point[] cor = new Point[tmp.length];
-		
-		for (int i = 0; i < tmp.length; i++) {
 
+		for (int i = 0; i < tmp.length; i++) {
 
 			Point wp = tmp[i];
 
 			double x = wp.x - WallService.imageCenter.x;
 			double y = wp.y - WallService.imageCenter.y;
+	
+			x = wp.x - center.x;
+			y = wp.y - center.y;
 
 			double nx = x * factor;
 			double ny = y * factor;

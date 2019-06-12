@@ -56,7 +56,7 @@ public class EasyCollect extends State {
 		List<Ball> balls = null;
 		ArrayList<Ball> drawingBalls = null;
 
-		wallService.locateWalls(frame);
+		frame = wallService.locateWallsAndCorrectFrame(frame);
 		wall = wallService.getWall();
 		obstacle = wallService.getObstacle();
 

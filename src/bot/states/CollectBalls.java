@@ -63,7 +63,7 @@ public class CollectBalls extends State {
 		Car car = null;
 		List<Ball> balls = null;
 
-		wallService.locateWalls(frame);
+		frame = wallService.locateWallsAndCorrectFrame(frame);
 		wall = wallService.getWall();
 		obstacle = wallService.getObstacle();
 

@@ -67,9 +67,9 @@ public class Boot extends Application {
 		if (steps == null) {
 			System.out.println("CALLED!");
 			steps = new LinkedList<>();
-			steps.add("./ball/BallPreview.fxml");
+			//steps.add("./ball/BallPreview.fxml");
 			steps.add("./wall/WallPreview.fxml");
-			steps.add("./car/CarPreview.fxml");
+			//steps.add("./car/CarPreview.fxml");
 		}
 
 		try {

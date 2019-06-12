@@ -29,7 +29,10 @@ public class CarService {
 
 		Mat frame = getCarFrame(f);
 
-		return getCarFromFrame(frame);
+		Car car =  getCarFromFrame(frame);
+		
+		//return car;
+		return car.substractHeight(new Point(frame.width()/2, frame.height()/2));
 	}
 
 	public Mat getCarFrame(Mat f) {
