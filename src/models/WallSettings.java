@@ -10,6 +10,8 @@ public class WallSettings {
 
 	public double threshold1, threshold2;
 	
+	public double camHeight;
+	
 	public double minArea;
 
 	public WallSettings(Properties props) {
@@ -17,7 +19,8 @@ public class WallSettings {
 
 		this.threshold1 = Double.parseDouble(props.getProperty(key + ".canny.threshold1", "0"));
 		this.threshold2 = Double.parseDouble(props.getProperty(key + ".canny.threshold2", "0"));
-		
+		this.camHeight = Double.parseDouble(props.getProperty(key + ".camheight", "150"));
+
 		this.minArea = Double.parseDouble(props.getProperty(key + ".minArea", "0"));
 
 	}
@@ -26,11 +29,10 @@ public class WallSettings {
 		
 		props.setProperty(key + ".canny.threshold1", ""+threshold1);
 		props.setProperty(key + ".canny.threshold2", ""+threshold2);
-
+		props.setProperty(key + ".camheight", ""+camHeight);
 		props.setProperty(key + ".minArea", ""+minArea);
 		
 		image.save(props);
-		
 	}
 
 }

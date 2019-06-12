@@ -126,11 +126,131 @@ public class CarService {
 			return;
 		}
 
-		Imgproc.drawMarker(frame, new Point(car.front.x + center.x, car.front.y + center.y), color,1, size);
-		Imgproc.drawMarker(frame, new Point(car.back.x + center.x, car.back.y + center.y), color,1, size);
-		Imgproc.drawMarker(frame, new Point(car.center.x + center.x, car.center.y + center.y), color,1, size);
-		Imgproc.line(frame, new Point(car.front.x + center.x, car.front.y + center.y),
-				new Point(car.back.x + center.x, car.back.y + center.y), color, size);
+		
+		System.out.println("qweqw: " + car.width);
+		
+		// punkt 1 = back
+		// Punkt 2 = front
+
+		double factor = 14D / (14D + 10D);
+
+		double x = car.back.x - car.front.x;
+		double y = car.back.y - car.front.y;
+
+		double nx = x * factor;
+		double ny = y * factor;
+
+		Point back = new Point((car.back.x + center.x) + nx, (car.back.y + center.y) + ny);
+
+		Imgproc.drawMarker(frame, back, color, 4, 2);
+
+		// Right Back
+		factor = 1;
+		nx = x * factor;
+		ny = y * factor;
+
+		System.out.println(x + " " + y);
+		System.out.println(nx + " " + ny);
+
+		System.out.println("-------");
+
+		double radian = Math.toRadians(90);
+
+		double s = Math.sin(radian);
+		double c = Math.cos(radian);
+
+		double nnx = nx * c + ny * s;
+		double nny = -1 * nx * s + ny * c;
+
+		Point right_back = new Point(nnx + back.x, nny + back.y);
+
+		Imgproc.drawMarker(frame, right_back, color, 4, 2);
+
+		// back left
+		factor = 9 / 14D;
+		nx = x * factor;
+		ny = y * factor;
+
+		System.out.println(x + " " + y);
+		System.out.println(nx + " " + ny);
+
+		System.out.println("-------");
+
+		radian = Math.toRadians(-90);
+
+		s = Math.sin(radian);
+		c = Math.cos(radian);
+
+		nnx = nx * c + ny * s;
+		nny = -1 * nx * s + ny * c;
+
+		Point left_back = new Point(nnx + back.x, nny + back.y);
+
+		Imgproc.drawMarker(frame, left_back, color, 4, 2);
+
+		// Front
+		factor = 14D / (14D + 5D);
+
+		x = car.front.x - car.back.x;
+		y = car.front.y - car.back.y;
+
+		nx = x * factor;
+		ny = y * factor;
+
+		Point front = new Point((car.front.x + center.x) + nx, (car.front.y + center.y) + ny);
+
+		Imgproc.drawMarker(frame, front, color, 4, 2);
+
+		// Front right
+		factor = 1;
+		nx = x * factor;
+		ny = y * factor;
+
+		radian = Math.toRadians(-90);
+
+		s = Math.sin(radian);
+		c = Math.cos(radian);
+
+		nnx = nx * c + ny * s;
+		nny = -1 * nx * s + ny * c;
+
+		Point right_front = new Point(nnx + front.x, nny + front.y);
+
+		Imgproc.drawMarker(frame, right_front, color, 4, 2);
+
+		// front left
+		factor = 9 / 14D;
+		nx = x * factor;
+		ny = y * factor;
+
+		radian = Math.toRadians(90);
+
+		s = Math.sin(radian);
+		c = Math.cos(radian);
+
+		nnx = nx * c + ny * s;
+		nny = -1 * nx * s + ny * c;
+
+		Point left_front = new Point(nnx + front.x, nny + front.y);
+
+		Imgproc.drawMarker(frame, left_front, color, 4, 2);
+
+		Imgproc.fillConvexPoly(frame,
+				new MatOfPoint(new Point[] {
+						left_front,
+						right_front,
+						right_back,
+						left_back
+				}),
+				color);
+
+		Imgproc.drawMarker(frame, new Point(car.front.x + center.x, car.front.y + center.y), color, 1, size);
+		Imgproc.drawMarker(frame, new Point(car.back.x + center.x, car.back.y + center.y), color, 1, size);
+		Imgproc.drawMarker(frame, new Point(car.center.x + center.x, car.center.y + center.y), new Scalar(0,0, 0), 1, 10);
+		
+		  Imgproc.line(frame, back, front, new Scalar(0,0, 0),
+		  size);
+		 
 	}
 
 	public static void drawCar(Mat frame, Car car, Point center) {

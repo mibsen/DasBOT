@@ -5,6 +5,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.TextField?>
 
 <TitledPane text="Wall preview" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="boot.wall.WallPreviewController">
       <content>
@@ -18,6 +19,8 @@
             </VBox>
             <VBox alignment="TOP_RIGHT" prefHeight="562.0" prefWidth="215.0">
                <children>
+                  <Label fx:id="HeightLabel" text="CAM height" />
+                  <TextField  fx:id="height"/>               
                   <Label fx:id="hueStartLabel" text="Hue start" />
                   <Slider fx:id="hueStart" blockIncrement="1" max="180" min="0" />
                   <Label fx:id="hueEndLabel" text="Hue end" />

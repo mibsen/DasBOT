@@ -1,12 +1,12 @@
 package services;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
@@ -22,10 +22,13 @@ public class WallService {
 	private ObstacleSettings obstacleSettings;
 	public Wall wall;
 	public Wall obstacle;
+	public static double camHeight;
+	public static Point imageCenter;
 	public boolean cache = true;
 
 	public WallService(WallSettings settings, ObstacleSettings obstacleSettings) {
 		this.settings = settings;
+		camHeight = settings.camHeight;
 		this.obstacleSettings = obstacleSettings;
 	}
 
@@ -46,6 +49,8 @@ public class WallService {
 	}
 
 	public Mat getWallFrame(Mat f) {
+		
+		imageCenter = new Point(f.width()/2, f.height()/2);
 
 		double hueStart = settings.image.hue.start;
 		double hueStop = settings.image.hue.stop;
@@ -118,8 +123,8 @@ public class WallService {
 		}
 		
 
-		//System.out.println("Wall size: " + (c[0] != null ? Imgproc.contourArea(c[0]) : ""));
-		//System.out.println("Obstacle size: " + (c[1] != null ? Imgproc.contourArea(c[1]) : ""));
+		System.out.println("Wall size: " + (c[0] != null ? Imgproc.contourArea(c[0]) : ""));
+		System.out.println("Obstacle size: " + (c[1] != null ? Imgproc.contourArea(c[1]) : ""));
 
 		if (c[0] == null) {
 			System.out.println("Wall is too small :-)");
@@ -141,6 +146,71 @@ public class WallService {
 			return;
 		}
 
+		/*
+		Point center = new Point(frame.width()/2, frame.height()/2);
+		
+		Imgproc.drawMarker(frame,center, new Scalar(0,0,0));
+		
+			
+		double factor = (6.5D) / 175D  ;
+
+		Point[] cor = new Point[wall.points.length];
+		
+		for (int i = 0; i < wall.points.length; i++) {
+			
+			Point wp = wall.points[i];
+		
+		
+		double x = wp.x - center.x;
+		double y = wp.y - center.y;
+
+		double nx = x * factor;
+		double ny = y * factor;
+
+
+		
+		Point corrected = new Point((wp.x) - nx, ( wp.y) - ny);
+
+		// Imgproc.drawMarker(frame, corrected, new Scalar(0,0,0));
+		
+		cor[i] = corrected;
+		
+		}
+		
+
+		Point p1 = cor[0];
+
+		for (int i = 1; i < cor.length; i++) {
+			Imgproc.line(frame, new Point(p1.x, p1.y),
+					new Point(cor[i].x, cor[i].y ), new Scalar(0, 250, 0), 1);
+			p1 = cor[i];
+		}
+		
+		Imgproc.line(frame, p1, cor[0], new Scalar(0, 250, 0));
+		  
+		
+        for (Point point : wall.corners) {
+			
+        	Imgproc.drawMarker(frame, point, new Scalar(0,250,250),Imgproc.MARKER_STAR);
+        	
+		}
+        
+
+		 p1 = wall.points[0];
+
+		for (int i = 1; i < wall.points.length; i++) {
+			Imgproc.line(frame, p1, wall.points[i], new Scalar(0, 250, 0));
+			p1 = wall.points[i];
+		}
+
+		Imgproc.line(frame, p1, wall.points[0], new Scalar(0, 250, 0));
+  
+        
+    	Imgproc.drawMarker(frame, wall.center, new Scalar(0,100,100),Imgproc.MARKER_STAR);
+    
+        
+    	
+        */
 		Point p1 = wall.points[0];
 
 		for (int i = 1; i < wall.points.length; i++) {
@@ -155,6 +225,8 @@ public class WallService {
 		}
 
 		// Imgproc.drawContours(frame, contours, 0, new Scalar(0, 250, 0), 3);
+		 
+		 
 	}
 
 	public static void drawWall(Mat frame, Wall wall, Point center) {
@@ -175,7 +247,7 @@ public class WallService {
 				new Point(wall.points[0].x + center.x, wall.points[0].y + center.y), color, size);
 
 		for (Point point : wall.points) {
-			//Imgproc.drawMarker(frame, new Point(point.x + center.x, point.y + center.y), color, 3, size);
+			Imgproc.drawMarker(frame, new Point(point.x + center.x, point.y + center.y), color, 3, size);
 		}
 
 	}
