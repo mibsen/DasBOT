@@ -37,7 +37,7 @@ public class EasyCollect extends State {
 	private boolean waitForNextFrame = false;
 	private ArrayList<Ball> activeBalls = new ArrayList<Ball>();
 	private Ball activeBall = null;
-	private long timeout = 120;
+	private long timeout = 10;
 
 	public EasyCollect(CarService carService, BallService ballService, WallService wallService) {
 
@@ -55,6 +55,7 @@ public class EasyCollect extends State {
 		Wall obstacle = null;
 		Car car = null;
 		List<Ball> balls = null;
+		ArrayList<Ball> drawingBalls = null;
 
 		wallService.locateWalls(frame);
 		wall = wallService.getWall();
@@ -140,6 +141,7 @@ public class EasyCollect extends State {
 				}
 			});
 
+			drawingBalls = tb;
 			Ball ball = tb.get(0);
 			activeBall = new Ball(map.getOriginalPoint(ball.point), ball.area);
 
@@ -149,12 +151,10 @@ public class EasyCollect extends State {
 
 			ActionList list = new ActionList();
 			list.add(new StartCollectionAction());
-
 			float nx = (float) (ball.point.x * ratio);
 			float ny = (float) (-1 * ball.point.y * ratio);
 			System.out.println("Driving to: " + nx + " : " + ny);
-			list.add(new WayPointAction(nx, ny, 0.80F));
-
+			list.add(new WayPointAction(nx, ny, 0.60F));
 			list.add(new WaitAction(3000));
 			list.add(new StopCollectionAction());
 
@@ -175,13 +175,10 @@ public class EasyCollect extends State {
 
 			return this;
 		}
-
-		for (Ball b : activeBalls) {
-			Imgproc.line(m, map.center, map.correctPoint(map.getOriginalPoint(b.point)), new Scalar(250, 250, 250));
-		}
+		//for (Ball b : drawingBalls) {
+		//	Imgproc.line(m, map.center, map.correctPoint(map.getOriginalPoint(b.point)), new Scalar(250, 250, 250));
+		//}
 		
-		Imgproc.drawMarker(m, new Point(690, 626), new Scalar(0,  250, 250), Imgproc.MARKER_TILTED_CROSS);
-
 		Ball first = activeBall;
 
 		Imgproc.line(m, map.center, map.correctPoint(first.point), new Scalar(88, 214, 141));

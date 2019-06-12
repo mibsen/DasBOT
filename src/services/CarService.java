@@ -127,7 +127,7 @@ public class CarService {
 		}
 
 		
-		System.out.println("qweqw: " + car.width);
+		//System.out.println("qweqw: " + car.width);
 		
 		// punkt 1 = back
 		// Punkt 2 = front
@@ -149,10 +149,10 @@ public class CarService {
 		nx = x * factor;
 		ny = y * factor;
 
-		System.out.println(x + " " + y);
-		System.out.println(nx + " " + ny);
+		//System.out.println(x + " " + y);
+		//System.out.println(nx + " " + ny);
 
-		System.out.println("-------");
+		//System.out.println("-------");
 
 		double radian = Math.toRadians(90);
 
@@ -171,10 +171,10 @@ public class CarService {
 		nx = x * factor;
 		ny = y * factor;
 
-		System.out.println(x + " " + y);
-		System.out.println(nx + " " + ny);
+		//System.out.println(x + " " + y);
+		//System.out.println(nx + " " + ny);
 
-		System.out.println("-------");
+		//System.out.println("-------");
 
 		radian = Math.toRadians(-90);
 

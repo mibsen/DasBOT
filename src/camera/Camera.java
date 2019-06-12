@@ -40,10 +40,10 @@ public class Camera implements CameraInterface {
 			return null;
 		}
 		
-		/*
+		
 		Size sz = new Size(frame.width()/2,frame.height()/2);
 		Imgproc.resize( frame, frame, sz );
-		 */
+		 
 		return frame;
 
 	}

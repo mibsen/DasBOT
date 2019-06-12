@@ -42,7 +42,7 @@ public class Bot extends Application implements ResponseReceiver {
 
 	CameraInterface camera;
 
-	public static boolean test = true;
+	public static boolean test = false;
 
 	public boolean skip = false;
 
@@ -84,7 +84,7 @@ public class Bot extends Application implements ResponseReceiver {
 			camera.init();
 
 		} else {
-			camera = new CameraFake();
+			camera = new Camera();
 			camera.init();
 		}
 
