@@ -6,14 +6,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Scanner;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
@@ -22,7 +17,6 @@ import bot.Connection;
 import bot.actions.ActionList;
 import bot.actions.StartCollectionAction;
 import bot.actions.StopCollectionAction;
-import bot.actions.TestAction;
 import bot.actions.WaitAction;
 import bot.actions.WayPointAction;
 import bot.messages.Messages;
@@ -34,7 +28,7 @@ import services.BallService;
 import services.CarService;
 import services.WallService;
 
-public class CollectBalls extends State {
+public class EasyCollect extends State {
 
 	private CarService carService;
 	private BallService ballService;
@@ -45,7 +39,7 @@ public class CollectBalls extends State {
 	private Ball activeBall = null;
 	private long timeout = 120;
 
-	public CollectBalls(CarService carService, BallService ballService, WallService wallService) {
+	public EasyCollect(CarService carService, BallService ballService, WallService wallService) {
 
 		this.carService = carService;
 		this.ballService = ballService;
@@ -54,7 +48,6 @@ public class CollectBalls extends State {
 
 	@Override
 	public State process(Mat frame) {
-
 
 		// We need car Position and Wall
 
@@ -87,13 +80,12 @@ public class CollectBalls extends State {
 
 		Mat m = map.getFrame();
 
-
 		if (running == null) {
 
 			// Locate A Ball
 
 			if (map.balls.size() == 0) {
-				System.out.println("THERE IS NO BALLS TO COLLECT!!!");
+				System.out.println("THERE IS NO BALLS IN MAP TO COLLECT!!!");
 				return this;
 			}
 
@@ -111,18 +103,21 @@ public class CollectBalls extends State {
 				double d = Math.sqrt(Math.pow(b.point.x, 2) + Math.pow(b.point.y, 2));
 
 				if (d <= minDistance) {
-
+					//System.out.println("Removed Ball - to close to robot");
 				} else if (new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x)))
 						.equals(new Scalar(250, 250, 250))) {
-					System.out.println("Removed Ball - to close to border");
+					//System.out.println("Removed Ball - to close to border");
+				} else if (isBehindObstacle(b, m)) {
+					//System.out.println("Removed Ball - hiding behind obstacle");
 				} else {
 					tb.add(b);
+					activeBalls.add(b);
 				}
 			}
 
 			if (tb.size() == 0) {
 
-				System.out.println("THERE IS NO BALLS TO COLLECT!!!");
+				System.out.println("THERE IS NO BALLS IN TB TO COLLECT!!!");
 				return this;
 			}
 
@@ -181,13 +176,61 @@ public class CollectBalls extends State {
 			return this;
 		}
 
-		// Draw robot frame
+		for (Ball b : activeBalls) {
+			Imgproc.line(m, map.center, map.correctPoint(map.getOriginalPoint(b.point)), new Scalar(250, 250, 250));
+		}
+		
+		Imgproc.drawMarker(m, new Point(690, 626), new Scalar(0,  250, 250), Imgproc.MARKER_TILTED_CROSS);
+
 		Ball first = activeBall;
 
 		Imgproc.line(m, map.center, map.correctPoint(first.point), new Scalar(88, 214, 141));
 		Imgproc.line(frame, car.center, first.point, new Scalar(88, 214, 141));
 
 		return this;
+	}
+
+	private boolean isBehindObstacle(Ball ball, Mat m) {
+		Point ballPoint = map.correctPoint(map.getOriginalPoint(ball.point));
+		Point carPoint = map.center;
+
+		System.out.println("Ball : " + ballPoint.toString());
+		System.out.println("Car : " + carPoint.toString());
+		
+		if (carPoint.x > ballPoint.x) {
+			
+			double a = (ballPoint.y - carPoint.y) / (ballPoint.x - carPoint.x);
+			double b = (carPoint.y - a * carPoint.x);
+
+			for (int x = (int) ballPoint.x; x < (int) carPoint.x-5; x++) {
+				double y = a * x + b;
+				System.out.println("1: Color of point (" + x + ", " + y + "): " + new Scalar(m.get((int) y, (int) x)).toString());
+				if (new Scalar(m.get((int) (y), (int) (x)))
+						.equals(new Scalar(250, 250, 250))) {
+					return true;
+				}
+			}
+
+		} else if (ballPoint.x > carPoint.x) {
+			
+			double a = (carPoint.y - ballPoint.y) / (carPoint.x - ballPoint.x);
+			double b = (ballPoint.y - a * ballPoint.x);
+
+			for (int x = (int) carPoint.x; x < (int) ballPoint.x-5; x++) {
+				double y = a * x + b;
+				System.out.println("2: Color of point (" + x + ", " + y + "): " + new Scalar(m.get((int) y, (int) x)).toString());
+				if (new Scalar(m.get((int) (y), (int) (x)))
+						.equals(new Scalar(250, 250, 250))) {
+					return true;
+				}
+			}
+
+		} 
+		else {
+
+		}
+
+		return false;
 	}
 
 	@Override

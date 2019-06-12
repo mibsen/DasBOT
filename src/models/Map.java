@@ -198,7 +198,7 @@ public class Map {
 		
 		Point d = derotatePoint(front);
 
-		System.out.println(d.toString());
+		//System.out.println(d.toString());
 
 		return new Point(d.x + origo.x, d.y + origo.y);
 	}

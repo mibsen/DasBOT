@@ -10,6 +10,8 @@ import org.opencv.core.Mat;
 import boot.Utils;
 import bot.messages.ResponseReceiver;
 import bot.states.CollectBalls;
+import bot.states.DriveObstacle;
+import bot.states.EasyCollect;
 import bot.states.RandomDrive;
 import bot.states.State;
 import camera.Camera;
@@ -40,7 +42,7 @@ public class Bot extends Application implements ResponseReceiver {
 
 	CameraInterface camera;
 
-	public static boolean test = false;
+	public static boolean test = true;
 
 	public boolean skip = false;
 
@@ -62,7 +64,10 @@ public class Bot extends Application implements ResponseReceiver {
 		CarService carService = new CarService(c.loadCar());
 
 		// Build first State
-		state = new CollectBalls(carService, ballService, wallService);
+		//state = new CollectBalls(carService, ballService, wallService);
+		//state = new DriveObstacle(carService, ballService, wallService);
+		state = new EasyCollect(carService, ballService, wallService);
+
 
 		System.out.println("Initializing BOT TEST:" + test);
 

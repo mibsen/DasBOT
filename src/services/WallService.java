@@ -1,6 +1,7 @@
 package services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.opencv.core.Core;
@@ -117,8 +118,8 @@ public class WallService {
 		}
 		
 
-		System.out.println("Wall size: " + (c[0] != null ? Imgproc.contourArea(c[0]) : ""));
-		System.out.println("Obstacle size: " + (c[1] != null ? Imgproc.contourArea(c[1]) : ""));
+		//System.out.println("Wall size: " + (c[0] != null ? Imgproc.contourArea(c[0]) : ""));
+		//System.out.println("Obstacle size: " + (c[1] != null ? Imgproc.contourArea(c[1]) : ""));
 
 		if (c[0] == null) {
 			System.out.println("Wall is too small :-)");
@@ -174,7 +175,7 @@ public class WallService {
 				new Point(wall.points[0].x + center.x, wall.points[0].y + center.y), color, size);
 
 		for (Point point : wall.points) {
-			Imgproc.drawMarker(frame, new Point(point.x + center.x, point.y + center.y), color, 3, size);
+			//Imgproc.drawMarker(frame, new Point(point.x + center.x, point.y + center.y), color, 3, size);
 		}
 
 	}
