@@ -140,13 +140,28 @@ public class WallService {
 		return f;
 	}
 
+	private CachedPoint[] cachedPoint = new CachedPoint[] { new CachedPoint(), new CachedPoint(), new CachedPoint(),
+			new CachedPoint() };
+
 	private Mat correctWall(Mat frame, Wall w) {
 
 		if (w == null) {
 			return frame;
 		}
 
-		MatOfPoint2f src = new MatOfPoint2f(getRightOrder(frame, w.corners));
+		Point[] srcP = getRightOrder(frame, w.corners);
+
+
+		// Point with Cache
+		for (int i = 0; i < srcP.length; i++) {
+			cachedPoint[i].add(srcP[i]);
+			srcP[i] = cachedPoint[i].point;
+		}
+
+		System.out.println("DEAD");
+
+		MatOfPoint2f src = new MatOfPoint2f(srcP);
+
 		RotatedRect box = Imgproc.minAreaRect(src);
 		Point[] p = new Point[4];
 		box.points(p);
