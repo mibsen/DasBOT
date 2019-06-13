@@ -15,6 +15,7 @@ import org.opencv.imgproc.Imgproc;
 
 import models.Ball;
 import models.BallSettings;
+import models.Car;
 
 public class BallService {
 
@@ -98,12 +99,12 @@ public class BallService {
 
 	}
 
-	public static void drawBalls(Mat frame, List<Ball> balls, Point center) {
+	public static void drawBalls(Mat frame, List<Ball> balls, Point center, double radius) {
 
 		for (Ball ball : balls) {
 			Imgproc.drawMarker(frame, new Point(ball.point.x + center.x, ball.point.y + center.y),
 					new Scalar(255, 0, 255));
-			Imgproc.circle(frame, ball.point, 50, new Scalar(250, 250, 250));
+			Imgproc.circle(frame, new Point(ball.point.x + center.x, ball.point.y + center.y), (int)radius, new Scalar(200, 200, 200), -1);
 		}
 
 	}

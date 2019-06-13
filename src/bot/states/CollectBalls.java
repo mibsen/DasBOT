@@ -82,7 +82,7 @@ public class CollectBalls extends State {
 		map.corrected();
 
 		map.drawCar(new Scalar(0, 250, 250), 1);
-		map.drawBalls(new Scalar(0, 250, 250), 1);
+		map.drawBalls(new Scalar(0, 250, 250), 1, 5);
 		map.drawWall(new Scalar(250, 250, 250), (int) (car.width * 2));
 
 		Mat m = map.getFrame();

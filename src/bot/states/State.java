@@ -9,8 +9,9 @@ import bot.messages.Messages;
 
 public abstract class State {
 
-	protected LocalTime running;
+	public LocalTime running;
 	public boolean isDone = false;
+	public State nextState = null;
 	
 	public void handle(String message) {
 

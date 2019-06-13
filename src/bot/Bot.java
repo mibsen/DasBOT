@@ -14,9 +14,11 @@ import org.opencv.core.Mat;
 import boot.Utils;
 import bot.messages.ResponseReceiver;
 import bot.states.CollectBalls;
-import bot.states.DriveObstacle;
 import bot.states.EasyCollect;
+import bot.states.ObstacleDrive;
+import bot.states.EasyDrive;
 import bot.states.RandomDrive;
+import bot.states.ScoreGoals;
 import bot.states.State;
 import camera.Camera;
 import camera.CameraFake;
@@ -48,7 +50,7 @@ public class Bot extends Application implements ResponseReceiver {
 
 	CameraInterface camera;
 
-	public static boolean test = true;
+	public static boolean test = false;
 
 	public boolean skip = false;
 
@@ -59,15 +61,19 @@ public class Bot extends Application implements ResponseReceiver {
 	public Bot() {
 	}
 	
-	LinkedList<State> collectBallsState = new LinkedList<State>();
+	LinkedList<State> collectBallsState;
 
-	private EasyCollect easyCollectState;
-	private DriveObstacle driveObstacleState;
-	private CollectBalls collectBallState;
+	private ScoreGoals scoreGoalState;
+
+	public static EasyDrive easyDriveState;
+	public static ObstacleDrive driveObstacleState;
+
+	public static EasyCollect easyCollectState;
 
 	@FXML
 	public void initialize() {
 
+		collectBallsState = new LinkedList<State>();
 		// Create Services
 		Config c = new Config();
 
@@ -75,15 +81,19 @@ public class Bot extends Application implements ResponseReceiver {
 		WallService wallService = new WallService(c.loadWall(), c.loadObstacle());
 		CarService carService = new CarService(c.loadCar());
 
-		// Build first State
-		collectBallState = new CollectBalls(carService, ballService, wallService);
-		driveObstacleState = new DriveObstacle(carService, ballService, wallService);
-		easyCollectState = new EasyCollect(carService, ballService, wallService);
 
-		state = easyCollectState;
+		//Builds collect states
+		easyCollectState = new EasyCollect(carService, ballService, wallService);
 		
-		collectBallsState.add(easyCollectState);
-		collectBallsState.add(driveObstacleState);
+		// Builds drive states
+		driveObstacleState = new ObstacleDrive(carService, ballService, wallService);
+		easyDriveState = new EasyDrive(carService, ballService, wallService);
+		
+		// Build hand in balls state
+		scoreGoalState = new ScoreGoals(carService, ballService, wallService);
+		
+
+		state = easyDriveState;
 		
 		
 		System.out.println("Initializing BOT TEST:" + test);
@@ -112,13 +122,15 @@ public class Bot extends Application implements ResponseReceiver {
 			public void run() {
 				Mat frame = camera.grabFrame();
 				
-				System.out.println("State: " + state.toString());
 
 				Mat f = state.process(frame).getFrame();
 
 				if (state.isDone) {
+					System.out.println("OldState: " + (state == null ? "empty" : state.toString()));
 					state.isDone = false;
+					state.running = null;
 					state = nextState();
+					System.out.println("NewState: " + (state == null ? "empty" : state.toString()));
 				}
 				
 				if (f != null)
@@ -135,12 +147,12 @@ public class Bot extends Application implements ResponseReceiver {
 	}
 
 	protected State nextState() {
-		if(collectBallsState.indexOf(state) + 1 >= collectBallsState.size()) {
-			return collectBallsState.getFirst();
-		}
-		else {
-			return collectBallsState.get(collectBallsState.indexOf(state)+1);
-		}
+		return state.nextState;
+	}
+
+	private void Switch(String stateName) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override

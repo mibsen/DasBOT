@@ -28,7 +28,7 @@ import services.BallService;
 import services.CarService;
 import services.WallService;
 
-public class DriveObstacle extends State {
+public class ObstacleDrive extends State {
 
 	private CarService carService;
 	private BallService ballService;
@@ -40,7 +40,7 @@ public class DriveObstacle extends State {
 	private Ball activeBall = null;
 	private long timeout = 120;
 
-	public DriveObstacle(CarService carService, BallService ballService, WallService wallService) {
+	public ObstacleDrive(CarService carService, BallService ballService, WallService wallService) {
 
 		this.carService = carService;
 		this.ballService = ballService;
@@ -75,7 +75,7 @@ public class DriveObstacle extends State {
 		map.corrected();
 
 		map.drawCar(new Scalar(0, 250, 250), 1);
-		map.drawBalls(new Scalar(0, 250, 250), 1);
+		map.drawBalls(new Scalar(0, 250, 250), 1, 5);
 		map.drawWall(new Scalar(250, 250, 250), (int) (car.width * 3));
 
 		Mat m = map.getFrame();
@@ -100,22 +100,18 @@ public class DriveObstacle extends State {
 		double width = ((corner2.x - corner1.x) + (corner4.x - corner3.x)) / 2;
 		double height = ((corner3.y - corner1.y) + (corner4.y - corner2.y)) / 2;
 
-		waypoints = new Point[8];
+		waypoints = new Point[4];
 		waypoints[0] = new Point(width / 4 + corner1.x, height / 4 + corner1.y);
-		waypoints[1] = new Point(width / 2 + corner1.x, height / 4 + corner1.y);
-		waypoints[2] = new Point(width * 3 / 4 + corner1.x, height / 4 + corner1.y);
-		waypoints[3] = new Point(width * 3 / 4 + corner1.x, height / 2 + corner1.y);
-		waypoints[4] = new Point(width * 3 / 4 + corner1.x, height * 3 / 4 + corner1.y);
-		waypoints[5] = new Point(width / 2 + corner1.x, height * 3 / 4 + corner1.y);
-		waypoints[6] = new Point(width / 4 + corner1.x, height * 3 / 4 + corner1.y);
-		waypoints[7] = new Point(width / 4 + corner1.x, height / 2 + corner1.y);
+		waypoints[1] = new Point(width * 3 / 4 + corner1.x, height / 4 + corner1.y);
+		waypoints[2] = new Point(width * 3 / 4 + corner1.x, height * 3 / 4 + corner1.y);
+		waypoints[3] = new Point(width / 4 + corner1.x, height * 3 / 4 + corner1.y);
 
 		double distance = 0;
 		double minDistance = car.width;
 
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < waypoints.length; i++) {
 
-			Imgproc.drawMarker(frame, waypoints[i], new Scalar(0, 20 * i, 250));
+			Imgproc.drawMarker(frame, waypoints[i], new Scalar(0, 250, 250));
 
 			double currentDistance = Math
 					.sqrt(Math.pow((waypoints[i].x - car.center.x), 2) + Math.pow((waypoints[i].y - car.center.y), 2));
@@ -188,6 +184,7 @@ public class DriveObstacle extends State {
 	
 	public void handle(String message) {
 
+		nextState = Bot.easyDriveState;
 		isDone = true;
 		
 		// We are done and we are ready for new work!

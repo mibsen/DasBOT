@@ -69,8 +69,6 @@ public class Map {
 
 			this.balls.add(new Ball(new Point(ball.point.x - origo.x, ball.point.y - origo.y), ball.area));
 		}
-
-		BallService.drawBalls(this.frame, this.balls, this.center);
 	}
 
 	public void addWall(Wall wall, Wall obstacle) {
@@ -187,8 +185,8 @@ public class Map {
 
 	}
 
-	public void drawBalls(Scalar color, int size) {
-		BallService.drawBalls(frame, balls, center);
+	public void drawBalls(Scalar color, int size, double radius) {
+		BallService.drawBalls(frame, balls, center, radius);
 
 	}
 	

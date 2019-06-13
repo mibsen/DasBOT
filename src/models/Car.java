@@ -42,7 +42,7 @@ public class Car {
 
 		this.frontMarker = front;
 		this.backMarker = back;
-		this.width = Math.abs(Math.sqrt(Math.pow(front.x - back.x, 2) + Math.pow(front.y - back.y, 2)));
+		this.width = Math.abs(Math.sqrt(Math.pow(frontMarker.x - backMarker.x, 2) + Math.pow(frontMarker.y - backMarker.y, 2)));
 
 		// ## Build car points ##
 		this.center = new Point((front.x + back.x) / 2, (front.y + back.y) / 2);
