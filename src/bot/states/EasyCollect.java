@@ -1,18 +1,5 @@
 package bot.states;
 
-import java.time.Duration;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
@@ -20,150 +7,105 @@ import org.opencv.imgproc.Imgproc;
 
 import bot.Bot;
 import bot.Connection;
+import bot.Controls;
 import bot.actions.ActionList;
 import bot.actions.StartCollectionAction;
 import bot.actions.StopCollectionAction;
-import bot.actions.TestAction;
-import bot.actions.WaitAction;
 import bot.actions.WayPointAction;
 import bot.messages.Messages;
 import models.Ball;
-import models.Car;
-import models.Map;
-import models.Wall;
 import services.BallService;
 import services.CarService;
 import services.WallService;
 
 public class EasyCollect extends State {
 
-	private CarService carService;
-	private BallService ballService;
-	private WallService wallService;
-	private Map map;
-	private boolean waitForNextFrame = false;
-	private ArrayList<Ball> activeBalls = new ArrayList<Ball>();
-	private Ball activeBall = null;
-	private long timeout = 120;
-	public Ball currentBall = null;
+	private Ball target;
 
 	public EasyCollect(CarService carService, BallService ballService, WallService wallService) {
+		super(carService, ballService, wallService);
+		// TODO Auto-generated constructor stub
+	}
 
-		this.carService = carService;
-		this.ballService = ballService;
-		this.wallService = wallService;
+	public void setTarget(Ball targetBall) {
+		target = targetBall;
+
 	}
 
 	@Override
-	public State process(Mat frame) {
+	public void calculate(Mat originalFrame, Mat correctedFrame) {
 
+		// Do we have a target?
+		if (target == null) {
 
-
-		Wall wall = null;
-		Wall obstacle = null;
-		Car car = null;
-
-		frame = wallService.locateWallsAndCorrectFrame(frame);
-		wall = wallService.getWall();
-		obstacle = wallService.getObstacle();
-
-		car = carService.getCar(frame);
-
-
-		if (wall == null || car == null || obstacle == null) {
-			return this;
+			System.out.println("THERE IS NO CURRENT BALL TO COLLECT!!!");
+			nextState(new EasyDrive(carService, ballService, wallService));
+			return;
 		}
 
-		map = new Map(car, frame);
-		map.addWall(wall, obstacle);
+		System.out.println("PLANNING EASY COLLECT!");
 
-		map.corrected();
+		Point t = map.correctPoint(target.point);
+		t = new Point(t.x - map.center.x, t.y - map.center.y);
 
-		map.drawCar(new Scalar(0, 250, 250), 1);
-		map.drawWall(new Scalar(250, 250, 250), (int) (car.width * 2 ));
+		// We only want to Ball to be into the center of the pick
+		// TODO:
 
-		Mat m = map.getFrame();
+		// center -> target
 
+		// Width imellem center -> pick
 
-		if (running == null) {
+		double d = Math.sqrt(Math.pow(map.center.x, 2) + Math.pow(map.center.y, 2));
+		double r = (d - map.car.pickCenter.x) / d;
 
-			System.out.println("PLANNING EASY COLLECT!");
+		t = new Point(t.x * r, t.y * r);
 
-			if (currentBall == null) {
-				isDone = true;
-				nextState = Bot.easyDriveState;
-				System.out.println("THERE IS NO CURRENT BALL TO COLLECT!!!");
-				return this;
-			}
-			
+		ActionList list = new ActionList();
+		list.add(new StartCollectionAction());
 
-			running = LocalTime.now();
+		Point targetCM = getPointInCM(t);
 
-			// Sort Balls by distance to car
+		System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
+		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.60F));
 
+		// list.add(new WaitAction(1000));
+		list.add(new StopCollectionAction());
 
-			Point activePoint = map.correctPoint(currentBall.point);
+		if (!Bot.test)
+			Connection.SendActions(list);
 
-			System.out.println("Driving to  ball: " + activePoint.toString());
-
-			
-			activePoint = new Point(activePoint.x - map.center.x , activePoint.y - map.center.y);
-			
-			double ratio = Car.widthInCM / car.width;
-
-			ActionList list = new ActionList();
-			list.add(new StartCollectionAction());
-
-			float nx = (float) (activePoint.x * ratio);
-			float ny = (float) (-1 * activePoint.y * ratio);
-			System.out.println("Driving to: " + nx + " : " + ny);
-			list.add(new WayPointAction(nx, ny, 0.80F));
-			list.add(new StopCollectionAction());
-
-			if (!Bot.test)
-				Connection.SendActions(list);
-
-		}
-
-		// Verify the Timeout
-		if (Duration.between(running, LocalTime.now()).getSeconds() > timeout) {
-
-			// We have timed out
-			System.out.println("DRIVING TIMEOUT");
-
-			// TODO: Send HARDBREAK ACTION
-
-			running = null;
-
-			return this;
-		}
-
-		// Draw robot frame
-		Ball first = currentBall;
-
-		Imgproc.circle(m, map.correctPoint(first.point), (int) (car.width * 2.5), new Scalar(200,200,200),5);
-		Imgproc.line(m, map.center, map.correctPoint(first.point), new Scalar(88, 214, 141));
-		Imgproc.line(frame, car.center, first.point, new Scalar(88, 214, 141));
-
-		return this;
 	}
 
 	@Override
-	public Mat getFrame() {
+	public void drawFrame(Mat originalFrame, Mat correctedFrame) {
 
-		if (map == null) {
-			return null;
+		map.drawWall(new Scalar(250, 250, 250), 10);
+
+		map.drawCar(new Scalar(100, 100, 100), 1);
+
+		if (target != null) {
+
+			correctedFrame = map.getFrame();
+
+			Imgproc.line(correctedFrame, map.center, map.correctPoint(target.point), new Scalar(88, 214, 141));
+			Imgproc.circle(correctedFrame, map.correctPoint(target.point), 10, new Scalar(200, 200, 200), -1);
+
+			Imgproc.circle(correctedFrame, map.correctPoint(target.point), (int) (car.width * 2.5),
+					new Scalar(200, 200, 200), 10);
+
+			Imgproc.line(originalFrame, car.center, target.point, new Scalar(88, 214, 141));
+
 		}
-		return map.getFrame();
+
 	}
 
+	@Override
 	public void handle(String message) {
 
 		// We are done and we are ready for new work!
 		if (message.equals(Messages.DONE)) {
-			currentBall =  null;
 			running = null;
+			target = null;
 		}
 	}
-
 }

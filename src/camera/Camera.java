@@ -77,10 +77,11 @@ public class Camera implements CameraInterface {
 		Calib3d.initUndistortRectifyMap(k, d, eye, k, frame.size(), CvType.CV_16SC2, map1, map2);		
 		Imgproc.remap(frame, frame, map1, map2, Imgproc.INTER_LINEAR, Core.BORDER_CONSTANT);
 
-		
+		/*
 		Size sz = new Size(frame.width() / 2, frame.height() / 2);
 		Imgproc.resize(frame, frame, sz);
-
+		 */
+		
 		return frame;
 
 	}

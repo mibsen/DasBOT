@@ -41,8 +41,8 @@ public class Map {
 
 		// Lets corrigate the car
 
-		this.car = new Car(new Point(car.front.x - origo.x, car.front.y - origo.y),
-				new Point(car.back.x - origo.x, car.back.y - origo.y));
+		this.car = new Car(new Point(car.frontMarker.x - origo.x, car.frontMarker.y - origo.y),
+				new Point(car.backMarker.x - origo.x, car.backMarker.y - origo.y));
 
 		CarService.drawCar(this.frame, this.car, this.center);
 		
@@ -120,12 +120,12 @@ public class Map {
 
 	public void corrected() {
 
-		this.radian = Math.atan2(this.car.front.y, this.car.front.x);
+		this.radian = Math.atan2(this.car.frontMarker.y, this.car.frontMarker.x);
 
 		this.frame = Mat.zeros(frame.rows(), frame.cols(), CvType.CV_8UC3);
 
 		if (this.car != null) {
-			this.car = new Car(rotatePoint(this.car.front), rotatePoint(this.car.back));
+			this.car = new Car(rotatePoint(this.car.frontMarker), rotatePoint(this.car.backMarker));
 			// CarService.drawCar(this.frame, this.car, this.center);
 		}
 	

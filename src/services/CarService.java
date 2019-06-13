@@ -30,15 +30,15 @@ public class CarService {
 
 		Mat frame = getCarFrame(f);
 
-		Car car =  getCarFromFrame(frame);
-		
-		if(car == null) {
+		Car car = getCarFromFrame(frame);
+
+		if (car == null) {
 			return null;
 		}
-		//return car;
-		
-		car = car.substractHeight(new Point(frame.width()/2, frame.height()/2));
-		
+		// return car;
+
+		car = car.substractHeight(new Point(frame.width() / 2, frame.height() / 2));
+
 		return car;
 	}
 
@@ -136,9 +136,21 @@ public class CarService {
 			return;
 		}
 
+		double factor = 14D / (14D + 10D);
+
+		double x = car.backMarker.x - car.frontMarker.x;
+		double y = car.backMarker.y - car.frontMarker.y;
+
+		double nx = x * factor;
+		double ny = y * factor;
+
+		Point back = new Point((car.backMarker.x + center.x) + nx, (car.backMarker.y + center.y) + ny);
+
+		Imgproc.drawMarker(frame, back, color, 4, 2);
+
 //
 //		// Back
-//		Imgproc.drawMarker(frame, new Point(car.back.x + center.x , car.back.y + center.y), color, 4, 2);
+		Imgproc.drawMarker(frame, new Point(car.back.x + center.x, car.back.y + center.y), color, 4, 2);
 //
 //		// Right
 //		Imgproc.drawMarker(frame, new Point(car.backRight.x + center.x , car.backRight.y + center.y), color, 4, 2);
@@ -160,27 +172,27 @@ public class CarService {
 //		
 //		
 		// Car
-		Imgproc.fillConvexPoly(frame, new MatOfPoint(new Point[] {
-			new Point(car.backRight.x + center.x , car.backRight.y + center.y),
-			new Point(car.frontRight.x + center.x , car.frontRight.y + center.y),
-			new Point(car.frontLeft.x + center.x , car.frontLeft.y + center.y),
-			new Point(car.backLeft.x + center.x , car.backLeft.y + center.y)
-		}), color);
-		
+		Imgproc.fillConvexPoly(frame,
+				new MatOfPoint(new Point[] { new Point(car.backRight.x + center.x, car.backRight.y + center.y),
+						new Point(car.frontRight.x + center.x, car.frontRight.y + center.y),
+						new Point(car.frontLeft.x + center.x, car.frontLeft.y + center.y),
+						new Point(car.backLeft.x + center.x, car.backLeft.y + center.y) }),
+				color);
+
 		// Collect
-		Imgproc.fillConvexPoly(frame, new MatOfPoint(new Point[] {
-				new Point(car.pickBackRight.x + center.x , car.pickBackRight.y + center.y),
-				new Point(car.pickFrontRight.x + center.x , car.pickFrontRight.y + center.y),
-				new Point(car.pickFrontLeft.x + center.x , car.pickFrontLeft.y + center.y),
-				new Point(car.pickBackLeft.x + center.x , car.pickBackLeft.y + center.y)
-			}), color);
-		
-		Imgproc.line(frame,new Point(car.front.x + center.x, car.front.y + center.y), new Point(car.back.x + center.x, car.back.y + center.y), new Scalar(0,0,0));
-		Imgproc.drawMarker(frame,new Point(car.center.x + center.x, car.center.y + center.y),new Scalar(0,0,0));
-		
+		Imgproc.fillConvexPoly(frame,
+				new MatOfPoint(new Point[] { new Point(car.pickBackRight.x + center.x, car.pickBackRight.y + center.y),
+						new Point(car.pickFrontRight.x + center.x, car.pickFrontRight.y + center.y),
+						new Point(car.pickFrontLeft.x + center.x, car.pickFrontLeft.y + center.y),
+						new Point(car.pickBackLeft.x + center.x, car.pickBackLeft.y + center.y) }),
+				color);
+
+		Imgproc.line(frame, new Point(car.front.x + center.x, car.front.y + center.y),
+				new Point(car.back.x + center.x, car.back.y + center.y), new Scalar(0, 0, 0));
+		Imgproc.drawMarker(frame, new Point(car.center.x + center.x, car.center.y + center.y), new Scalar(0, 0, 0));
+
 	}
 
-	
 	public static void drawCar(Mat frame, Car car, Point center) {
 
 		drawCar(frame, car, center, new Scalar(0, 250, 250), 2);

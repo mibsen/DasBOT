@@ -1,9 +1,5 @@
 package bot;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -13,12 +9,8 @@ import org.opencv.core.Mat;
 
 import boot.Utils;
 import bot.messages.ResponseReceiver;
-import bot.states.CollectBalls;
 import bot.states.EasyCollect;
-import bot.states.ObstacleDrive;
 import bot.states.EasyDrive;
-import bot.states.RandomDrive;
-import bot.states.ScoreGoals;
 import bot.states.State;
 import camera.Camera;
 import camera.CameraFake;
@@ -45,7 +37,8 @@ public class Bot extends Application implements ResponseReceiver {
 	@FXML
 	ImageView maskImage;
 
-	private State state;
+	public static State state;
+	
 	private Connection connection;
 
 	CameraInterface camera;
@@ -61,19 +54,11 @@ public class Bot extends Application implements ResponseReceiver {
 	public Bot() {
 	}
 	
-	LinkedList<State> collectBallsState;
-
-	private ScoreGoals scoreGoalState;
-
-	public static EasyDrive easyDriveState;
-	public static ObstacleDrive driveObstacleState;
-
 	public static EasyCollect easyCollectState;
 
 	@FXML
 	public void initialize() {
 
-		collectBallsState = new LinkedList<State>();
 		// Create Services
 		Config c = new Config();
 
@@ -81,26 +66,15 @@ public class Bot extends Application implements ResponseReceiver {
 		WallService wallService = new WallService(c.loadWall(), c.loadObstacle());
 		CarService carService = new CarService(c.loadCar());
 
-
 		//Builds collect states
-		easyCollectState = new EasyCollect(carService, ballService, wallService);
-		
-		// Builds drive states
-		driveObstacleState = new ObstacleDrive(carService, ballService, wallService);
-		easyDriveState = new EasyDrive(carService, ballService, wallService);
-		
-		// Build hand in balls state
-		scoreGoalState = new ScoreGoals(carService, ballService, wallService);
-		
-
-		state = easyDriveState;
-		
+		state = new EasyDrive(carService, ballService, wallService);
 		
 		System.out.println("Initializing BOT TEST:" + test);
 
 		if (!test) {
 			// Create Connection
-			connection = new Connection("172.20.10.5", 4444);
+			// 172.20.10.5
+			connection = new Connection("192.168.43.142", 4444);
 
 			// Listen for communication from the CAR
 			connection.onResponse(this);
@@ -111,7 +85,7 @@ public class Bot extends Application implements ResponseReceiver {
 			camera.init();
 
 		} else {
-			camera = new CameraFake();
+			camera = new Camera();
 			camera.init();
 		}
 
@@ -122,16 +96,7 @@ public class Bot extends Application implements ResponseReceiver {
 			public void run() {
 				Mat frame = camera.grabFrame();
 				
-
 				Mat f = state.process(frame).getFrame();
-
-				if (state.isDone) {
-					System.out.println("OldState: " + (state == null ? "empty" : state.toString()));
-					state.isDone = false;
-					state.running = null;
-					state = nextState();
-					System.out.println("NewState: " + (state == null ? "empty" : state.toString()));
-				}
 				
 				if (f != null)
 					updateImageView(originalFrame, f);
@@ -144,15 +109,6 @@ public class Bot extends Application implements ResponseReceiver {
 		ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
 		timer.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MILLISECONDS);
 
-	}
-
-	protected State nextState() {
-		return state.nextState;
-	}
-
-	private void Switch(String stateName) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

@@ -7,8 +7,8 @@ import services.WallService;
 public class Car {
 
 	public Double width;
-	private Point frontMarker;
-	private Point backMarker;
+	public Point frontMarker;
+	public Point backMarker;
 
 	// Car Points
 	public Point front;
@@ -28,7 +28,7 @@ public class Car {
 
 	// Car Build variable
 	
-	public static float widthInCM = 14F;
+	public static float widthInCM = 12.3F;
 	public static float carHeightInCM = 22F;
 	public static float frontToMakerCM = 7F;
 	public static float maxPicktoMarkerCM = 14F;
@@ -126,7 +126,7 @@ public class Car {
 	
 	private void getBack() {
 		
-		float factor = backToMakerCM / (widthInCM );
+		float factor =   (widthInCM ) / (backToMakerCM + widthInCM);
 
 		double x = backMarker.x - frontMarker.x;
 		double y = backMarker.y - frontMarker.y;
@@ -222,10 +222,7 @@ public class Car {
 	}
 
 	public Car substractHeight(Point point) {
-		System.out.println(correctPoint(front));
-		System.out.println(correctPoint(back));
-
-		return new Car(correctPoint(front), correctPoint(back));
+		return new Car(correctPoint(frontMarker), correctPoint(backMarker));
 	}
 
 }
