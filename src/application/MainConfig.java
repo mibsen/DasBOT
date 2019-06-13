@@ -1,5 +1,7 @@
 package application;
 
+import java.util.concurrent.Callable;
+
 import boot.Boot;
 
 public class MainConfig {
@@ -9,6 +11,16 @@ public class MainConfig {
 		System.out.println("BOOTING.. BOOTING.. BOOTING..");
 
 		Boot b = new Boot();
+		
+		b.after(new Callable() {
+
+			@Override
+			public Object call() throws Exception {
+				System.out.println("EXIT");
+				System.exit(1);
+				return null;
+			}
+		});
 		
 		b.load();
 		

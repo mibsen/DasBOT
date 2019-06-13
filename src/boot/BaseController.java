@@ -18,8 +18,8 @@ public class BaseController {
 	// a flag to change the button behavior
 	public boolean cameraActive;
 
-	//public CameraInterface camera = new CameraFake();
-	public CameraInterface camera = new Camera();
+	public CameraInterface camera = new CameraFake();
+	//public CameraInterface camera = new Camera();
 
 	public Callable onSaveCallable;
 

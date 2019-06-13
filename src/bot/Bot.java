@@ -23,12 +23,14 @@ import camera.CameraFake;
 import camera.CameraInterface;
 import config.Config;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import services.BallService;
 import services.CarService;
 import services.WallService;
@@ -46,7 +48,7 @@ public class Bot extends Application implements ResponseReceiver {
 
 	CameraInterface camera;
 
-	public static boolean test = false;
+	public static boolean test = true;
 
 	public boolean skip = false;
 
@@ -115,6 +117,7 @@ public class Bot extends Application implements ResponseReceiver {
 				Mat f = state.process(frame).getFrame();
 
 				if (state.isDone) {
+					state.isDone = false;
 					state = nextState();
 				}
 				
@@ -132,7 +135,7 @@ public class Bot extends Application implements ResponseReceiver {
 	}
 
 	protected State nextState() {
-		if(collectBallsState.indexOf(state) + 1 > collectBallsState.size()) {
+		if(collectBallsState.indexOf(state) + 1 >= collectBallsState.size()) {
 			return collectBallsState.getFirst();
 		}
 		else {
@@ -154,6 +157,15 @@ public class Bot extends Application implements ResponseReceiver {
 		Scene scene = new Scene(root, 1000, 800);
 		primaryStage.setScene(scene);
 		primaryStage.show();
+		
+		
+		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			
+			@Override
+			public void handle(WindowEvent event) {
+				System.exit(0);
+			}
+		});
 	}
 
 	public void load() {

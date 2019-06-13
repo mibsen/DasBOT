@@ -65,7 +65,6 @@ public class DriveObstacle extends State {
 		balls = ballService.getBalls(frame);
 
 		if (wall == null || car == null || obstacle == null) {
-			isDone = true;
 			return this;
 		}
 
@@ -136,7 +135,6 @@ public class DriveObstacle extends State {
 		if (running == null) {
 			
 			if(isDone) {
-				isDone = false;
 				return this;
 			}
 			

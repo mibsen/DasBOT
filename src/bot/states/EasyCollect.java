@@ -96,7 +96,7 @@ public class EasyCollect extends State {
 
 			// Close - Not to close
 			// We do not want balls to close!
-			double minDistance = car.width * 2;
+			double minDistance = car.width;
 
 			ArrayList<Ball> tb = new ArrayList<Ball>();
 

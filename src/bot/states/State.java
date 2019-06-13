@@ -30,4 +30,5 @@ public abstract class State {
 	public abstract State process(Mat frame);
 	
 	public abstract Mat getFrame();
+	
 }

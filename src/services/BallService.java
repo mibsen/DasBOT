@@ -103,6 +103,7 @@ public class BallService {
 		for (Ball ball : balls) {
 			Imgproc.drawMarker(frame, new Point(ball.point.x + center.x, ball.point.y + center.y),
 					new Scalar(255, 0, 255));
+			Imgproc.circle(frame, ball.point, 50, new Scalar(250, 250, 250));
 		}
 
 	}
