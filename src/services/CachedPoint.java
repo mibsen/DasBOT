@@ -1,7 +1,5 @@
 package services;
 
-import java.util.ArrayList;
-
 import org.opencv.core.Point;
 
 public class CachedPoint {
@@ -33,8 +31,6 @@ public class CachedPoint {
 
 		Point temp = new Point(0, 0);
 
-		System.out.println("DEAD");
-
 		int l = 0;
 		for (Point point : points) {
 
@@ -50,8 +46,6 @@ public class CachedPoint {
 		temp.y = temp.y / l;
 
 		point = temp;
-		System.out.println(l);
-		System.out.println(point);
 	}
 
 }

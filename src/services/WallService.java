@@ -158,7 +158,6 @@ public class WallService {
 			srcP[i] = cachedPoint[i].point;
 		}
 
-		System.out.println("DEAD");
 
 		MatOfPoint2f src = new MatOfPoint2f(srcP);
 
