@@ -73,7 +73,7 @@ public abstract class State {
 		if (running == null) {
 
 			calculate(frame, m);
-			
+
 			running = LocalTime.now();
 		}
 
@@ -84,27 +84,27 @@ public abstract class State {
 		}
 
 		drawFrame(frame, m);
-		
+
 		return this;
 	}
 
 	protected void nextState(State state) {
-	
+
 		System.out.println("Changing state: " + state.getClass().toString());
 		Bot.state = state;
-		
+
 	}
-	
+
 	protected Point getPointInCM(Point p) {
 
 		double ratio = (Car.widthInCM / car.width);
 		float nx = (float) ((p.x * ratio));
 		float ny = (float) (-1 * ((p.y * ratio)));
 
-		return new Point(nx,ny);
-		
+		return new Point(nx, ny);
+
 	}
-	
+
 	public abstract void calculate(Mat originalFrame, Mat correctedFrame);
 
 	public abstract void drawFrame(Mat originalFrame, Mat correctedFrame);

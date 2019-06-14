@@ -1,12 +1,5 @@
 package bot.states;
 
-import java.time.Duration;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
@@ -15,15 +8,14 @@ import org.opencv.imgproc.Imgproc;
 import bot.Bot;
 import bot.Connection;
 import bot.actions.ActionList;
+import bot.actions.ClosePortAction;
+import bot.actions.OpenPortAction;
 import bot.actions.StartCollectionAction;
 import bot.actions.StopCollectionAction;
+import bot.actions.TurnAction;
 import bot.actions.WaitAction;
 import bot.actions.WayPointAction;
-import bot.messages.Messages;
-import models.Ball;
-import models.Car;
 import models.Map;
-import models.Wall;
 import services.BallService;
 import services.CarService;
 import services.WallService;
@@ -34,45 +26,16 @@ public class ScoreGoals extends State {
 	private Point[] waypoints;
 	private Point nearestWaypoint;
 	private Point finnishPoint;
-	private long timeout = 120;
 	private Point goalPoint;
+	private boolean atFinishPoint;
+	private int correctedCount = 0;
 
 	public ScoreGoals(CarService carService, BallService ballService, WallService wallService) {
 		super(carService, ballService, wallService);
 	}
 
 	@Override
-	public State process(Mat frame) {
-		// We need car Position and Wall
-
-		Wall wall = null;
-		Wall obstacle = null;
-		Car car = null;
-		List<Ball> balls = null;
-
-		frame = wallService.locateWallsAndCorrectFrame(frame);
-		wall = wallService.getWall();
-		obstacle = wallService.getObstacle();
-
-		car = carService.getCar(frame);
-
-		balls = ballService.getBalls(frame);
-
-		if (wall == null || car == null || obstacle == null) {
-			return this;
-		}
-
-		map = new Map(car, frame);
-		map.addBalls(balls);
-		map.addWall(wall, obstacle);
-
-		map.corrected();
-
-		map.drawCar(new Scalar(0, 250, 250), 1);
-		map.drawBalls(new Scalar(0, 250, 250), 1, 5);
-		map.drawWall(new Scalar(250, 250, 250), (int) (car.width * 3));
-
-		Mat m = map.getFrame();
+	public void calculate(Mat originalFrame, Mat correctedFrame) {
 
 		Point corner1 = null;
 		Point corner2 = null;
@@ -94,136 +57,133 @@ public class ScoreGoals extends State {
 		double width = ((corner2.x - corner1.x) + (corner4.x - corner3.x)) / 2;
 		double height = ((corner3.y - corner1.y) + (corner4.y - corner2.y)) / 2;
 
-		waypoints = new Point[4];
-		waypoints[0] = new Point(width / 4 + corner1.x, height / 4 + corner1.y);
-		waypoints[1] = new Point(width * 3 / 4 + corner1.x, height / 4 + corner1.y);
-		waypoints[2] = new Point(width * 3 / 4 + corner1.x, height * 3 / 4 + corner1.y);
-		waypoints[3] = new Point(width / 4 + corner1.x, height * 3 / 4 + corner1.y);
-		
 		finnishPoint = new Point(width * 4 / 5 + corner1.x, height / 2 + corner1.y);
 		goalPoint = new Point(width + corner1.x, height / 2 + corner1.y);
-		
-		Imgproc.drawMarker(frame, goalPoint, new Scalar(150, 200, 250));
-		Imgproc.drawMarker(frame, finnishPoint, new Scalar(150, 200, 250));
-		
-		double distance = Math.sqrt(Math.pow((finnishPoint.x - car.center.x), 2) + Math.pow((finnishPoint.y - car.center.y), 2));
+
+		waypoints = new Point[5];
+		waypoints[0] = new Point(width / 4 + corner1.x, height / 4 + corner1.y);
+		waypoints[1] = new Point(width * 3 / 4 + corner1.x, height / 4 + corner1.y);
+		waypoints[2] = finnishPoint;
+		waypoints[3] = new Point(width * 3 / 4 + corner1.x, height * 3 / 4 + corner1.y);
+		waypoints[4] = new Point(width / 4 + corner1.x, height * 3 / 4 + corner1.y);
+
 		double minDistance = car.width;
-		nearestWaypoint = finnishPoint;
-		
-		//double z = Math.sqrt(Math.pow(finnishPoint.x - car.center.x, 2) + Math.pow(finnishPoint.y - car.center.x, 2));
-		
-		//double angle = Math.acos((Math.pow(finnishPoint.x - car.center.x, 2) + Math.pow(z, 2) - Math.pow(finnishPoint.y - car.center.x, 2))/(2 * (finnishPoint.x  - car.center.x) * z));
-		
-		//System.out.println("Angle: " + angle);
-		
 
-		for (int i = 0; i < waypoints.length; i++) {
+		// Locate IF i am in FinishPoint
 
-			Imgproc.drawMarker(frame, waypoints[i], new Scalar(0, 250, 250));
+		double distance = Math
+				.sqrt(Math.pow((finnishPoint.x - car.center.x), 2) + Math.pow((finnishPoint.y - car.center.y), 2));
 
-			double currentDistance = Math
-					.sqrt(Math.pow((waypoints[i].x - car.center.x), 2) + Math.pow((waypoints[i].y - car.center.y), 2));
+		if (distance < minDistance || atFinishPoint) {
 
-			
+			atFinishPoint = true;
+			// We are at the finnishPoint
 
-			
-			if (currentDistance <= minDistance) {
-				nearestWaypoint = waypoints[(i + 1) % waypoints.length];
-				break;
-			} else if (distance > currentDistance) {
-				distance = currentDistance;
-				nearestWaypoint = waypoints[i];
+			// Drive a bit closer
+
+			distance = Math.sqrt(Math.pow((goalPoint.x - car.center.x), 2) + Math.pow((goalPoint.y - car.center.y), 2));
+
+			if (correctedCount < 5) {
+
+				Point p = map.correctPoint(goalPoint);
+
+				p.x = p.x - map.center.x;
+				p.y = p.y - map.center.y;
+
+				p.x = p.x * (distance / 4);
+				p.y = p.y * (distance / 4);
+
+				// Turn into the correct Degree
+				nearestWaypoint = map.correctPoint(p);
+
+				// Actions
+				ActionList list = new ActionList();
+				list.add(new WayPointAction(p.x, p.y, 0.40F)); // go to waypoint
+
+				correctedCount++;
+
+				if (!Bot.test)
+					Connection.SendActions(list);
+
+			} else {
+
+				// Actions
+				ActionList list = new ActionList();
+				list.add(new TurnAction(180)); // go to waypoint
+				list.add(new OpenPortAction());
+				list.add(new WaitAction(3000));
+
+				list.add(new ClosePortAction());
+				list.add(new OpenPortAction());
+
+				list.add(new WaitAction(3000));
+				list.add(new ClosePortAction());
+
+				if (!Bot.test)
+					Connection.SendActions(list);
+
+				System.out.println("DONE!");
+				System.exit(1);
+
 			}
-		}
-		
 
-		
-		if(nearestWaypoint.equals(finnishPoint)) {
-			Imgproc.circle(frame, nearestWaypoint, (int) (car.width * 0.5), new Scalar(100, 100, 200), -1);		
-		}
-		else {
-			Imgproc.drawMarker(frame, nearestWaypoint, new Scalar(0, 250, 0), Imgproc.MARKER_TILTED_CROSS);
-		}		
-		Imgproc.line(frame, car.center, nearestWaypoint, new Scalar(0, 0, 250));
+			// open
 
+		} else {
 
-		if (running == null) {
+			distance = Double.MAX_VALUE;
 
-			//if (isDone) {
-			//	return this;
-			//}
-			
-			
+			for (int i = 0; i < waypoints.length; i++) {
 
-			
+				double currentDistance = Math.sqrt(
+						Math.pow((waypoints[i].x - car.center.x), 2) + Math.pow((waypoints[i].y - car.center.y), 2));
+
+				if (currentDistance <= minDistance) {
+					nearestWaypoint = waypoints[(i + 1) % waypoints.length];
+					break;
+				} else if (distance > currentDistance) {
+					distance = currentDistance;
+					nearestWaypoint = waypoints[i];
+				}
+			}
+
+			// Drive to nearestWaypoint
+
 			Point p = map.rotatePoint(new Point(nearestWaypoint.x - car.center.x, nearestWaypoint.y - car.center.y));
 
-			Imgproc.line(m, map.center, new Point(map.center.x + p.x, map.center.y + p.y), new Scalar(0, 0, 250));
+			p = getPointInCM(p);
 
-			running = LocalTime.now();
-
-			double ratio = Car.widthInCM / car.width;
-
-			float nx = (float) (p.x * ratio);
-			float ny = (float) (-1 * p.y * ratio);
 			// Actions
 			ActionList list = new ActionList();
 			list.add(new StartCollectionAction());
-			list.add(new WayPointAction(nx, ny, 1.00F)); // go to waypoint
+			list.add(new WayPointAction(p.x, p.y, 1.00F)); // go to waypoint
 			list.add(new StopCollectionAction());
 
 			if (!Bot.test)
 				Connection.SendActions(list);
 
 		}
-
-		// Verify the Timeout
-		if (Duration.between(running, LocalTime.now()).getSeconds() > timeout) {
-
-			// We have timed out
-			System.out.println("DRIVING TIMEOUT");
-
-			// TODO: Send HARDBREAK ACTION
-
-			running = null;
-
-			return this;
-		}
-
-		return this;
-	}
-
-	@Override
-	public Mat getFrame() {
-
-		if (map == null) {
-			return null;
-		}
-		return map.getFrame();
-	}
-
-	public void handle(String message) {
-
-		//nextState = Bot.easyDriveState;
-		//isDone = true;
-
-		// We are done and we are ready for new work!
-		if (message.equals(Messages.DONE)) {
-
-			running = null;
-		}
-	}
-
-	@Override
-	public void calculate(Mat originalFrame, Mat correctedFrame) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void drawFrame(Mat originalFrame, Mat correctedFrame) {
-		// TODO Auto-generated method stub
-		
-	}
 
+		map.drawWall(new Scalar(250, 250, 250), 10);
+
+		map.drawCar(new Scalar(100, 100, 100), 1);
+
+		if (nearestWaypoint != null) {
+
+			correctedFrame = map.getFrame();
+
+			Imgproc.line(correctedFrame, map.center, map.correctPoint(nearestWaypoint), new Scalar(88, 214, 141));
+			Imgproc.circle(correctedFrame, map.correctPoint(nearestWaypoint), 10, new Scalar(200, 200, 200), -1);
+
+			Imgproc.circle(correctedFrame, map.correctPoint(nearestWaypoint), (int) (car.width * 2.5),
+					new Scalar(200, 200, 200), 10);
+
+			Imgproc.line(originalFrame, car.center, nearestWaypoint, new Scalar(88, 214, 141));
+
+		}
+	}
 }
