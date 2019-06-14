@@ -41,7 +41,8 @@ public class EasyDrive extends State {
 		double minDistance = car.width * 1.5;
 
 		map.drawWall(new Scalar(250, 250, 250), (int) (car.width * 2));
-
+		WallService.drawWall(map.getFrame(), map.getObstacle(), map.center, new Scalar(250, 250, 250), (int) (car.width * 3));
+		
 		Mat m = map.getFrame();
 
 		// filter balls
@@ -122,7 +123,7 @@ public class EasyDrive extends State {
 		ActionList list = new ActionList();
 
 		System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
-		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.60F));
+		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.70F,0.4F));
 
 		if (!Bot.test)
 			Connection.SendActions(list);

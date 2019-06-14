@@ -35,21 +35,14 @@ import services.CarService;
 import services.WallService;
 
 public class CollectBalls extends State {
-
-	private CarService carService;
-	private BallService ballService;
-	private WallService wallService;
+	
 	private Map map;
 	private boolean waitForNextFrame = false;
 	private ArrayList<Ball> activeBalls = new ArrayList<Ball>();
 	private Ball activeBall = null;
-	private long timeout = 120;
 
 	public CollectBalls(CarService carService, BallService ballService, WallService wallService) {
-
-		this.carService = carService;
-		this.ballService = ballService;
-		this.wallService = wallService;
+		super(carService, ballService, wallService);
 	}
 
 	@Override
@@ -155,8 +148,8 @@ public class CollectBalls extends State {
 			ActionList list = new ActionList();
 			list.add(new StartCollectionAction());
 
-			float nx = (float) (ball.point.x * ratio);
-			float ny = (float) (-1 * ball.point.y * ratio);
+			double nx = (ball.point.x * ratio);
+			double ny = (-1 * ball.point.y * ratio);
 			System.out.println("Driving to: " + nx + " : " + ny);
 			list.add(new WayPointAction(nx, ny, 0.80F));
 
@@ -206,6 +199,18 @@ public class CollectBalls extends State {
 			activeBalls = new ArrayList<Ball>();
 			running = null;
 		}
+	}
+
+	@Override
+	public void calculate(Mat originalFrame, Mat correctedFrame) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawFrame(Mat originalFrame, Mat correctedFrame) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

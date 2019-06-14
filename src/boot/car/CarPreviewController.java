@@ -14,6 +14,7 @@ import javafx.scene.image.ImageView;
 import models.Car;
 import models.CarSettings;
 import services.CarService;
+import services.WallService;
 
 public class CarPreviewController extends BaseController {
 
@@ -94,6 +95,9 @@ public class CarPreviewController extends BaseController {
 			this.imageViewProperties(ContourImage, 500);
 			this.imageViewProperties(TransformedImage, 500);
 
+			
+			WallService wallService = new WallService(config.loadWall(), config.loadObstacle());
+			
 			// grab a frame every 33 ms (30 frames/sec)
 			Runnable frameGrabber = new Runnable() {
 
@@ -122,6 +126,8 @@ public class CarPreviewController extends BaseController {
 
 					Mat frame = camera.grabFrame();
 
+					frame = wallService.locateWallsAndCorrectFrame(frame);
+					
 					updateImageView(TransformedImage, carService.getCarFrame(frame));
 
 					Car car = carService.getCar(frame);

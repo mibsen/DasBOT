@@ -38,10 +38,7 @@ public class RandomDrive extends State {
 	private Map map;
 
 	public RandomDrive(CarService carService, BallService ballService, WallService wallService) {
-
-		this.carService = carService;
-		this.ballService = ballService;
-		this.wallService = wallService;
+		super(carService, ballService, wallService);
 	}
 
 	@Override
@@ -226,5 +223,17 @@ public class RandomDrive extends State {
 			return null;
 		}
 		return map.getFrame();
+	}
+
+	@Override
+	public void calculate(Mat originalFrame, Mat correctedFrame) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawFrame(Mat originalFrame, Mat correctedFrame) {
+		// TODO Auto-generated method stub
+		
 	}
 }

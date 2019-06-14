@@ -66,7 +66,7 @@ public class EasyCollect extends State {
 		Point targetCM = getPointInCM(t);
 
 		System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
-		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.60F));
+		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.50F,0.4F));
 
 		// list.add(new WaitAction(1000));
 		list.add(new StopCollectionAction());

@@ -30,9 +30,6 @@ import services.WallService;
 
 public class ScoreGoals extends State {
 
-	private CarService carService;
-	private BallService ballService;
-	private WallService wallService;
 	private Map map;
 	private Point[] waypoints;
 	private Point nearestWaypoint;
@@ -41,10 +38,7 @@ public class ScoreGoals extends State {
 	private Point goalPoint;
 
 	public ScoreGoals(CarService carService, BallService ballService, WallService wallService) {
-
-		this.carService = carService;
-		this.ballService = ballService;
-		this.wallService = wallService;
+		super(carService, ballService, wallService);
 	}
 
 	@Override
@@ -155,9 +149,9 @@ public class ScoreGoals extends State {
 
 		if (running == null) {
 
-			if (isDone) {
-				return this;
-			}
+			//if (isDone) {
+			//	return this;
+			//}
 			
 			
 
@@ -218,6 +212,18 @@ public class ScoreGoals extends State {
 
 			running = null;
 		}
+	}
+
+	@Override
+	public void calculate(Mat originalFrame, Mat correctedFrame) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawFrame(Mat originalFrame, Mat correctedFrame) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

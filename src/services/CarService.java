@@ -39,6 +39,7 @@ public class CarService {
 
 		car = car.substractHeight(new Point(frame.width() / 2, frame.height() / 2));
 
+		
 		return car;
 	}
 

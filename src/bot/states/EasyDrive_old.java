@@ -180,10 +180,10 @@ public class EasyDrive_old extends State {
 			ActionList list = new ActionList();			
 			list.add(new StartCollectionAction());
 
-			Point d = getPointInCM(target);
+			Point destination = getPointInCM(target);
 			
-			System.out.println("Driving to: " + d.x + " : " + d.y);
-			list.add(new WayPointAction(d.x, d.y, 0.60F));
+			System.out.println("Driving to: " + destination.x + " : " + destination.y);
+			list.add(new WayPointAction((float)d.x, (float)d.y, 0.60F));
 			list.add(new StopCollectionAction());
 
 			if (!Bot.test)

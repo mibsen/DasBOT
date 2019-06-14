@@ -82,6 +82,8 @@ public class Connection {
 
 	public static void SendActions(ActionList actions) {
 
+		System.out.println("Sending command");
+		
 		try {
 			connection.outputStream.writeObject(actions);
 		} catch (IOException e) {
