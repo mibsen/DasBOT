@@ -57,7 +57,7 @@ public class ScoreGoals extends State {
 		double width = ((corner2.x - corner1.x) + (corner4.x - corner3.x)) / 2;
 		double height = ((corner3.y - corner1.y) + (corner4.y - corner2.y)) / 2;
 
-		finnishPoint = new Point(width * 4 / 5 + corner1.x, height / 2 + corner1.y);
+		finnishPoint = new Point(width * 3 / 4 + corner1.x, height / 2 + corner1.y);
 		goalPoint = new Point(width + corner1.x, height / 2 + corner1.y);
 
 		waypoints = new Point[5];
@@ -83,7 +83,7 @@ public class ScoreGoals extends State {
 
 			distance = Math.sqrt(Math.pow((goalPoint.x - car.center.x), 2) + Math.pow((goalPoint.y - car.center.y), 2));
 
-			if (correctedCount < 1) {
+			if (correctedCount < 3) {
 
 				
 				System.out.println(goalPoint );
@@ -94,8 +94,8 @@ public class ScoreGoals extends State {
 				
 				System.out.println(p);
 				
-				p.x = p.x * ((distance / 4) / distance);
-				p.y = p.y * ((distance / 4) / distance);
+				p.x = p.x * ((distance / 10) / distance);
+				p.y = p.y * ((distance / 10) / distance);
 
 				
 				// Turn into the correct Degree
@@ -114,12 +114,13 @@ public class ScoreGoals extends State {
 
 			} else {
 
+				long angleToGoal = (long) Math.asin((goalPoint.x - car.center.x)/distance);
 				// Actions
 				ActionList list = new ActionList();
-				list.add(new TurnAction(180)); // go to waypoint
+				list.add(new TurnAction(angleToGoal));
 				list.add(new OpenPortAction());
 				list.add(new ShakeAction());
-				list.add(new WaitAction(3000));
+				list.add(new WaitAction(2000));
 
 				list.add(new ShakeAction());
 				
@@ -130,7 +131,6 @@ public class ScoreGoals extends State {
 					Connection.SendActions(list);
 
 				System.out.println("DONE!");
-				System.exit(1);
 
 			}
 
@@ -168,9 +168,7 @@ public class ScoreGoals extends State {
 
 			// Actions
 			ActionList list = new ActionList();
-			list.add(new StartCollectionAction());
 			list.add(new WayPointAction(p.x, p.y, 1.00F)); // go to waypoint
-			list.add(new StopCollectionAction());
 
 			if (!Bot.test)
 				Connection.SendActions(list);

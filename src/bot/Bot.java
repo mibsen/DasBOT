@@ -11,8 +11,10 @@ import boot.Utils;
 import bot.messages.ResponseReceiver;
 import bot.states.EasyCollect;
 import bot.states.EasyDrive;
+import bot.states.ObstacleDrive;
 import bot.states.ScoreGoals;
 import bot.states.State;
+import bot.states.TurnDegreeTest;
 import camera.Camera;
 import camera.CameraFake;
 import camera.CameraInterface;
@@ -44,7 +46,7 @@ public class Bot extends Application implements ResponseReceiver {
 
 	CameraInterface camera;
 
-	public static boolean test = true;
+	public static boolean test = false;
 
 	public boolean skip = false;
 	public static int BALL_COUNTER = 0;
@@ -70,14 +72,15 @@ public class Bot extends Application implements ResponseReceiver {
 		CarService carService = new CarService(c.loadCar());
 
 		//Builds collect states
-		state = new EasyDrive(carService, ballService, wallService);
+		state = new ObstacleDrive(carService, ballService, wallService);
 		
 		System.out.println("Initializing BOT TEST:" + test);
 
 		if (!test) {
 			// Create Connection
 			// 172.20.10.5
-			connection = new Connection("192.168.43.142", 4444);
+			// 192.168.43.142
+			connection = new Connection("172.20.10.5", 4444);
 
 			// Listen for communication from the CAR
 			connection.onResponse(this);
@@ -100,11 +103,14 @@ public class Bot extends Application implements ResponseReceiver {
 				Mat frame = camera.grabFrame();
 				
 				Mat f = state.process(frame).getFrame();
+
 				
-				if (f != null)
+				if (f != null) {
 					updateImageView(originalFrame, f);
+				}
 
 				updateImageView(maskImage, frame);
+
 
 			}
 		};
