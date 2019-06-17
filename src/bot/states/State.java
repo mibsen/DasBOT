@@ -110,11 +110,22 @@ public abstract class State {
 	protected Point getPointInCM(Point p) {
 
 		double ratio = (Car.widthInCM / car.width);
+		double nx =  ((p.x * ratio));
+		double ny =  ((p.y * ratio));
+
+		return new Point(nx, - ny);
+
+	}
+	
+	protected Point getPointFromCM(Point p) {
+
+		double ratio = (car.width / Car.widthInCM );
 		float nx = (float) ((p.x * ratio));
-		float ny = (float) (-1 * ((p.y * ratio)));
+		float ny = (float) (((p.y * ratio)));
 
-		return new Point(nx, ny);
-
+		return new Point(nx, -ny);
+		
+		
 	}
 
 	public abstract void calculate(Mat originalFrame, Mat correctedFrame);
