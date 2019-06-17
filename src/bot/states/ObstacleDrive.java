@@ -19,6 +19,10 @@ public class ObstacleDrive extends State {
 	private Point nearestWaypoint;
 	private Point[] waypoints;
 
+	private Point debug;
+	private Point start;
+	private Point axis;
+
 	public ObstacleDrive(CarService carService, BallService ballService, WallService wallService) {
 		super(carService, ballService, wallService);
 		// TODO Auto-generated constructor stub
@@ -26,6 +30,11 @@ public class ObstacleDrive extends State {
 
 	@Override
 	public void calculate(Mat originalFrame, Mat correctedFrame) {
+
+		start = car.center;
+		axis = map.car.center;
+		axis.x = 2000;
+		axis = map.getOriginalPoint(axis);
 
 		Point corner1 = null;
 		Point corner2 = null;
@@ -75,7 +84,15 @@ public class ObstacleDrive extends State {
 		ActionList list = new ActionList();
 
 		p = getPointInCM(p);
-		list.add(new WayPointAction((float)p.x, (float)p.y, 1.00F,0.4F)); // go to waypoint
+
+		debug = (getPointFromCM(p));
+
+		debug = map.getOriginalPoint(debug);
+
+		System.out.println("nearestWayPoint" + nearestWaypoint);
+		System.out.println("debug" + debug);
+
+		list.add(new WayPointAction(p.x, p.y, 1.00F, 0.4F)); // go to waypoint
 
 		if (!Bot.test)
 			Connection.SendActions(list);
@@ -85,13 +102,17 @@ public class ObstacleDrive extends State {
 	@Override
 	public void drawFrame(Mat originalFrame, Mat correctedFrame) {
 
-		map.drawWall(new Scalar(255,255,255), 10);
-		map.drawCar(new Scalar(200,200,200), 2);
-		
+		map.drawWall(new Scalar(255, 255, 255), 10);
+		map.drawCar(new Scalar(200, 200, 200), 2);
+
 		if (originalFrame != null) {
 
 			Imgproc.drawMarker(originalFrame, nearestWaypoint, new Scalar(0, 250, 0), Imgproc.MARKER_TILTED_CROSS);
 			Imgproc.line(originalFrame, car.center, nearestWaypoint, new Scalar(0, 0, 250));
+			Imgproc.line(originalFrame, start, axis, new Scalar(88, 214, 141));
+			Imgproc.line(originalFrame, start, nearestWaypoint, new Scalar(88, 214, 141));
+
+			Imgproc.line(originalFrame, start, debug, new Scalar(88, 214, 141));
 
 		}
 
@@ -106,16 +127,13 @@ public class ObstacleDrive extends State {
 		Imgproc.line(correctedFrame, map.center, p, new Scalar(0, 0, 250));
 
 	}
-	
-	
+
 	@Override
 	public void handle(String message) {
-		
+
 		if (message.equals(Messages.DONE)) {
 			nextState(new EasyDrive(carService, ballService, wallService));
 		}
-		
-		
-		
+
 	}
 }
