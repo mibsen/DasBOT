@@ -44,9 +44,24 @@ public class Car {
 		this.width = Math.abs(Math.sqrt(Math.pow(frontMarker.x - backMarker.x, 2) + Math.pow(frontMarker.y - backMarker.y, 2)));
 
 		// ## Build car points ##
-		this.center = new Point((front.x + back.x) / 2, (front.y + back.y) / 2);
-
+		//this.center = new Point((front.x + back.x) / 2, (front.y + back.y) / 2);
+		calcuateCenter();
 		calculateParts();
+	}
+	
+	private void calcuateCenter(){
+		
+		// destance from marker 
+		double d = 2.6D;
+		double factor = d/ widthInCM;
+
+		double x = frontMarker.x - backMarker.x;
+		double y = frontMarker.y - backMarker.y;
+
+		double nx = x * factor;
+		double ny = y * factor;
+
+		center = new Point(backMarker.x + nx, backMarker.y + ny);			
 	}
 	
 	private void calculateParts() {
@@ -204,6 +219,7 @@ public class Car {
 	private Point correctPoint(Point point) {
 
 
+		System.out.println(WallService.camHeight);
 		double factor = carHeightInCM / WallService.camHeight;
 
 		Point wp = point;
