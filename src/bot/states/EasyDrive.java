@@ -38,7 +38,7 @@ public class EasyDrive extends State {
 			return;
 		}
 
-		double minDistance = car.width * 1.5;
+		double minDistance = car.width * 3;
 
 		map.drawWall(new Scalar(250, 250, 250), (int) (car.width * 2));
 		WallService.drawWall(map.getFrame(), map.getObstacle(), map.center, new Scalar(250, 250, 250), (int) (car.width * 3));
@@ -92,7 +92,7 @@ public class EasyDrive extends State {
 		// Calculate target
 
 		double d = Math.sqrt(Math.pow(ball.point.x, 2) + Math.pow(ball.point.y, 2));
-		double dratio = (d - (car.width * 2)) / d;
+		double dratio = (d - (car.width * 3)) / d;
 
 		Point destination = new Point(ball.point.x * dratio, ball.point.y * dratio);
 
@@ -102,7 +102,7 @@ public class EasyDrive extends State {
 
 		Mat tmp = correctedFrame.clone();
 		Imgproc.circle(tmp, new Point(ball.point.x + map.center.x, ball.point.y + map.center.y),
-				(int) (car.width * 2.5), new Scalar(200, 200, 200), -1);
+				(int) (car.width * 4), new Scalar(200, 200, 200), -1);
 
 		if (new Scalar(tmp.get((int) (map.center.y), (int) (map.center.x))).equals(new Scalar(200, 200, 200))) {
 

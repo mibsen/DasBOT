@@ -10,6 +10,7 @@ import bot.Connection;
 import bot.actions.ActionList;
 import bot.actions.ClosePortAction;
 import bot.actions.OpenPortAction;
+import bot.actions.ShakeAction;
 import bot.actions.StartCollectionAction;
 import bot.actions.StopCollectionAction;
 import bot.actions.TurnAction;
@@ -22,7 +23,6 @@ import services.WallService;
 
 public class ScoreGoals extends State {
 
-	private Map map;
 	private Point[] waypoints;
 	private Point nearestWaypoint;
 	private Point finnishPoint;
@@ -83,19 +83,26 @@ public class ScoreGoals extends State {
 
 			distance = Math.sqrt(Math.pow((goalPoint.x - car.center.x), 2) + Math.pow((goalPoint.y - car.center.y), 2));
 
-			if (correctedCount < 5) {
+			if (correctedCount < 1) {
 
-				Point p = map.correctPoint(goalPoint);
+				
+				System.out.println(goalPoint );
+				
+				
+				Point p = map.rotatePoint(new Point(goalPoint.x - car.center.x, goalPoint.y - car.center.y));
+	
+				
+				System.out.println(p);
+				
+				p.x = p.x * ((distance / 4) / distance);
+				p.y = p.y * ((distance / 4) / distance);
 
-				p.x = p.x - map.center.x;
-				p.y = p.y - map.center.y;
-
-				p.x = p.x * (distance / 4);
-				p.y = p.y * (distance / 4);
-
+				
 				// Turn into the correct Degree
-				nearestWaypoint = map.correctPoint(p);
+				nearestWaypoint = map.getOriginalPoint(p);
 
+				p = getPointInCM(p);
+				
 				// Actions
 				ActionList list = new ActionList();
 				list.add(new WayPointAction(p.x, p.y, 0.40F)); // go to waypoint
@@ -111,11 +118,11 @@ public class ScoreGoals extends State {
 				ActionList list = new ActionList();
 				list.add(new TurnAction(180)); // go to waypoint
 				list.add(new OpenPortAction());
+				list.add(new ShakeAction());
 				list.add(new WaitAction(3000));
 
-				list.add(new ClosePortAction());
-				list.add(new OpenPortAction());
-
+				list.add(new ShakeAction());
+				
 				list.add(new WaitAction(3000));
 				list.add(new ClosePortAction());
 
@@ -130,7 +137,6 @@ public class ScoreGoals extends State {
 			// open
 
 		} else {
-
 			distance = Double.MAX_VALUE;
 
 			for (int i = 0; i < waypoints.length; i++) {
@@ -148,9 +154,16 @@ public class ScoreGoals extends State {
 			}
 
 			// Drive to nearestWaypoint
+			
+			System.out.println("Non-substracted point" + new Point(nearestWaypoint.x, nearestWaypoint.y).toString());
+			System.out.println("Non-rotated point" + new Point(nearestWaypoint.x - car.center.x, nearestWaypoint.y - car.center.y).toString());
+			System.out.println("Non-rotated point" + new Point(nearestWaypoint.x - map.center.x, nearestWaypoint.y - map.center.y).toString());
+
 
 			Point p = map.rotatePoint(new Point(nearestWaypoint.x - car.center.x, nearestWaypoint.y - car.center.y));
-
+			
+			System.out.println("Rotated point" + p.toString());
+			
 			p = getPointInCM(p);
 
 			// Actions

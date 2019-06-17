@@ -11,6 +11,7 @@ import boot.Utils;
 import bot.messages.ResponseReceiver;
 import bot.states.EasyCollect;
 import bot.states.EasyDrive;
+import bot.states.ScoreGoals;
 import bot.states.State;
 import camera.Camera;
 import camera.CameraFake;
@@ -43,9 +44,11 @@ public class Bot extends Application implements ResponseReceiver {
 
 	CameraInterface camera;
 
-	public static boolean test = false;
+	public static boolean test = true;
 
 	public boolean skip = false;
+	public static int BALL_COUNTER = 0;
+	public static boolean ALL_BALLS_COLLECTED = false;
 
 	public Bot(boolean skip) {
 		this.skip = skip;

@@ -117,7 +117,6 @@ public class WallPreviewController extends BaseController {
 					setSettings();
 
 					WallService wallService = new WallService(wallSettings, obstacleSettings);
-					// ObstacleService obstacleService = new ObstacleService(obstacleSettings);
 
 					Mat frame = camera.grabFrame();
 
@@ -127,7 +126,6 @@ public class WallPreviewController extends BaseController {
 					Wall wall = wallService.getWall();
 
 					Wall obstacle = wallService.getObstacle();
-					// Obstacle obstacle = obstacleService.getObstacle(frame);
 
 					if (wall != null) {
 						wallService.drawWall(frame, wall);

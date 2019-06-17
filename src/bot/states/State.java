@@ -44,6 +44,12 @@ public abstract class State {
 		if (message.equals(Messages.DONE)) {
 			running = null;
 		}
+		if (message.equals(Messages.COLLECTED)) {
+			Bot.BALL_COUNTER++;
+		}
+		if (message.equals(Messages.FINISHED)) {
+			Bot.ALL_BALLS_COLLECTED = true;
+		}
 	}
 
 	@Override
@@ -90,7 +96,13 @@ public abstract class State {
 
 	protected void nextState(State state) {
 
+		if (Bot.ALL_BALLS_COLLECTED) {
+			state = new ScoreGoals(carService, ballService, wallService);
+			System.out.println("All balls are collected! Lets Finish this thing :*");
+		}
+		
 		System.out.println("Changing state: " + state.getClass().toString());
+
 		Bot.state = state;
 
 	}

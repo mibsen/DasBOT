@@ -28,7 +28,7 @@ public class Car {
 
 	// Car Build variable
 	
-	public static float widthInCM = 12.3F;
+	public static float widthInCM = 10.7F;
 	public static float carHeightInCM = 22F;
 	public static float frontToMakerCM = 7F;
 	public static float maxPicktoMarkerCM = 14F;

@@ -75,7 +75,7 @@ public class ObstacleDrive extends State {
 		ActionList list = new ActionList();
 
 		p = getPointInCM(p);
-		list.add(new WayPointAction((float)p.x, (float)p.y, 1.00F)); // go to waypoint
+		list.add(new WayPointAction((float)p.x, (float)p.y, 1.00F,0.4F)); // go to waypoint
 
 		if (!Bot.test)
 			Connection.SendActions(list);
