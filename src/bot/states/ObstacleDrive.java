@@ -113,7 +113,7 @@ public class ObstacleDrive extends State {
 			Imgproc.line(originalFrame, start, nearestWaypoint, new Scalar(88, 214, 141));
 
 			Imgproc.line(originalFrame, start, debug, new Scalar(88, 214, 141));
-
+			carService.drawCar(originalFrame, car);
 		}
 
 		if (waypoints != null) {
