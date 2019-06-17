@@ -27,13 +27,12 @@ public class Car {
 	public Point pickCenter;
 
 	// Car Build variable
-	
-	public static float widthInCM = 10.7F;
-	public static float carHeightInCM = 22F;
-	public static float frontToMakerCM = 7F;
-	public static float maxPicktoMarkerCM = 14F;
+	public static float widthInCM = 9.2F;
+	public static float carHeightInCM = 23.2F;
+	public static float frontToMakerCM = 9F;
+	public static float maxPicktoMarkerCM = 16F;
 	public static float pickWithCM = 3F;
-	public static float backToMakerCM = 9F;
+	public static float backToMakerCM = 10F;
 	
 	public static float radiusLeftCM = 9F;
 	public static float radiusRightCM = 14F;
