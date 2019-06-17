@@ -125,8 +125,9 @@ public class Car {
 	
 	private void getBack() {
 		
-		float factor =   (widthInCM ) / (backToMakerCM + widthInCM);
-
+		//float factor =   (widthInCM ) / (backToMakerCM + widthInCM);
+		float factor =   (backToMakerCM) / ( widthInCM);
+		
 		double x = backMarker.x - frontMarker.x;
 		double y = backMarker.y - frontMarker.y;
 
