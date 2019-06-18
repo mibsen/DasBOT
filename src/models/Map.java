@@ -120,8 +120,23 @@ public class Map {
 
 	public void corrected() {
 
-		this.radian = Math.atan2(this.car.frontMarker.y, this.car.frontMarker.x);
+		double d = Math.toDegrees(Math.atan2(this.car.backMarker.y, this.car.backMarker.x));
+		
+		d += 180;
+		
+		if(d >= 360) {
+			d = d -  360;
+		}
+		
+		if(d <= -360) {
+			d = d + 360;
+		}
+		
+		this.radian = Math.toRadians(d);
+		
+		//this.radian = Math.atan2(this.car.backMarker.y, this.car.backMarker.x);
 
+		
 		this.frame = Mat.zeros(frame.rows(), frame.cols(), CvType.CV_8UC3);
 
 		if (this.car != null) {
