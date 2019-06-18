@@ -52,7 +52,7 @@ public class Bot extends Application implements ResponseReceiver {
 
 	CameraInterface camera;
 
-	public static boolean test = false;
+	public static boolean test = true;
 
 	public boolean skip = false;
 	public static int BALL_COUNTER = 0;
@@ -103,7 +103,7 @@ public class Bot extends Application implements ResponseReceiver {
 			camera.init();
 
 		} else {
-			camera = new Camera();
+			camera = new CameraFake();
 			camera.init();
 		}
 

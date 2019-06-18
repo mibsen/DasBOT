@@ -56,7 +56,7 @@ public class WallDrive extends State {
 				System.out
 						.println(new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x))));
 				System.out.println("Removed Ball - to close to border");
-			} else if (isBehindObstacle(b)) {
+			} else if (isBehindObstacle(b.point)) {
 				System.out.println("Removed Ball - hiding behind obstacle");
 			} else {
 
@@ -156,9 +156,15 @@ public class WallDrive extends State {
 		}
 
 		if (target == null) {
-			System.out.println("THERE IS NO BALL AT WALL ??!!!");
+			System.out.println("The ball is NOT at a WALL ??!!!");
 			nextState(new ObstacleDrive(carService, ballService, wallService));
 			return;
+		} else if (isBehindObstacle(map.correctPoint(target))) {
+			
+			System.out.println("The Target is behind the obstacle!");
+			nextState(new ObstacleDrive(carService, ballService, wallService));
+			return;	
+			
 		}
 
 		// We are at the point!

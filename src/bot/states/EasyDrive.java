@@ -71,7 +71,7 @@ public class EasyDrive extends State {
 			else if (new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x)))
 					.equals(new Scalar(250, 250, 250))) {
 				// System.out.println("Removed Ball - to close to border");
-			} else if (isBehindObstacle(b)) {
+			} else if (isBehindObstacle(b.point)) {
 				// System.out.println("Removed Ball - hiding behind obstacle");
 			} else {
 				tb.add(b);

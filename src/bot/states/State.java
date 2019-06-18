@@ -142,12 +142,13 @@ public abstract class State {
 		return map.getFrame();
 	};
 
-	protected boolean isBehindObstacle(Ball ball) {
+	
+	protected boolean isBehindObstacle(Point point) {
 		Mat m = map.getFrame().clone();
 
 		WallService.drawWall(m, map.getObstacle(), map.center, new Scalar(250, 250, 250), (int) (car.width * 3));
 
-		Point ballPoint = map.correctPoint(map.getOriginalPoint(ball.point));
+		Point ballPoint = map.correctPoint(map.getOriginalPoint(point));
 		Point carPoint = map.center;
 
 		// System.out.println("Ball : " + ballPoint.toString());
