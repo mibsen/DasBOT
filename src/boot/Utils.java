@@ -2,6 +2,7 @@ package boot;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.sql.Timestamp;
 
 import org.opencv.core.Mat;
 
@@ -9,6 +10,7 @@ import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import javafx.scene.control.Label;
 
 /**
  * Provide general purpose methods for handling OpenCV-JavaFX data conversion.
@@ -57,6 +59,16 @@ public final class Utils
 			@Override
 			public void run() {
 				property.set(value);
+			}
+		});
+	}
+	
+	public static void updateElapsedTime(Label label, String value)
+	{
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				label.setText(value);
 			}
 		});
 	}

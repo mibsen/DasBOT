@@ -1,5 +1,7 @@
 package bot;
 
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -26,6 +28,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import services.BallService;
@@ -39,6 +42,9 @@ public class Bot extends Application implements ResponseReceiver {
 
 	@FXML
 	ImageView maskImage;
+	
+	@FXML
+	Label elapsedTime;
 
 	public static State state;
 	
@@ -51,6 +57,9 @@ public class Bot extends Application implements ResponseReceiver {
 	public boolean skip = false;
 	public static int BALL_COUNTER = 0;
 	public static boolean ALL_BALLS_COLLECTED = false;
+	
+	public static long RUNTIME_IN_MS = 0;
+	public static final long SEVEN_MINUTES_RUNTIME = 500000;
 
 	public Bot(boolean skip) {
 		this.skip = skip;
@@ -58,6 +67,9 @@ public class Bot extends Application implements ResponseReceiver {
 
 	public Bot() {
 	}
+	
+	
+	
 	
 	public static EasyCollect easyCollectState;
 
@@ -80,7 +92,7 @@ public class Bot extends Application implements ResponseReceiver {
 			// Create Connection
 			// 172.20.10.5
 			// 192.168.43.142
-			connection = new Connection("192.168.43.142", 4444);
+			connection = new Connection("172.20.10.5", 4444);
 
 			// Listen for communication from the CAR
 			connection.onResponse(this);
@@ -105,6 +117,7 @@ public class Bot extends Application implements ResponseReceiver {
 				Mat f = state.process(frame).getFrame();
 
 				
+				
 				if (f != null) {
 					updateImageView(originalFrame, f);
 				}
@@ -123,7 +136,7 @@ public class Bot extends Application implements ResponseReceiver {
 	@Override
 	public void receive(String message) {
 		System.out.println("Received message: " + message);
-		//state.handle(message);
+		state.handle(message);
 	}
 
 	@Override
@@ -148,13 +161,15 @@ public class Bot extends Application implements ResponseReceiver {
 	public void load() {
 
 		System.out.println("Loading BOT Frame SKIP:" + skip);
-
+		
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		launch();
 	}
 
 	public void updateImageView(ImageView view, Mat image) {
-
+		String s = new Timestamp(System.currentTimeMillis() - RUNTIME_IN_MS).toLocaleString().substring(14);
+		
+		Utils.updateElapsedTime(elapsedTime, s);
 		Utils.onFXThread(view.imageProperty(), Utils.mat2Image(image));
 	}
 

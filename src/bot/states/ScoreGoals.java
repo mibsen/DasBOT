@@ -13,6 +13,7 @@ import bot.actions.OpenPortAction;
 import bot.actions.ShakeAction;
 import bot.actions.StartCollectionAction;
 import bot.actions.StopCollectionAction;
+import bot.actions.TravelAction;
 import bot.actions.TurnAction;
 import bot.actions.WaitAction;
 import bot.actions.WayPointAction;
@@ -28,7 +29,8 @@ public class ScoreGoals extends State {
 	private Point finnishPoint;
 	private Point goalPoint;
 	private boolean atFinishPoint;
-	private int correctedCount = 4;
+	private int correctedCount = 0;
+	private Point almostTherePoint;
 
 	public ScoreGoals(CarService carService, BallService ballService, WallService wallService) {
 		super(carService, ballService, wallService);
@@ -57,14 +59,17 @@ public class ScoreGoals extends State {
 		double width = ((corner2.x - corner1.x) + (corner4.x - corner3.x)) / 2;
 		double height = ((corner3.y - corner1.y) + (corner4.y - corner2.y)) / 2;
 
-		finnishPoint = new Point(width * 3 / 4 + corner1.x, height / 2 + corner1.y);
-		goalPoint = new Point(width + corner1.x, height / 2 + corner1.y);
+		// System.out.println("Car back to center: " + car.backToCenter);
+
+		goalPoint = new Point(width + corner1.x - car.backToCenter, height / 2 + corner1.y);
+		almostTherePoint = new Point(goalPoint.x - (car.backToCenter / 3), goalPoint.y);
+		finnishPoint = new Point(almostTherePoint.x - (car.backToCenter / 3), almostTherePoint.y);
 
 		waypoints = new Point[7];
 		waypoints[0] = new Point(width / 4 + corner1.x, height / 4 + corner1.y);
 		waypoints[1] = new Point(width / 2 + corner1.x, height / 4 + corner1.y);
 		waypoints[2] = new Point(width * 3 / 4 + corner1.x, height / 4 + corner1.y);
-		waypoints[3] = finnishPoint;
+		waypoints[3] = goalPoint;
 		waypoints[4] = new Point(width * 3 / 4 + corner1.x, height * 3 / 4 + corner1.y);
 		waypoints[5] = new Point(width / 2 + corner1.x, height * 3 / 4 + corner1.y);
 		waypoints[6] = new Point(width / 4 + corner1.x, height * 3 / 4 + corner1.y);
@@ -74,27 +79,67 @@ public class ScoreGoals extends State {
 		// Locate IF i am in FinishPoint
 
 		double distance = Math
-				.sqrt(Math.pow((finnishPoint.x - car.center.x), 2) + Math.pow((finnishPoint.y - car.center.y), 2));
+				.sqrt(Math.pow((goalPoint.x - car.center.x), 2) + Math.pow((goalPoint.y - car.center.y), 2));
 
+		System.out.println("CorrectedCount: " + correctedCount);
+
+		// Calculates angle towards goal
+		Point diff = new Point(goalPoint.x - car.center.x, goalPoint.y - car.center.y);
+		long angleToGoal = Math.round(Math.toDegrees(Math.atan2(-diff.y, diff.x)));
+		System.out.println("Before: Angle to goal: " + angleToGoal);
+		System.out.println("Abs: Angle to goal: " + Math.abs(angleToGoal));
+
+		// start tree of operations
 		if (distance < minDistance || atFinishPoint) {
 
 			atFinishPoint = true;
+
+			if (correctedCount == 0) {
+
+				System.out.println("Almost there!");
+				distance = Math.sqrt(Math.pow((almostTherePoint.x - car.center.x), 2)
+						+ Math.pow((almostTherePoint.y - car.center.y), 2));
+
+				// System.out.println(almostTherePoint);
+
+				Point p = map
+						.rotatePoint(new Point(almostTherePoint.x - car.center.x, almostTherePoint.y - car.center.y));
+
+				// System.out.println(p);
+
+				// Turn into the correct Degree
+				nearestWaypoint = map.getOriginalPoint(p);
+
+				p = getPointInCM(p);
+
+				// Actions
+				ActionList list = new ActionList();
+				list.add(new WayPointAction(p.x, p.y, 0.40F, 0.3F)); // go to waypoint
+
+				correctedCount++;
+
+				if (!Bot.test)
+					Connection.SendActions(list);
+
+			}
+
 			// We are at the finnishPoint
 
 			// Drive a bit closer
 
-			distance = Math.sqrt(Math.pow((goalPoint.x - car.center.x), 2) + Math.pow((goalPoint.y - car.center.y), 2));
+			else if (correctedCount == 1) {
 
-			if (correctedCount < 3) {
+				System.out.println("Driving to finnish point");
+				distance = Math.sqrt(
+						Math.pow((finnishPoint.x - car.center.x), 2) + Math.pow((finnishPoint.y - car.center.y), 2));
 
-				System.out.println(goalPoint);
+				// System.out.println(finnishPoint);
 
-				Point p = map.rotatePoint(new Point(goalPoint.x - car.center.x, goalPoint.y - car.center.y));
+				Point p = new Point(finnishPoint.x - car.center.x, finnishPoint.y - car.center.y);
 
-				System.out.println(p);
+				p = map.rotatePoint(p);
 
-				p.x = p.x * ((distance / 10) / distance);
-				p.y = p.y * ((distance / 10) / distance);
+				// System.out.println(p);
 
 				// Turn into the correct Degree
 				nearestWaypoint = map.getOriginalPoint(p);
@@ -110,28 +155,43 @@ public class ScoreGoals extends State {
 				if (!Bot.test)
 					Connection.SendActions(list);
 
-			} else if (correctedCount == 3) {
+			} else if (Math.abs(angleToGoal) > 2) {
+
+				System.out.println("Starting over");
+				correctedCount = 0;
+
+				Point p = map.rotatePoint(new Point(goalPoint.x - car.center.x, goalPoint.y - car.center.y));
+
+				// Turn into the correct Degree
+				nearestWaypoint = map.getOriginalPoint(p);
+
+				p = getPointInCM(p);
+
 				// Actions
 				ActionList list = new ActionList();
-				list.add(new TurnAction(180));
+
+				list.add(new WayPointAction(p.x, p.y, 0.40F, 0.3F)); // go to waypoint
+
+				if (!Bot.test)
+					Connection.SendActions(list);
+
+			} else if (correctedCount == 2) {
+				System.out.println("Driving closer to goal!");
+				// Actions
+				ActionList list = new ActionList();
+				list.add(new TravelAction(-15.0));
 
 				correctedCount++;
 				if (!Bot.test)
 					Connection.SendActions(list);
 
 			} else {
-				// System.out.println("Distance: " + distance);
-				// System.out.println("Car center: " + car.center.toString());
-				// System.out.println("Goal pooint: " + goalPoint.toString());
 
-				Point diff = new Point(goalPoint.x - car.center.x, goalPoint.y - car.center.y);
+				System.out.println("Opening port!");
 
-				long angleToGoal = Math.round(Math.toDegrees(Math.atan2(-diff.y, diff.x)));
-
-				System.out.println("Angle to goal: " + angleToGoal);
 				// Actions
 				ActionList list = new ActionList();
-				list.add(new TurnAction(angleToGoal));
+				// list.add(new TurnAction(angleToGoal));
 				list.add(new OpenPortAction());
 				list.add(new ShakeAction());
 				list.add(new WaitAction(2000));
@@ -149,7 +209,9 @@ public class ScoreGoals extends State {
 
 			// open
 
-		} else {
+		} else
+
+		{
 			distance = Double.MAX_VALUE;
 
 			for (int i = 0; i < waypoints.length; i++) {
@@ -173,7 +235,7 @@ public class ScoreGoals extends State {
 
 			// Actions
 			ActionList list = new ActionList();
-			list.add(new WayPointAction(p.x, p.y, 1.00F)); // go to waypoint
+			list.add(new WayPointAction(p.x, p.y, 0.70F, 0.40F)); // go to waypoint
 
 			if (!Bot.test)
 				Connection.SendActions(list);

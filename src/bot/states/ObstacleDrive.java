@@ -94,7 +94,7 @@ public class ObstacleDrive extends State {
 		System.out.println("nearestWayPoint" + nearestWaypoint);
 		System.out.println("debug" + debug);
 
-		list.add(new WayPointAction(p.x, p.y, 1.00F, 0.4F)); // go to waypoint
+		list.add(new WayPointAction(p.x, p.y, 0.50F, 0.25F)); // go to waypoint
 
 		if (!Bot.test)
 			Connection.SendActions(list);

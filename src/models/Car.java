@@ -25,14 +25,16 @@ public class Car {
 	public Point pickBackLeft;
 	public Point pickFrontLeft;
 	public Point pickCenter;
-
+	public float backToCenter;
+	
 	// Car Build variable
 	public static float widthInCM = 9.2F;
-	public static float carHeightInCM = 24F;
+	public static float carHeightInCM = 24.45F;
 	public static float frontToMakerCM = 9F;
 	public static float maxPicktoMarkerCM = 16F;
 	public static float pickWithCM = 3F;
 	public static float backToMakerCM = 10F;
+	
 	
 	public static float radiusLeftCM = 9F;
 	public static float radiusRightCM = 14F;
@@ -42,7 +44,8 @@ public class Car {
 		this.frontMarker = front;
 		this.backMarker = back;
 		this.width = Math.abs(Math.sqrt(Math.pow(frontMarker.x - backMarker.x, 2) + Math.pow(frontMarker.y - backMarker.y, 2)));
-
+		this.backToCenter = backToMakerCM + widthInCM;
+		this.backToCenter = (float) (this.backToCenter / widthInCM * this.width * 1.5);
 		// ## Build car points ##
 		//this.center = new Point((front.x + back.x) / 2, (front.y + back.y) / 2);
 		calcuateCenter();

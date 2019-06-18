@@ -52,7 +52,7 @@ public abstract class State {
 			System.out.println("ALL BALLS COLLECTED!");
 			Bot.ALL_BALLS_COLLECTED = true;
 		}
-		
+
 	}
 
 	@Override
@@ -99,36 +99,36 @@ public abstract class State {
 
 	protected void nextState(State state) {
 
-		if (Bot.ALL_BALLS_COLLECTED) {
+		if (System.currentTimeMillis() - Bot.RUNTIME_IN_MS > Bot.SEVEN_MINUTES_RUNTIME) {
+			state = new ScoreGoals(carService, ballService, wallService);
+		} else if (Bot.ALL_BALLS_COLLECTED) {
 			state = new ScoreGoals(carService, ballService, wallService);
 			System.out.println("All balls are collected! Lets Finish this thing :*");
-		}
-		
+		} 
+
 		System.out.println("Changing state: " + state.getClass().toString());
 
 		Bot.state = state;
-
 	}
 
 	protected Point getPointInCM(Point p) {
 
 		double ratio = (Car.widthInCM / car.width);
-		double nx =  ((p.x * ratio));
-		double ny =  ((p.y * ratio));
+		double nx = ((p.x * ratio));
+		double ny = ((p.y * ratio));
 
-		return new Point(nx, - ny);
+		return new Point(nx, -ny);
 
 	}
-	
+
 	protected Point getPointFromCM(Point p) {
 
-		double ratio = (car.width / Car.widthInCM );
+		double ratio = (car.width / Car.widthInCM);
 		float nx = (float) ((p.x * ratio));
 		float ny = (float) (((p.y * ratio)));
 
 		return new Point(nx, -ny);
-		
-		
+
 	}
 
 	public abstract void calculate(Mat originalFrame, Mat correctedFrame);
@@ -141,10 +141,10 @@ public abstract class State {
 		}
 		return map.getFrame();
 	};
-	
+
 	protected boolean isBehindObstacle(Ball ball) {
 		Mat m = map.getFrame().clone();
-		
+
 		WallService.drawWall(m, map.getObstacle(), map.center, new Scalar(250, 250, 250), (int) (car.width * 3));
 
 		Point ballPoint = map.correctPoint(map.getOriginalPoint(ball.point));

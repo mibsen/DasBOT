@@ -72,7 +72,7 @@ public class WallCollect extends State {
 		// Drive TO
 		double d = Math.sqrt(Math.pow(t.x, 2) + Math.pow(t.y, 2));
 		
-		double r = (d - map.car.pickFront.x) / d;
+		double r = (d - map.car.pickCenter.x) / d;
 		t = new Point(t.x * r, t.y * r);
 
 		ActionList list = new ActionList();
