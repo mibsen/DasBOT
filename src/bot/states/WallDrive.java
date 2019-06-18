@@ -32,139 +32,142 @@ public class WallDrive extends State {
 
 		System.out.println("WallDrive has begun!");
 
-		if (map.balls.size() == 0) {
-			System.out.println("THERE IS NO BALLS IN MAP TO COLLECT!!!");
-			nextState(new ObstacleDrive(carService, ballService, wallService));
-			return;
-		}
+		if (targetBall == null) {
 
+			if (map.balls.size() == 0) {
+				System.out.println("THERE IS NO BALLS IN MAP TO COLLECT!!!");
+				nextState(new ObstacleDrive(carService, ballService, wallService));
+				return;
+			}
 
-		Mat m = map.getFrame().clone();
+			Mat m = map.getFrame().clone();
 
-		WallService.drawWall(m, map.getWall(), map.center, new Scalar(250, 250, 250), (int) (car.width * 4));
+			WallService.drawWall(m, map.getWall(), map.center, new Scalar(250, 250, 250), (int) (car.width * 4));
 
-		// filter balls
-		ArrayList<Ball> tb = new ArrayList<Ball>();
-		// Remove close balls and balls not close to border
-		for (Ball b : map.balls) {
+			// filter balls
+			ArrayList<Ball> tb = new ArrayList<Ball>();
+			// Remove close balls and balls not close to border
+			for (Ball b : map.balls) {
 
-			double d = Math.sqrt(Math.pow(b.point.x, 2) + Math.pow(b.point.y, 2));
-			
-			if (!new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x)))
-					.equals(new Scalar(250, 250, 250))) {
+				double d = Math.sqrt(Math.pow(b.point.x, 2) + Math.pow(b.point.y, 2));
 
-				System.out
-						.println(new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x))));
-				System.out.println("Removed Ball - to close to border");
-			} else if (isBehindObstacle(b.point)) {
-				System.out.println("Removed Ball - hiding behind obstacle");
-			} else {
+				if (!new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x)))
+						.equals(new Scalar(250, 250, 250))) {
 
-				boolean valid = true;
-				// Remove stuff to close to border
-				for (Point p : map.getWall().corners) {
+					System.out.println(
+							new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x))));
+					System.out.println("Removed Ball - to close to border");
+				} else if (isBehindObstacle(b.point)) {
+					System.out.println("Removed Ball - hiding behind obstacle");
+				} else {
 
-					d = Math.sqrt(Math.pow(p.x - b.point.x, 2) + Math.pow(p.x - b.point.y, 2));
+					boolean valid = true;
+					// Remove stuff to close to border
+					for (Point p : map.getWall().corners) {
 
-					if (d < map.car.pickFront.x) {
-						valid = false;
-						break;
+						d = Math.sqrt(Math.pow(p.x - b.point.x, 2) + Math.pow(p.x - b.point.y, 2));
+
+						if (d < map.car.pickFront.x) {
+							valid = false;
+							break;
+						}
+					}
+
+					if (valid) {
+						tb.add(b);
+					} else {
+						System.out.println("Removing Ball - Not close to wall");
 					}
 				}
-
-				if (valid) {
-					tb.add(b);
-				} else {
-					System.out.println("Removing Ball - Not close to wall");
-				}
 			}
-		}
 
-		if (tb.size() == 0) {
-			System.out.println("THERE IS NO BALLS IN MAP TO COLLECT2!!!");
-			nextState(new ObstacleDrive(carService, ballService, wallService));
-			return;
-		}
-
-		Collections.sort(tb, new Comparator<Ball>() {
-
-			@Override
-			public int compare(Ball o1, Ball o2) {
-
-				double d1 = Math.sqrt(Math.pow(o1.point.x, 2) + Math.pow(o1.point.y, 2));
-				double d2 = Math.sqrt(Math.pow(o2.point.x, 2) + Math.pow(o2.point.y, 2));
-
-				if (d1 == d2) {
-					return 0;
-				}
-				return d1 > d2 ? 1 : -1;
+			if (tb.size() == 0) {
+				System.out.println("THERE IS NO BALLS IN MAP TO COLLECT2!!!");
+				nextState(new ObstacleDrive(carService, ballService, wallService));
+				return;
 			}
-		});
 
-		Ball ball = tb.get(0);
+			Collections.sort(tb, new Comparator<Ball>() {
 
-		targetBall = new Ball(map.getOriginalPoint(ball.point), ball.area);
+				@Override
+				public int compare(Ball o1, Ball o2) {
 
-		// Calculate target
+					double d1 = Math.sqrt(Math.pow(o1.point.x, 2) + Math.pow(o1.point.y, 2));
+					double d2 = Math.sqrt(Math.pow(o2.point.x, 2) + Math.pow(o2.point.y, 2));
 
-		// locate the correct Point against the tanget of the Wall
+					if (d1 == d2) {
+						return 0;
+					}
+					return d1 > d2 ? 1 : -1;
+				}
+			});
 
-		// We need to locate which wall the ball is against.
+			Ball ball = tb.get(0);
 
-		Point[] corners = wallService.getRightOrder(originalFrame, wall.corners);
+			targetBall = new Ball(map.getOriginalPoint(ball.point), ball.area);
 
-		// Top ?
-		Point p1 = corners[0];
-		Point p2 = corners[1];
+			// Calculate target
 
-		double dist = getDist(p1, p2, targetBall.point);
-		double distance = map.car.pickFront.x + 10;
+			// locate the correct Point against the tanget of the Wall
 
-		if (dist < car.width * 1.5) {
-			target = new Point(targetBall.point.x, targetBall.point.y + distance);
-		}
+			// We need to locate which wall the ball is against.
 
-		// Right ?
-		p1 = corners[1];
-		p2 = corners[3];
-		
-		// Dist from wall
-		dist = getDist(p1, p2, targetBall.point);
+			Point[] corners = wallService.getRightOrder(originalFrame, wall.corners);
 
-		if (dist < car.width * 1.5) {
-			target = new Point(targetBall.point.x - distance, targetBall.point.y);
-		}
+			// Top ?
+			Point p1 = corners[0];
+			Point p2 = corners[1];
 
-		// But ?
-		p1 = corners[2];
-		p2 = corners[3];
+			double dist = getDist(p1, p2, targetBall.point);
+			double distance = map.car.pickFront.x + 10;
 
-		dist = getDist(p1, p2, targetBall.point);
+			if (dist < car.width * 1.5) {
+				target = new Point(targetBall.point.x, targetBall.point.y + distance);
+			}
 
-		if (dist < car.width * 1.5) {
-			target = new Point(targetBall.point.x, targetBall.point.y - distance);
-		}
+			// Right ?
+			p1 = corners[1];
+			p2 = corners[3];
 
-		// Left ?
-		p1 = corners[2];
-		p2 = corners[0];
+			// Dist from wall
+			dist = getDist(p1, p2, targetBall.point);
 
-		dist = getDist(p1, p2, targetBall.point);
+			if (dist < car.width * 1.5) {
+				target = new Point(targetBall.point.x - distance, targetBall.point.y);
+			}
 
-		if (dist < car.width * 1.5) {
-			target = new Point(targetBall.point.x + distance, targetBall.point.y);
-		}
+			// But ?
+			p1 = corners[2];
+			p2 = corners[3];
 
-		if (target == null) {
-			System.out.println("The ball is NOT at a WALL ??!!!");
-			nextState(new ObstacleDrive(carService, ballService, wallService));
-			return;
-		} else if (isBehindObstacle(map.correctPoint(target))) {
-			
-			System.out.println("The Target is behind the obstacle!");
-			nextState(new ObstacleDrive(carService, ballService, wallService));
-			return;	
-			
+			dist = getDist(p1, p2, targetBall.point);
+
+			if (dist < car.width * 1.5) {
+				target = new Point(targetBall.point.x, targetBall.point.y - distance);
+			}
+
+			// Left ?
+			p1 = corners[2];
+			p2 = corners[0];
+
+			dist = getDist(p1, p2, targetBall.point);
+
+			if (dist < car.width * 1.5) {
+				target = new Point(targetBall.point.x + distance, targetBall.point.y);
+			}
+
+			if (target == null) {
+				System.out.println("The ball is NOT at a WALL ??!!!");
+				nextState(new ObstacleDrive(carService, ballService, wallService));
+				return;
+			} else if (isBehindObstacle(map.correctPoint(target))) {
+
+				System.out.println("The Target is behind the obstacle!");
+				nextState(new ObstacleDrive(carService, ballService, wallService));
+				return;
+
+			}
+
 		}
 
 		// We are at the point!
@@ -194,8 +197,6 @@ public class WallDrive extends State {
 				Connection.SendActions(list);
 
 		}
-
-
 
 	}
 
