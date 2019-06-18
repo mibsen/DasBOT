@@ -28,7 +28,7 @@ public class ScoreGoals extends State {
 	private Point finnishPoint;
 	private Point goalPoint;
 	private boolean atFinishPoint;
-	private int correctedCount = 0;
+	private int correctedCount = 4;
 
 	public ScoreGoals(CarService carService, BallService ballService, WallService wallService) {
 		super(carService, ballService, wallService);
@@ -60,12 +60,14 @@ public class ScoreGoals extends State {
 		finnishPoint = new Point(width * 3 / 4 + corner1.x, height / 2 + corner1.y);
 		goalPoint = new Point(width + corner1.x, height / 2 + corner1.y);
 
-		waypoints = new Point[5];
+		waypoints = new Point[7];
 		waypoints[0] = new Point(width / 4 + corner1.x, height / 4 + corner1.y);
-		waypoints[1] = new Point(width * 3 / 4 + corner1.x, height / 4 + corner1.y);
-		waypoints[2] = finnishPoint;
-		waypoints[3] = new Point(width * 3 / 4 + corner1.x, height * 3 / 4 + corner1.y);
-		waypoints[4] = new Point(width / 4 + corner1.x, height * 3 / 4 + corner1.y);
+		waypoints[1] = new Point(width / 2 + corner1.x, height / 4 + corner1.y);
+		waypoints[2] = new Point(width * 3 / 4 + corner1.x, height / 4 + corner1.y);
+		waypoints[3] = finnishPoint;
+		waypoints[4] = new Point(width * 3 / 4 + corner1.x, height * 3 / 4 + corner1.y);
+		waypoints[5] = new Point(width / 2 + corner1.x, height * 3 / 4 + corner1.y);
+		waypoints[6] = new Point(width / 4 + corner1.x, height * 3 / 4 + corner1.y);
 
 		double minDistance = car.width;
 
@@ -85,24 +87,20 @@ public class ScoreGoals extends State {
 
 			if (correctedCount < 3) {
 
-				
-				System.out.println(goalPoint );
-				
-				
+				System.out.println(goalPoint);
+
 				Point p = map.rotatePoint(new Point(goalPoint.x - car.center.x, goalPoint.y - car.center.y));
-	
-				
+
 				System.out.println(p);
-				
+
 				p.x = p.x * ((distance / 10) / distance);
 				p.y = p.y * ((distance / 10) / distance);
 
-				
 				// Turn into the correct Degree
 				nearestWaypoint = map.getOriginalPoint(p);
 
 				p = getPointInCM(p);
-				
+
 				// Actions
 				ActionList list = new ActionList();
 				list.add(new WayPointAction(p.x, p.y, 0.40F)); // go to waypoint
@@ -112,18 +110,32 @@ public class ScoreGoals extends State {
 				if (!Bot.test)
 					Connection.SendActions(list);
 
-			} else {
+			} else if (correctedCount == 3) {
+				// Actions
+				ActionList list = new ActionList();
+				list.add(new TurnAction(180));
 
-				long angleToGoal = (long) Math.asin((goalPoint.x - car.center.x)/distance);
+				correctedCount++;
+				if (!Bot.test)
+					Connection.SendActions(list);
+
+			} else {
+				// System.out.println("Distance: " + distance);
+				// System.out.println("Car center: " + car.center.toString());
+				// System.out.println("Goal pooint: " + goalPoint.toString());
+
+				Point diff = new Point(goalPoint.x - car.center.x, goalPoint.y - car.center.y);
+
+				long angleToGoal = Math.round(Math.toDegrees(Math.atan2(-diff.y, diff.x)));
+
+				System.out.println("Angle to goal: " + angleToGoal);
 				// Actions
 				ActionList list = new ActionList();
 				list.add(new TurnAction(angleToGoal));
 				list.add(new OpenPortAction());
 				list.add(new ShakeAction());
 				list.add(new WaitAction(2000));
-
 				list.add(new ShakeAction());
-				
 				list.add(new WaitAction(3000));
 				list.add(new ClosePortAction());
 
@@ -131,6 +143,7 @@ public class ScoreGoals extends State {
 					Connection.SendActions(list);
 
 				System.out.println("DONE!");
+				System.exit(0);
 
 			}
 
@@ -154,16 +167,8 @@ public class ScoreGoals extends State {
 			}
 
 			// Drive to nearestWaypoint
-			
-			System.out.println("Non-substracted point" + new Point(nearestWaypoint.x, nearestWaypoint.y).toString());
-			System.out.println("Non-rotated point" + new Point(nearestWaypoint.x - car.center.x, nearestWaypoint.y - car.center.y).toString());
-			System.out.println("Non-rotated point" + new Point(nearestWaypoint.x - map.center.x, nearestWaypoint.y - map.center.y).toString());
-
-
 			Point p = map.rotatePoint(new Point(nearestWaypoint.x - car.center.x, nearestWaypoint.y - car.center.y));
-			
-			System.out.println("Rotated point" + p.toString());
-			
+
 			p = getPointInCM(p);
 
 			// Actions

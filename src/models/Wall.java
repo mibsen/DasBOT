@@ -22,6 +22,7 @@ public class Wall {
 
 		locateCorners(c);
 		locateCenter(c);
+		
 
 		this.contour = c;
 		this.points = c.toArray();

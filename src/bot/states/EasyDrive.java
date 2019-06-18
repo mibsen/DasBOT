@@ -39,10 +39,20 @@ public class EasyDrive extends State {
 		}
 
 		double minDistance = car.width * 2;
+		Point corner1 = null;
+		Point corner2 = null;
+		
+		for (Point corner : wall.corners) {
+			if (corner.x < car.center.x && corner.y < car.center.y) {
+				corner1 = corner.clone();
+			} else if (corner.x < car.center.x && corner.y > car.center.y) {
+				corner2 = corner.clone();
+			} 
+		}
+		double maxDistance = corner1.y - corner2.y;
 
 		map.drawWall(new Scalar(250, 250, 250), (int) (car.width * 2));
-		WallService.drawWall(map.getFrame(), map.getObstacle(), map.center, new Scalar(250, 250, 250), (int) (car.width * 3));
-		
+
 		Mat m = map.getFrame();
 
 		// filter balls
@@ -54,10 +64,14 @@ public class EasyDrive extends State {
 
 			if (d <= minDistance) {
 				// System.out.println("Removed Ball - to close to robot");
-			} else if (new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x)))
+			} 
+			/*else if (d >= maxDistance) {
+				// System.out.println("Removed Ball - to far away from robot");
+			} */
+			else if (new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x)))
 					.equals(new Scalar(250, 250, 250))) {
 				// System.out.println("Removed Ball - to close to border");
-			} else if (isBehindObstacle(b, m)) {
+			} else if (isBehindObstacle(b)) {
 				// System.out.println("Removed Ball - hiding behind obstacle");
 			} else {
 				tb.add(b);
@@ -101,8 +115,8 @@ public class EasyDrive extends State {
 		// We need to verify if we are inside the Circle
 
 		Mat tmp = correctedFrame.clone();
-		Imgproc.circle(tmp, new Point(ball.point.x + map.center.x, ball.point.y + map.center.y),
-				(int) (car.width * 4), new Scalar(200, 200, 200), -1);
+		Imgproc.circle(tmp, new Point(ball.point.x + map.center.x, ball.point.y + map.center.y), (int) (car.width * 4),
+				new Scalar(200, 200, 200), -1);
 
 		if (new Scalar(tmp.get((int) (map.center.y), (int) (map.center.x))).equals(new Scalar(200, 200, 200))) {
 
@@ -123,53 +137,11 @@ public class EasyDrive extends State {
 		ActionList list = new ActionList();
 
 		System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
-		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.70F,0.4F));
+		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.60F, 0.3F));
 
 		if (!Bot.test)
 			Connection.SendActions(list);
 
-	}
-
-	private boolean isBehindObstacle(Ball ball, Mat m) {
-		Point ballPoint = map.correctPoint(map.getOriginalPoint(ball.point));
-		Point carPoint = map.center;
-
-		// System.out.println("Ball : " + ballPoint.toString());
-		// System.out.println("Car : " + carPoint.toString());
-
-		if (carPoint.x > ballPoint.x) {
-
-			double a = (ballPoint.y - carPoint.y) / (ballPoint.x - carPoint.x);
-			double b = (carPoint.y - a * carPoint.x);
-
-			for (int x = (int) ballPoint.x; x < (int) carPoint.x - 5; x++) {
-				double y = a * x + b;
-				// System.out.println("1: Color of point (" + x + ", " + y + "): " + new
-				// Scalar(m.get((int) y, (int) x)).toString());
-				if (new Scalar(m.get((int) (y), (int) (x))).equals(new Scalar(250, 250, 250))) {
-					return true;
-				}
-			}
-
-		} else if (ballPoint.x > carPoint.x) {
-
-			double a = (carPoint.y - ballPoint.y) / (carPoint.x - ballPoint.x);
-			double b = (ballPoint.y - a * ballPoint.x);
-
-			for (int x = (int) carPoint.x; x < (int) ballPoint.x - 5; x++) {
-				double y = a * x + b;
-				// System.out.println("2: Color of point (" + x + ", " + y + "): " + new
-				// Scalar(m.get((int) y, (int) x)).toString());
-				if (new Scalar(m.get((int) (y), (int) (x))).equals(new Scalar(250, 250, 250))) {
-					return true;
-				}
-			}
-
-		} else {
-
-		}
-
-		return false;
 	}
 
 	@Override

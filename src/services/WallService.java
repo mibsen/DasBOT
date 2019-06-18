@@ -155,7 +155,7 @@ public class WallService {
 		// Point with Cache
 		for (int i = 0; i < srcP.length; i++) {
 			cachedPoint[i].add(srcP[i]);
-		//	srcP[i] = cachedPoint[i].point;
+			srcP[i] = cachedPoint[i].point;
 		}
 
 

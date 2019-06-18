@@ -56,11 +56,13 @@ public class ObstacleDrive extends State {
 		double width = ((corner2.x - corner1.x) + (corner4.x - corner3.x)) / 2;
 		double height = ((corner3.y - corner1.y) + (corner4.y - corner2.y)) / 2;
 
-		Point[] waypoints = new Point[4];
+		Point[] waypoints = new Point[6];
 		waypoints[0] = new Point(width / 4 + corner1.x, height / 4 + corner1.y);
-		waypoints[1] = new Point(width * 3 / 4 + corner1.x, height / 4 + corner1.y);
-		waypoints[2] = new Point(width * 3 / 4 + corner1.x, height * 3 / 4 + corner1.y);
-		waypoints[3] = new Point(width / 4 + corner1.x, height * 3 / 4 + corner1.y);
+		waypoints[1] = new Point(width / 2 + corner1.x, height / 4 + corner1.y);
+		waypoints[2] = new Point(width * 3 / 4 + corner1.x, height / 4 + corner1.y);
+		waypoints[3] = new Point(width * 3 / 4 + corner1.x, height * 3 / 4 + corner1.y);
+		waypoints[4] = new Point(width / 2 + corner1.x, height * 3 / 4 + corner1.y);
+		waypoints[5] = new Point(width / 4 + corner1.x, height * 3 / 4 + corner1.y);
 
 		double distance = 0;
 		double minDistance = car.width;

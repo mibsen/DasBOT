@@ -28,7 +28,7 @@ public class Car {
 
 	// Car Build variable
 	public static float widthInCM = 9.2F;
-	public static float carHeightInCM = 23.2F;
+	public static float carHeightInCM = 24F;
 	public static float frontToMakerCM = 9F;
 	public static float maxPicktoMarkerCM = 16F;
 	public static float pickWithCM = 3F;
@@ -50,18 +50,7 @@ public class Car {
 	}
 	
 	private void calcuateCenter(){
-		
-		// destance from marker 
-		double d = 2.6D;
-		double factor = d/ widthInCM;
-
-		double x = frontMarker.x - backMarker.x;
-		double y = frontMarker.y - backMarker.y;
-
-		double nx = x * factor;
-		double ny = y * factor;
-
-		center = new Point(backMarker.x + nx, backMarker.y + ny);			
+		center = frontMarker;		
 	}
 	
 	private void calculateParts() {
@@ -218,8 +207,6 @@ public class Car {
 
 	private Point correctPoint(Point point) {
 
-
-		System.out.println(WallService.camHeight);
 		double factor = carHeightInCM / WallService.camHeight;
 
 		Point wp = point;

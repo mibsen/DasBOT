@@ -72,7 +72,7 @@ public class Bot extends Application implements ResponseReceiver {
 		CarService carService = new CarService(c.loadCar());
 
 		//Builds collect states
-		state = new ObstacleDrive(carService, ballService, wallService);
+		state = new EasyDrive(carService, ballService, wallService);
 		
 		System.out.println("Initializing BOT TEST:" + test);
 
@@ -80,7 +80,7 @@ public class Bot extends Application implements ResponseReceiver {
 			// Create Connection
 			// 172.20.10.5
 			// 192.168.43.142
-			connection = new Connection("172.20.10.5", 4444);
+			connection = new Connection("192.168.43.142", 4444);
 
 			// Listen for communication from the CAR
 			connection.onResponse(this);
@@ -123,7 +123,7 @@ public class Bot extends Application implements ResponseReceiver {
 	@Override
 	public void receive(String message) {
 		System.out.println("Received message: " + message);
-		state.handle(message);
+		//state.handle(message);
 	}
 
 	@Override

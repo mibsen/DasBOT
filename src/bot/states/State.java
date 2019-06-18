@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 
 import bot.Bot;
 import bot.messages.Messages;
@@ -48,8 +49,10 @@ public abstract class State {
 			Bot.BALL_COUNTER++;
 		}
 		if (message.equals(Messages.FINISHED)) {
+			System.out.println("ALL BALLS COLLECTED!");
 			Bot.ALL_BALLS_COLLECTED = true;
 		}
+		
 	}
 
 	@Override
@@ -138,5 +141,51 @@ public abstract class State {
 		}
 		return map.getFrame();
 	};
+	
+	protected boolean isBehindObstacle(Ball ball) {
+		Mat m = map.getFrame().clone();
+		
+		WallService.drawWall(m, map.getObstacle(), map.center, new Scalar(250, 250, 250), (int) (car.width * 3));
+
+		Point ballPoint = map.correctPoint(map.getOriginalPoint(ball.point));
+		Point carPoint = map.center;
+
+		// System.out.println("Ball : " + ballPoint.toString());
+		// System.out.println("Car : " + carPoint.toString());
+
+		if (carPoint.x > ballPoint.x) {
+
+			double a = (ballPoint.y - carPoint.y) / (ballPoint.x - carPoint.x);
+			double b = (carPoint.y - a * carPoint.x);
+
+			for (int x = (int) ballPoint.x; x < (int) carPoint.x - 5; x++) {
+				double y = a * x + b;
+				// System.out.println("1: Color of point (" + x + ", " + y + "): " + new
+				// Scalar(m.get((int) y, (int) x)).toString());
+				if (new Scalar(m.get((int) (y), (int) (x))).equals(new Scalar(250, 250, 250))) {
+					return true;
+				}
+			}
+
+		} else if (ballPoint.x > carPoint.x) {
+
+			double a = (carPoint.y - ballPoint.y) / (carPoint.x - ballPoint.x);
+			double b = (ballPoint.y - a * ballPoint.x);
+
+			for (int x = (int) carPoint.x; x < (int) ballPoint.x - 5; x++) {
+				double y = a * x + b;
+				// System.out.println("2: Color of point (" + x + ", " + y + "): " + new
+				// Scalar(m.get((int) y, (int) x)).toString());
+				if (new Scalar(m.get((int) (y), (int) (x))).equals(new Scalar(250, 250, 250))) {
+					return true;
+				}
+			}
+
+		} else {
+
+		}
+
+		return false;
+	}
 
 }
