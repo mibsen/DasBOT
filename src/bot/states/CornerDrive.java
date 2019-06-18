@@ -18,19 +18,19 @@ import services.BallService;
 import services.CarService;
 import services.WallService;
 
-public class WallDrive extends State {
+public class CornerDrive extends State {
 
 	private Ball targetBall;
 	private Point target;
 
-	public WallDrive(CarService carService, BallService ballService, WallService wallService) {
+	public CornerDrive(CarService carService, BallService ballService, WallService wallService) {
 		super(carService, ballService, wallService);
 	}
 
 	@Override
 	public void calculate(Mat originalFrame, Mat correctedFrame) {
 
-		System.out.println("WallDrive has begun!");
+		System.out.println("CornerDrive has begun!");
 
 		if (targetBall == null) {
 
@@ -61,19 +61,14 @@ public class WallDrive extends State {
 					System.out.println("Removed Ball - hiding behind obstacle");
 				} else {
 
-					boolean valid = true;
-					// Remove stuff to close to border
+					boolean valid = false;
+					// Remove stuff Not close to border
 					for (Point p : map.getWall().corners) {
 
-						System.out.println(p);
-						System.out.println(b.point);
-						
 						d = Math.sqrt(Math.pow(p.x - b.point.x, 2) + Math.pow(p.y - b.point.y, 2));
 
-						System.out.println(d);
-						
 						if (d < map.car.pickFront.x) {
-							valid = false;
+							valid = true;
 							break;
 						}
 					}
@@ -81,14 +76,14 @@ public class WallDrive extends State {
 					if (valid) {
 						tb.add(b);
 					} else {
-						System.out.println("Removing Ball - To close to border");
+						System.out.println("Removing Ball - Not close to Corner");
 					}
 				}
 			}
 
 			if (tb.size() == 0) {
 				System.out.println("THERE IS NO BALLS IN MAP TO COLLECT2!!!");
-				nextState(new CornerDrive(carService, ballService, wallService));
+				nextState(new ObstacleDrive(carService, ballService, wallService));
 				return;
 			}
 
@@ -119,56 +114,53 @@ public class WallDrive extends State {
 
 			Point[] corners = wallService.getRightOrder(originalFrame, wall.corners);
 
-			// Top ?
+			// Top - left ?
 			Point p1 = corners[0];
-			Point p2 = corners[1];
 
-			double dist = getDist(p1, p2, targetBall.point);
+			double dist = getDist(p1, targetBall.point);
 			double distance = map.car.pickFront.x + 10;
 
-			if (dist < car.width * 1.5) {
-				target = new Point(targetBall.point.x, targetBall.point.y + distance);
+			if (dist <= map.car.pickFront.x ) {
+				System.out.println("IN HERE!");
+				target = new Point(targetBall.point.x + distance, targetBall.point.y + distance);
 			}
 
-			// Right ?
+			// Top - Right ?
 			p1 = corners[1];
-			p2 = corners[3];
-
+			
 			// Dist from wall
-			dist = getDist(p1, p2, targetBall.point);
+			dist = getDist(p1, targetBall.point);
 
-			if (dist < car.width * 1.5) {
-				target = new Point(targetBall.point.x - distance, targetBall.point.y);
+			if (dist <= map.car.pickFront.x ) {
+				target = new Point(targetBall.point.x - distance, targetBall.point.y +  distance);
 			}
 
-			// But ?
+			// But - left ?
 			p1 = corners[2];
-			p2 = corners[3];
 
-			dist = getDist(p1, p2, targetBall.point);
+			dist = getDist(p1, targetBall.point);
 
-			if (dist < car.width * 1.5) {
-				target = new Point(targetBall.point.x, targetBall.point.y - distance);
+			if (dist <= map.car.pickFront.x ) {
+				target = new Point(targetBall.point.x + distance, targetBall.point.y - distance);
 			}
 
-			// Left ?
-			p1 = corners[2];
-			p2 = corners[0];
+			// bug - RigthLeft ?
+			p1 = corners[3];
 
-			dist = getDist(p1, p2, targetBall.point);
+			dist = getDist(p1, targetBall.point);
 
 			if (dist < car.width * 1.5) {
-				target = new Point(targetBall.point.x + distance, targetBall.point.y);
+				target = new Point(targetBall.point.x - distance, targetBall.point.y - distance);
 			}
 
 			if (target == null) {
 				System.out.println("The ball is NOT at a WALL ??!!!");
-				nextState(new CornerDrive(carService, ballService, wallService));
+				nextState(new ObstacleDrive(carService, ballService, wallService));
 				return;
 			} else if (isBehindObstacle(map.correctPoint(target))) {
 
 				System.out.println("The Target is behind the obstacle!");
-				nextState(new CornerDrive(carService, ballService, wallService));
+				nextState(new ObstacleDrive(carService, ballService, wallService));
 				return;
 
 			}
