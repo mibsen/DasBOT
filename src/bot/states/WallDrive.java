@@ -38,7 +38,6 @@ public class WallDrive extends State {
 			return;
 		}
 
-		double minDistance = car.width;
 
 		Mat m = map.getFrame().clone();
 
@@ -50,10 +49,8 @@ public class WallDrive extends State {
 		for (Ball b : map.balls) {
 
 			double d = Math.sqrt(Math.pow(b.point.x, 2) + Math.pow(b.point.y, 2));
-
-			if (d <= minDistance) {
-				System.out.println("Removed Ball - to close to robot");
-			} else if (!new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x)))
+			
+			if (!new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x)))
 					.equals(new Scalar(250, 250, 250))) {
 
 				System.out
@@ -69,7 +66,7 @@ public class WallDrive extends State {
 
 					d = Math.sqrt(Math.pow(p.x - b.point.x, 2) + Math.pow(p.x - b.point.y, 2));
 
-					if (d < car.width * 3) {
+					if (d < map.car.pickFront.x) {
 						valid = false;
 						break;
 					}
@@ -121,7 +118,7 @@ public class WallDrive extends State {
 		Point p2 = corners[1];
 
 		double dist = getDist(p1, p2, targetBall.point);
-		double distance = car.width * 4;
+		double distance = map.car.pickFront.x + 10;
 
 		if (dist < car.width * 1.5) {
 			target = new Point(targetBall.point.x, targetBall.point.y + distance);
@@ -192,45 +189,7 @@ public class WallDrive extends State {
 
 		}
 
-		/*
-		 * 
-		 * double d = Math.sqrt(Math.pow(ball.point.x, 2) + Math.pow(ball.point.y, 2));
-		 * double dratio = (d - (car.width * 3)) / d;
-		 * 
-		 * Point destination = new Point(ball.point.x * dratio, ball.point.y * dratio);
-		 * 
-		 * target = map.getOriginalPoint(destination);
-		 * 
-		 * // We need to verify if we are inside the Circle
-		 * 
-		 * Mat tmp = correctedFrame.clone(); Imgproc.circle(tmp, new Point(ball.point.x
-		 * + map.center.x, ball.point.y + map.center.y), (int) (car.width * 4), new
-		 * Scalar(200, 200, 200), -1);
-		 * 
-		 * if (new Scalar(tmp.get((int) (map.center.y), (int)
-		 * (map.center.x))).equals(new Scalar(200, 200, 200))) {
-		 * 
-		 * // THE car is inside the circle
-		 * 
-		 * System.out.println("What up bitches");
-		 * 
-		 * EasyCollect nextState = new EasyCollect(carService, ballService,
-		 * wallService); nextState.setTarget(targetBall); nextState(nextState); return;
-		 * }
-		 * 
-		 * System.out.println("Driving to  point: " + target.toString());
-		 * 
-		 * Point targetCM = getPointInCM(destination);
-		 * 
-		 * ActionList list = new ActionList();
-		 * 
-		 * System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
-		 * list.add(new WayPointAction(targetCM.x, targetCM.y, 0.70F, 0.4F));
-		 * 
-		 * if (!Bot.test) Connection.SendActions(list);
-		 * 
-		 * 
-		 */
+
 
 	}
 

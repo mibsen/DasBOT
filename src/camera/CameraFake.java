@@ -37,7 +37,7 @@ public class CameraFake implements CameraInterface {
 
 		frame = new Mat();
 
-		String path = this.getClass().getResource("/map9.jpg").getPath();
+		String path = this.getClass().getResource("/map12.jpg").getPath();
 		path = new File(path).getPath();
 
 		frame = Imgcodecs.imread(path);

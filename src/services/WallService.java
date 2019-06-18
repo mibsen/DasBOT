@@ -217,66 +217,6 @@ public class WallService {
 			return;
 		}
 
-		/*
-		 * Point center = new Point(frame.width()/2, frame.height()/2);
-		 * 
-		 * Imgproc.drawMarker(frame,center, new Scalar(0,0,0));
-		 * 
-		 * 
-		 * double factor = (6.5D) / 175D ;
-		 * 
-		 * Point[] cor = new Point[wall.points.length];
-		 * 
-		 * for (int i = 0; i < wall.points.length; i++) {
-		 * 
-		 * Point wp = wall.points[i];
-		 * 
-		 * 
-		 * double x = wp.x - center.x; double y = wp.y - center.y;
-		 * 
-		 * double nx = x * factor; double ny = y * factor;
-		 * 
-		 * 
-		 * 
-		 * Point corrected = new Point((wp.x) - nx, ( wp.y) - ny);
-		 * 
-		 * // Imgproc.drawMarker(frame, corrected, new Scalar(0,0,0));
-		 * 
-		 * cor[i] = corrected;
-		 * 
-		 * }
-		 * 
-		 * 
-		 * Point p1 = cor[0];
-		 * 
-		 * for (int i = 1; i < cor.length; i++) { Imgproc.line(frame, new Point(p1.x,
-		 * p1.y), new Point(cor[i].x, cor[i].y ), new Scalar(0, 250, 0), 1); p1 =
-		 * cor[i]; }
-		 * 
-		 * Imgproc.line(frame, p1, cor[0], new Scalar(0, 250, 0));
-		 * 
-		 * 
-		 * for (Point point : wall.corners) {
-		 * 
-		 * Imgproc.drawMarker(frame, point, new Scalar(0,250,250),Imgproc.MARKER_STAR);
-		 * 
-		 * }
-		 * 
-		 * 
-		 * p1 = wall.points[0];
-		 * 
-		 * for (int i = 1; i < wall.points.length; i++) { Imgproc.line(frame, p1,
-		 * wall.points[i], new Scalar(0, 250, 0)); p1 = wall.points[i]; }
-		 * 
-		 * Imgproc.line(frame, p1, wall.points[0], new Scalar(0, 250, 0));
-		 * 
-		 * 
-		 * Imgproc.drawMarker(frame, wall.center, new
-		 * Scalar(0,100,100),Imgproc.MARKER_STAR);
-		 * 
-		 * 
-		 * 
-		 */
 		Point p1 = wall.points[0];
 
 		for (int i = 1; i < wall.points.length; i++) {

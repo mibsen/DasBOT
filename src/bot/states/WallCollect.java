@@ -55,7 +55,7 @@ public class WallCollect extends State {
 		// Verify VINKEL!
 		double deg = -Math.toDegrees(Math.atan2(t.y, t.x));
 		
-		if(deg > 10 || deg < -10) {
+		if(Math.abs(deg) > 10) {
 			
 			System.out.println("correcting moving " + deg +" Deg");
 			
@@ -72,7 +72,11 @@ public class WallCollect extends State {
 		// Drive TO
 		double d = Math.sqrt(Math.pow(t.x, 2) + Math.pow(t.y, 2));
 		
-		double r = (d - map.car.pickCenter.x) / d;
+		
+		// Distance to ball
+		double val = map.car.pickCenter.x + ((map.car.pickFront.x - map.car.pickCenter.x)/2);
+		
+		double r = (d - val) / d;
 		t = new Point(t.x * r, t.y * r);
 
 		ActionList list = new ActionList();
@@ -82,10 +86,9 @@ public class WallCollect extends State {
 		System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
 		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.50F,0.3F));
 
-		// list.add(new WaitAction(1000));
 	
 		list.add(new StartCollectionAction());
-		list.add(new WaitAction(1000));
+		list.add(new WaitAction(2000));
 		list.add(new StopCollectionAction());
 		
 		

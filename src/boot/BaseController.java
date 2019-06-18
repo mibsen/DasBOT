@@ -19,7 +19,7 @@ public class BaseController {
 	public boolean cameraActive;
 
 	//public CameraInterface camera = new CameraFake();
-	public CameraInterface camera = new Camera();
+	public CameraInterface camera = new CameraFake();
 
 	public Callable onSaveCallable;
 

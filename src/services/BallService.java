@@ -28,7 +28,30 @@ public class BallService {
 
 	public List<Ball> getBalls(Mat f) {
 		Mat frame = getBallFrame(f);
-		return getBallsFromFrame(frame);
+		List<Ball> balls = getBallsFromFrame(frame);
+		
+		correct(balls);
+		
+		return balls;
+	}
+
+	private void correct(List<Ball> balls) {
+		
+	
+		double factor = Ball.ballHeightInCM/ WallService.camHeight;
+	
+		for (Ball ball : balls) {
+			
+			double x = ball.point.x - WallService.imageCenter.x;
+			double y = ball.point.y - WallService.imageCenter.y;
+			
+			double nx = x * factor;
+			double ny = y * factor;
+
+			ball.point.x -=  nx;
+			ball.point.y -= ny;
+		}
+		
 	}
 
 	public Mat getBallFrame(Mat f) {
