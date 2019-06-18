@@ -80,7 +80,7 @@ public class EasyDrive extends State {
 
 		if (tb.size() == 0) {
 			System.out.println("THERE IS NO BALLS IN TB TO COLLECT!!!");
-			nextState(new ObstacleDrive(carService, ballService, wallService));
+			nextState(new WallDrive(carService, ballService, wallService));
 			return;
 		}
 

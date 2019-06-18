@@ -179,7 +179,7 @@ public class WallService {
 
 	}
 
-	private Point[] getRightOrder(Mat frame, Point[] points) {
+	public Point[] getRightOrder(Mat frame, Point[] points) {
 
 		if (points.length < 4) {
 			return points;
