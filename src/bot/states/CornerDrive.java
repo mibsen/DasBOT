@@ -12,6 +12,7 @@ import org.opencv.imgproc.Imgproc;
 import bot.Bot;
 import bot.Connection;
 import bot.actions.ActionList;
+import bot.actions.TurnAction;
 import bot.actions.WayPointAction;
 import models.Ball;
 import services.BallService;
@@ -176,11 +177,30 @@ public class CornerDrive extends State {
 			return;
 
 		} else {
+			
 
 			Point p = map.correctPoint(target);
 			p.x -= map.center.x;
 			p.y -= map.center.y;
 
+			// Verify VINKEL!
+			double deg = -Math.toDegrees(Math.atan2(p.y, p.x));
+			
+			if(Math.abs(deg) > 5) {
+				
+				System.out.println("correcting moving " + deg +" Deg");
+				
+				ActionList list = new ActionList();
+				list.add(new TurnAction((long) deg));
+
+				if (!Bot.test)
+					Connection.SendActions(list);		
+			
+				return;
+			}
+			
+			
+			
 			System.out.println("Driving to  point: " + target.toString());
 
 			Point targetCM = getPointInCM(p);
@@ -188,7 +208,7 @@ public class CornerDrive extends State {
 			ActionList list = new ActionList();
 
 			System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
-			list.add(new WayPointAction(targetCM.x, targetCM.y, 0.70F, 0.4F));
+			list.add(new WayPointAction(targetCM.x, targetCM.y, 0.90F, 0.6F));
 
 			if (!Bot.test)
 				Connection.SendActions(list);
