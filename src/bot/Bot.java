@@ -106,7 +106,7 @@ public class Bot extends Application implements ResponseReceiver {
 		carService = new CarService(c.loadCar());
 
 		//Builds collect states
-		state = new FinishState(carService, ballService, wallService);
+		state = new StartState(carService, ballService, wallService);
 		
 		System.out.println("Initializing BOT TEST:" + test);
 
