@@ -8,6 +8,7 @@ import org.opencv.imgproc.Imgproc;
 import bot.Bot;
 import bot.Connection;
 import bot.actions.ActionList;
+import bot.actions.TurnAction;
 import bot.actions.WayPointAction;
 import bot.messages.Messages;
 import services.BallService;
@@ -56,16 +57,16 @@ public class ObstacleDrive extends State {
 		double width = ((corner2.x - corner1.x) + (corner4.x - corner3.x)) / 2;
 		double height = ((corner3.y - corner1.y) + (corner4.y - corner2.y)) / 2;
 
-		Point[] waypoints = new Point[6];
+		Point[] waypoints = new Point[4];
 		waypoints[0] = new Point(width / 4 + corner1.x, height / 4 + corner1.y);
-		waypoints[1] = new Point(width / 2 + corner1.x, height / 4 + corner1.y);
-		waypoints[2] = new Point(width * 3 / 4 + corner1.x, height / 4 + corner1.y);
-		waypoints[3] = new Point(width * 3 / 4 + corner1.x, height * 3 / 4 + corner1.y);
-		waypoints[4] = new Point(width / 2 + corner1.x, height * 3 / 4 + corner1.y);
-		waypoints[5] = new Point(width / 4 + corner1.x, height * 3 / 4 + corner1.y);
+//		waypoints[1] = new Point(width / 2 + corner1.x, height / 4 + corner1.y);
+		waypoints[1] = new Point(width * 3 / 4 + corner1.x, height / 4 + corner1.y);
+		waypoints[2] = new Point(width * 3 / 4 + corner1.x, height * 3 / 4 + corner1.y);
+//		waypoints[4] = new Point(width / 2 + corner1.x, height * 3 / 4 + corner1.y);
+		waypoints[3] = new Point(width / 4 + corner1.x, height * 3 / 4 + corner1.y);
 
 		double distance = 0;
-		double minDistance = car.width;
+		double minDistance = car.width / 2;
 
 		for (int i = 0; i < waypoints.length; i++) {
 
@@ -83,18 +84,25 @@ public class ObstacleDrive extends State {
 
 		Point p = map.rotatePoint(new Point(nearestWaypoint.x - car.center.x, nearestWaypoint.y - car.center.y));
 
+		// Verify VINKEL!
+		double deg = -Math.toDegrees(Math.atan2(p.y, p.x));
+
+		if (Math.abs(deg) > 5) {
+
+			System.out.println("correcting. Moving " + deg + " Deg");
+
+			ActionList list = new ActionList();
+			list.add(new TurnAction((long) deg));
+
+			if (!Bot.test)
+				Connection.SendActions(list);
+
+			return;
+		}
+
 		ActionList list = new ActionList();
-
 		p = getPointInCM(p);
-
-		debug = (getPointFromCM(p));
-
-		debug = map.getOriginalPoint(debug);
-
-		System.out.println("nearestWayPoint" + nearestWaypoint);
-		System.out.println("debug" + debug);
-
-		list.add(new WayPointAction(p.x, p.y, 0.70F, 0.4F)); // go to waypoint
+		list.add(new WayPointAction(p.x, p.y, 0.90F, 0.4F)); // go to waypoint
 
 		if (!Bot.test)
 			Connection.SendActions(list);
