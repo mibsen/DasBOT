@@ -16,6 +16,7 @@ public class MainConfig {
 
 			@Override
 			public Object call() throws Exception {
+				System.out.println("BOOTING IS COMPLETE!");
 				System.out.println("EXIT");
 				System.exit(1);
 				return null;
@@ -24,7 +25,6 @@ public class MainConfig {
 		
 		b.load();
 		
-		System.out.println("BOOTING IS COMPLETE!");
 		
 		
 	}

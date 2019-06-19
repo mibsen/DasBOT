@@ -13,8 +13,10 @@ import boot.Utils;
 import bot.messages.ResponseReceiver;
 import bot.states.EasyCollect;
 import bot.states.EasyDrive;
+import bot.states.FinishState;
 import bot.states.ObstacleDrive;
 import bot.states.ScoreGoals;
+import bot.states.StartState;
 import bot.states.State;
 import bot.states.TurnDegreeTest;
 import camera.Camera;
@@ -29,6 +31,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.Label;
+import javafx.scene.control.Button;
+import javafx.scene.control.Slider;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import services.BallService;
@@ -45,6 +49,15 @@ public class Bot extends Application implements ResponseReceiver {
 	
 	@FXML
 	Label elapsedTime;
+	
+	@FXML
+	Button beginBtn;
+	
+	@FXML 
+	Slider goalSlider;
+	
+	@FXML
+	Label goalLabel;
 
 	public static State state;
 	
@@ -52,14 +65,23 @@ public class Bot extends Application implements ResponseReceiver {
 
 	CameraInterface camera;
 
-	public static boolean test = true;
+	public static boolean test = false;
 
 	public boolean skip = false;
+
+	private BallService ballService;
+
+	private WallService wallService;
+
+	private CarService carService;
 	public static int BALL_COUNTER = 0;
 	public static boolean ALL_BALLS_COLLECTED = false;
 	
 	public static long RUNTIME_IN_MS = 0;
-	public static final long SEVEN_MINUTES_RUNTIME = 500000;
+	public static final long SEVEN_MINUTES_RUNTIME = 300;
+	public static int GOAL_POSITION = 0; // 0 = left, 1 = right
+	
+	public static boolean DONE = false;
 
 	public Bot(boolean skip) {
 		this.skip = skip;
@@ -79,12 +101,12 @@ public class Bot extends Application implements ResponseReceiver {
 		// Create Services
 		Config c = new Config();
 
-		BallService ballService = new BallService(c.loadBall());
-		WallService wallService = new WallService(c.loadWall(), c.loadObstacle());
-		CarService carService = new CarService(c.loadCar());
+		ballService = new BallService(c.loadBall());
+		wallService = new WallService(c.loadWall(), c.loadObstacle());
+		carService = new CarService(c.loadCar());
 
 		//Builds collect states
-		state = new EasyDrive(carService, ballService, wallService);
+		state = new FinishState(carService, ballService, wallService);
 		
 		System.out.println("Initializing BOT TEST:" + test);
 
@@ -92,7 +114,7 @@ public class Bot extends Application implements ResponseReceiver {
 			// Create Connection
 			// 172.20.10.5
 			// 192.168.43.142
-			connection = new Connection("172.20.10.5", 4444);
+			connection = new Connection("192.168.43.142", 4444);
 
 			// Listen for communication from the CAR
 			connection.onResponse(this);
@@ -103,7 +125,7 @@ public class Bot extends Application implements ResponseReceiver {
 			camera.init();
 
 		} else {
-			camera = new CameraFake();
+			camera = new Camera();
 			camera.init();
 		}
 
@@ -113,17 +135,16 @@ public class Bot extends Application implements ResponseReceiver {
 			@Override
 			public void run() {
 				Mat frame = camera.grabFrame();
-				
+
 				Mat f = state.process(frame).getFrame();
 
-				
+
 				
 				if (f != null) {
 					updateImageView(originalFrame, f);
 				}
 
 				updateImageView(maskImage, frame);
-
 
 			}
 		};
@@ -135,7 +156,10 @@ public class Bot extends Application implements ResponseReceiver {
 
 	@Override
 	public void receive(String message) {
+
+		System.out.println("----- MESSAGE START  ------");
 		System.out.println("Received message: " + message);
+		System.out.println("----- MESSAGE END  ------");
 		state.handle(message);
 	}
 
@@ -167,10 +191,35 @@ public class Bot extends Application implements ResponseReceiver {
 	}
 
 	public void updateImageView(ImageView view, Mat image) {
-		String s = new Timestamp(System.currentTimeMillis() - RUNTIME_IN_MS).toLocaleString().substring(14);
 		
-		Utils.updateElapsedTime(elapsedTime, s);
+		if(RUNTIME_IN_MS != 0 && !DONE) {
+			String s = new Timestamp(System.currentTimeMillis() - RUNTIME_IN_MS).toLocaleString().substring(14);
+			Utils.updateElapsedTime(elapsedTime, s);
+		}
 		Utils.onFXThread(view.imageProperty(), Utils.mat2Image(image));
 	}
 
+	public void beginRobot() {
+		
+		state = new EasyDrive(carService, ballService, wallService);
+		
+		RUNTIME_IN_MS = System.currentTimeMillis();
+		GOAL_POSITION = (int) goalSlider.getValue();
+
+		System.out.println("GOAL POSITION: " + GOAL_POSITION);
+		System.out.println("GOAL POSITION: " + (GOAL_POSITION == 0 ? "left" : "right"));
+		
+		Utils.changeBtnVisibility(beginBtn, false);
+		Utils.changeLabelVisibility(goalLabel, false);
+		Utils.changeSliderVisibility(goalSlider, false);
+	}
+	
+	public void handleDrag() {
+		System.out.println("SLIDER DRAGGED");
+		System.out.println("Slider value: " + goalSlider.getValue());
+		
+		Utils.changeLabelText(goalLabel, ((int) goalSlider.getValue() == 0 ? "left" : "right"));
+		
+	}
+	
 }

@@ -16,6 +16,7 @@ import org.opencv.imgproc.Imgproc;
 import models.Ball;
 import models.BallSettings;
 import models.Car;
+import models.Wall;
 
 public class BallService {
 
@@ -29,29 +30,29 @@ public class BallService {
 	public List<Ball> getBalls(Mat f) {
 		Mat frame = getBallFrame(f);
 		List<Ball> balls = getBallsFromFrame(frame);
-		
+
 		correct(balls);
-		
+
 		return balls;
 	}
 
 	private void correct(List<Ball> balls) {
-		
-	
-		double factor = Ball.ballHeightInCM/ WallService.camHeight;
-	
-		for (Ball ball : balls) {
-			
-			double x = ball.point.x - WallService.imageCenter.x;
-			double y = ball.point.y - WallService.imageCenter.y;
-			
-			double nx = x * factor;
-			double ny = y * factor;
 
-			ball.point.x -=  nx;
-			ball.point.y -= ny;
+		if (WallService.imageCenter != null) {
+			double factor = Ball.ballHeightInCM / WallService.camHeight;
+
+			for (Ball ball : balls) {
+
+				double x = ball.point.x - WallService.imageCenter.x;
+				double y = ball.point.y - WallService.imageCenter.y;
+
+				double nx = x * factor;
+				double ny = y * factor;
+
+				ball.point.x -= nx;
+				ball.point.y -= ny;
+			}
 		}
-		
 	}
 
 	public Mat getBallFrame(Mat f) {
@@ -127,9 +128,21 @@ public class BallService {
 		for (Ball ball : balls) {
 			Imgproc.drawMarker(frame, new Point(ball.point.x + center.x, ball.point.y + center.y),
 					new Scalar(255, 0, 255));
-			Imgproc.circle(frame, new Point(ball.point.x + center.x, ball.point.y + center.y), (int)radius, new Scalar(200, 200, 200), -1);
+			Imgproc.circle(frame, new Point(ball.point.x + center.x, ball.point.y + center.y), (int) radius,
+					new Scalar(200, 200, 200), -1);
 		}
 
+	}
+
+	public List<Ball> removeBallsOutOfBounds(Wall wall, List<Ball> balls) {
+		List<Ball> tb = new ArrayList<Ball>();
+		for (Ball ball : balls) {
+			System.out.println("Distance to ball: " + Imgproc.pointPolygonTest(new MatOfPoint2f(wall.contour.toArray()), ball.point, true));
+			if (Imgproc.pointPolygonTest(new MatOfPoint2f(wall.contour.toArray()), ball.point, true) > -5) {
+				tb.add(ball);
+			}
+		}
+		return tb;
 	}
 
 }

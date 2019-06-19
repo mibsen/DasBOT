@@ -5,7 +5,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.opencv.core.Mat;
 
+import application.MainBot;
 import boot.BaseController;
+import bot.Bot;
 import config.Config;
 import javafx.fxml.FXML;
 import javafx.scene.control.Slider;

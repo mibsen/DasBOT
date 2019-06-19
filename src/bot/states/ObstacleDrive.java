@@ -94,7 +94,7 @@ public class ObstacleDrive extends State {
 		System.out.println("nearestWayPoint" + nearestWaypoint);
 		System.out.println("debug" + debug);
 
-		list.add(new WayPointAction(p.x, p.y, 0.50F, 0.25F)); // go to waypoint
+		list.add(new WayPointAction(p.x, p.y, 0.70F, 0.4F)); // go to waypoint
 
 		if (!Bot.test)
 			Connection.SendActions(list);
@@ -115,7 +115,7 @@ public class ObstacleDrive extends State {
 			Imgproc.line(originalFrame, start, nearestWaypoint, new Scalar(88, 214, 141));
 
 			Imgproc.line(originalFrame, start, debug, new Scalar(88, 214, 141));
-			carService.drawCar(originalFrame, car);
+			CarService.drawCar(originalFrame, car);
 		}
 
 		if (waypoints != null) {

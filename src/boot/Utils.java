@@ -11,6 +11,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.control.Label;
+import javafx.scene.control.Button;
+import javafx.scene.control.Slider;
 
 /**
  * Provide general purpose methods for handling OpenCV-JavaFX data conversion.
@@ -72,6 +74,47 @@ public final class Utils
 			}
 		});
 	}
+	
+	public static void changeBtnVisibility(Button btn, boolean visible)
+	{
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				btn.setVisible(visible);
+			}
+		});
+	}
+	
+	public static void changeLabelVisibility(Label label, boolean visible)
+	{
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				label.setVisible(visible);
+			}
+		});
+	}
+	
+	public static void changeSliderVisibility(Slider slider, boolean visible)
+	{
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				slider.setVisible(visible);
+			}
+		});
+	}
+	
+	public static void changeLabelText(Label label, String text)
+	{
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				label.setText("Goal position: " + text);
+			}
+		});
+	}
+	
 	
 	/**
 	 * Support for the {@link mat2image()} method

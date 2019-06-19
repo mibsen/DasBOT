@@ -42,7 +42,7 @@ public class WallDrive extends State {
 
 			Mat m = map.getFrame().clone();
 
-			WallService.drawWall(m, map.getWall(), map.center, new Scalar(250, 250, 250), (int) (car.width * 4));
+			WallService.drawWall(m, map.getWall(), map.center, new Scalar(250, 250, 250), (int) (Math.sqrt(Math.pow(map.car.backRight.x, 2) + Math.pow(map.car.backRight.y, 2)) * 2));
 
 			// filter balls
 			ArrayList<Ball> tb = new ArrayList<Ball>();

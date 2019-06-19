@@ -12,6 +12,7 @@ import org.opencv.imgproc.Imgproc;
 import bot.Bot;
 import bot.Connection;
 import bot.actions.ActionList;
+import bot.actions.TurnAction;
 import bot.actions.WayPointAction;
 import models.Ball;
 import services.BallService;
@@ -38,20 +39,21 @@ public class EasyDrive extends State {
 			return;
 		}
 
-		double minDistance = car.width * 2;
+		double minDistance = map.car.pickFront.x;
 		Point corner1 = null;
 		Point corner2 = null;
-		
+
 		for (Point corner : wall.corners) {
 			if (corner.x < car.center.x && corner.y < car.center.y) {
 				corner1 = corner.clone();
 			} else if (corner.x < car.center.x && corner.y > car.center.y) {
 				corner2 = corner.clone();
-			} 
+			}
 		}
 		double maxDistance = corner1.y - corner2.y;
 
-		map.drawWall(new Scalar(250, 250, 250), (int) (car.width * 2));
+		map.drawWall(new Scalar(250, 250, 250),
+				(int) (Math.sqrt(Math.pow(map.car.backRight.x, 2) + Math.pow(map.car.backRight.y, 2)) * 2));
 
 		Mat m = map.getFrame();
 
@@ -64,10 +66,11 @@ public class EasyDrive extends State {
 
 			if (d <= minDistance) {
 				// System.out.println("Removed Ball - to close to robot");
-			} 
-			/*else if (d >= maxDistance) {
-				// System.out.println("Removed Ball - to far away from robot");
-			} */
+			}
+			/*
+			 * else if (d >= maxDistance) { //
+			 * System.out.println("Removed Ball - to far away from robot"); }
+			 */
 			else if (new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x)))
 					.equals(new Scalar(250, 250, 250))) {
 				// System.out.println("Removed Ball - to close to border");
@@ -130,13 +133,29 @@ public class EasyDrive extends State {
 			return;
 		}
 
+		System.out.println("map center: " + map.center.toString());
+		System.out.println("ball point: " + ball.point.toString());
+		double deg = -Math.toDegrees(Math.atan2(ball.point.y, ball.point.x));
+
+		if (deg > 4) {
+			System.out.println("correcting moving " + deg + " Deg");
+
+			ActionList list = new ActionList();
+			list.add(new TurnAction((long) deg));
+
+			if (!Bot.test)
+				Connection.SendActions(list);
+
+			return;
+		}
+
 		System.out.println("Driving to  point: " + target.toString());
 
 		Point targetCM = getPointInCM(destination);
 
-		ActionList list = new ActionList();
-
 		System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
+
+		ActionList list = new ActionList();
 		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.60F, 0.3F));
 
 		if (!Bot.test)

@@ -11,6 +11,8 @@ import bot.Controls;
 import bot.actions.ActionList;
 import bot.actions.StartCollectionAction;
 import bot.actions.StopCollectionAction;
+import bot.actions.TravelAction;
+import bot.actions.TurnAction;
 import bot.actions.WayPointAction;
 import bot.messages.Messages;
 import models.Ball;
@@ -21,6 +23,7 @@ import services.WallService;
 public class EasyCollect extends State {
 
 	private Ball target;
+	private boolean done;
 
 	public EasyCollect(CarService carService, BallService ballService, WallService wallService) {
 		super(carService, ballService, wallService);
@@ -42,6 +45,8 @@ public class EasyCollect extends State {
 			nextState(new EasyDrive(carService, ballService, wallService));
 			return;
 		}
+		
+
 
 		System.out.println("PLANNING EASY COLLECT!");
 
@@ -54,25 +59,43 @@ public class EasyCollect extends State {
 		// center -> target
 
 		// Width imellem center -> pick
+		
+
+		double deg = -Math.toDegrees(Math.atan2(t.y, t.x));
+		
+		if(deg > 4) {
+			System.out.println("correcting moving " + deg +" Deg");
+			
+			ActionList list = new ActionList();
+			list.add(new TurnAction((long) deg));
+
+			if (!Bot.test)
+				Connection.SendActions(list);	
+			
+			return;
+		}
 
 		double d = Math.sqrt(Math.pow(map.center.x, 2) + Math.pow(map.center.y, 2));
 		double r = (d - map.car.pickCenter.x) / d;
 
 		t = new Point(t.x * r, t.y * r);
 
-		ActionList list = new ActionList();
-		list.add(new StartCollectionAction());
 
 		Point targetCM = getPointInCM(t);
 
 		System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
-		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.50F,0.3F));
 
+		ActionList list = new ActionList();
+		list.add(new StartCollectionAction());
+		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.50F,0.3F));
 		// list.add(new WaitAction(1000));
 		list.add(new StopCollectionAction());
 
 		if (!Bot.test)
 			Connection.SendActions(list);
+		
+
+		done = true;
 
 	}
 
@@ -105,7 +128,11 @@ public class EasyCollect extends State {
 		// We are done and we are ready for new work!
 		if (message.equals(Messages.DONE)) {
 			running = null;
-			target = null;
+			
+			if(done) {
+				target = null;
+			}
+			
 		}
 	}
 }

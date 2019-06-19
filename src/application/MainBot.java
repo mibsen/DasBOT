@@ -9,8 +9,6 @@ public class MainBot {
 
 	public static void main(String[] args) {
 		
-		Bot.RUNTIME_IN_MS = System.currentTimeMillis();
-		
 		System.out.println("LOADING ROBOT...");
 		
 		

@@ -8,6 +8,7 @@ import org.opencv.imgproc.Imgproc;
 import bot.Bot;
 import bot.Connection;
 import bot.actions.ActionList;
+import bot.actions.GrepCollectionAction;
 import bot.actions.StartCollectionAction;
 import bot.actions.StopCollectionAction;
 import bot.actions.TravelAction;
@@ -23,6 +24,7 @@ import services.WallService;
 public class WallCollect extends State {
 
 	private Ball target;
+	private boolean done = false;
 
 	public WallCollect(CarService carService, BallService ballService, WallService wallService) {
 		super(carService, ballService, wallService);
@@ -30,6 +32,7 @@ public class WallCollect extends State {
 	}
 
 	public void setTarget(Ball targetBall) {
+		
 		target = targetBall;
 
 	}
@@ -55,7 +58,7 @@ public class WallCollect extends State {
 		// Verify VINKEL!
 		double deg = -Math.toDegrees(Math.atan2(t.y, t.x));
 		
-		if(Math.abs(deg) > 10) {
+		if(Math.abs(deg) > 5) {
 			
 			System.out.println("correcting moving " + deg +" Deg");
 			
@@ -74,7 +77,7 @@ public class WallCollect extends State {
 		
 		
 		// Distance to ball
-		double val = map.car.pickCenter.x + ((map.car.pickFront.x - map.car.pickCenter.x)/2);
+		double val = map.car.pickCenter.x;
 		
 		double r = (d - val) / d;
 		t = new Point(t.x * r, t.y * r);
@@ -87,19 +90,21 @@ public class WallCollect extends State {
 		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.50F,0.3F));
 
 	
-		list.add(new StartCollectionAction());
-		list.add(new WaitAction(2000));
-		list.add(new StopCollectionAction());
 		
 		
 		double backDistance = (Math.sqrt(Math.pow(targetCM.x,2) + Math.pow(targetCM.y,2)));
 		
 		System.out.println("driving " + backDistance + " CM back");
-		
+
+		list.add(new GrepCollectionAction());
 		list.add(new TravelAction(-backDistance));
+		list.add(new StartCollectionAction());
+		list.add(new WaitAction(2000));
+		list.add(new StopCollectionAction());
 		if (!Bot.test)
-		
 			Connection.SendActions(list);
+		
+		done = true;
 
 	}
 	
@@ -130,14 +135,19 @@ public class WallCollect extends State {
 		}
 
 	}
-
+	
+	
 	@Override
 	public void handle(String message) {
 
 		// We are done and we are ready for new work!
 		if (message.equals(Messages.DONE)) {
 			running = null;
-			target = null;
+			
+			if(done) {
+				target = null;
+			}
+			
 		}
 	}
 }

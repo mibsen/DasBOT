@@ -13,14 +13,14 @@
    <content>
       <VBox alignment="CENTER" fillWidth="false" prefHeight="413.0" prefWidth="645.0">
          <children>
-            <VBox alignment="CENTER" prefHeight="45.0" prefWidth="250.0">
+            <VBox alignment="CENTER" prefHeight="45.0" prefWidth="256.0">
                <children>
                   <Label text="Elasped Time" textAlignment="CENTER">
                      <font>
                         <Font size="22.0" />
                      </font>
                   </Label>
-                  <Label id="elapsedtime" fx:id="elapsedTime" text="00:00:00" textAlignment="CENTER" />
+                  <Label id="elapsedtime" fx:id="elapsedTime" text="00:00" textAlignment="CENTER" />
                </children>
             </VBox>
             <ImageView fx:id="originalFrame" fitHeight="357.0" fitWidth="573.0" pickOnBounds="true" preserveRatio="true">
@@ -29,6 +29,9 @@
                </VBox.margin>
             </ImageView>
             <ImageView fx:id="maskImage" fitHeight="357.0" fitWidth="573.0" pickOnBounds="true" preserveRatio="true" />
+            <Label fx:id="goalLabel" text="Goal side: left" />
+            <Slider fx:id="goalSlider" blockIncrement="1.0" majorTickUnit="1.0" max="1.0" minorTickCount="1" snapToTicks="true" />
+            <Button fx:id="beginBtn" onMouseClicked="#beginRobot" text="LET'S GO!" textAlignment="CENTER" />
          </children>
       </VBox>
    </content>
