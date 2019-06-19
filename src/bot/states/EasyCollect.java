@@ -10,6 +10,7 @@ import bot.Connection;
 import bot.Controls;
 import bot.actions.ActionList;
 import bot.actions.StartCollectionAction;
+import bot.actions.StopAction;
 import bot.actions.StopCollectionAction;
 import bot.actions.TravelAction;
 import bot.actions.TurnAction;
@@ -124,7 +125,12 @@ public class EasyCollect extends State {
 
 	@Override
 	public void handle(String message) {
-
+		if (message.equals(Messages.COLLECTED)) {
+			ActionList list = new ActionList();
+			list.add(new StopAction());
+			Connection.SendActions(list);
+	       
+		}
 		// We are done and we are ready for new work!
 		if (message.equals(Messages.DONE)) {
 			running = null;
