@@ -58,14 +58,12 @@ public class CirculateDrive extends State {
 
 		Point[] waypoints = new Point[4];
 		waypoints[0] = new Point(width / 4 + corner1.x, height / 4 + corner1.y);
-//		waypoints[1] = new Point(width / 2 + corner1.x, height / 4 + corner1.y);
 		waypoints[1] = new Point(width * 3 / 4 + corner1.x, height / 4 + corner1.y);
 		waypoints[2] = new Point(width * 3 / 4 + corner1.x, height * 3 / 4 + corner1.y);
-//		waypoints[4] = new Point(width / 2 + corner1.x, height * 3 / 4 + corner1.y);
 		waypoints[3] = new Point(width / 4 + corner1.x, height * 3 / 4 + corner1.y);
 
 		double distance = 0;
-		double minDistance = car.width / 2;
+		double minDistance = car.width * 2;
 
 		for (int i = 0; i < waypoints.length; i++) {
 
@@ -86,7 +84,7 @@ public class CirculateDrive extends State {
 		// Verify VINKEL!
 		double deg = -Math.toDegrees(Math.atan2(p.y, p.x));
 
-		if (Math.abs(deg) > 5) {
+		if (Math.abs(deg) > 10) {
 
 			System.out.println("correcting. Moving " + deg + " Deg");
 

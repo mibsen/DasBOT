@@ -64,7 +64,7 @@ public class EasyCollect extends State {
 
 		double deg = -Math.toDegrees(Math.atan2(t.y, t.x));
 		
-		if(Math.abs(deg) > 4) {
+		if(Math.abs(deg) > 6) {
 			//System.out.println("correcting moving " + deg +" Deg");
 			
 			ActionList list = new ActionList();

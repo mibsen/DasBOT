@@ -56,9 +56,7 @@ public class WallDrive extends State {
 				if (!new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x)))
 						.equals(new Scalar(250, 250, 250))) {
 					System.out.println("Removed Ball - to close to border");
-				} else if (isBehindObstacle(b.point)) {
-					System.out.println("Removed Ball - hiding behind obstacle");
-				}  else if (isBallOutOfSector(b.point)){
+				} else if (isBallOutOfSector(b.point)){
 					System.out.println("Removed Ball - out of sector");
 				} else {
 
@@ -160,19 +158,6 @@ public class WallDrive extends State {
 				nextState(new CornerDrive(carService, ballService, wallService));
 				return;
 			} 
-			
-			Point tt = map.correctPoint(target);
-			tt.x -= map.center.x;
-			tt.y -= map.center.y;
-				
-			if (isBehindObstacle(tt)) {
-
-				System.out.println("The Target is behind the obstacle!");
-				nextState(new CornerDrive(carService, ballService, wallService));
-				return;
-
-			}
-
 		}
 
 		// We are at the point!
@@ -191,7 +176,7 @@ public class WallDrive extends State {
 			// Verify VINKEL!
 			double deg = -Math.toDegrees(Math.atan2(p.y, p.x));
 
-			if (Math.abs(deg) > 5) {
+			if (Math.abs(deg) > 10) {
 
 				//System.out.println("correcting moving " + deg + " Deg");
 

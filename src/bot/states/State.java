@@ -267,12 +267,12 @@ public abstract class State {
 		Point ballPoint = map.getOriginalPoint(point);
 		
 		// car is on the right of center
-		if (car.center.x >= map.center.x) {
+		if (car.center.x >= obstacle.center.x) {
 
 			// car is in the upper half
-			if (car.center.y >= map.center.y) {
+			if (car.center.y >= obstacle.center.y) {
 				// hvis bold. x <= center.x eller bold.y <= center.y returner true
-				if (ballPoint.x <= map.center.x || ballPoint.x <= map.center.y) {
+				if (ballPoint.x <= obstacle.center.x || ballPoint.y <= obstacle.center.y) {
 					return true;
 				} else {
 					return false;
@@ -281,7 +281,7 @@ public abstract class State {
 			// car is in the lower half
 			else {
 				// hvis bold. x <= center.x eller bold.y > center.y returner true
-				if (ballPoint.x <= map.center.x || ballPoint.x > map.center.y) {
+				if (ballPoint.x <= obstacle.center.x || ballPoint.y > obstacle.center.y) {
 					return true;
 				} else {
 					return false;
@@ -294,9 +294,9 @@ public abstract class State {
 		else {
 
 			// car is in the upper half
-			if (car.center.y >= map.center.y) {
+			if (car.center.y >= obstacle.center.y) {
 				// hvis bold. x > center.x eller bold.y <= center.y returner true
-				if (ballPoint.x > map.center.x || ballPoint.x <= map.center.y) {
+				if (ballPoint.x > obstacle.center.x || ballPoint.y <= obstacle.center.y) {
 					return true;
 				} else {
 					return false;
@@ -305,7 +305,7 @@ public abstract class State {
 			// car is in the lower half
 			else {
 				// hvis bold. x > center.x eller bold.y > center.y returner true
-				if (ballPoint.x > map.center.x || ballPoint.x > map.center.y) {
+				if (ballPoint.x > obstacle.center.x || ballPoint.y > obstacle.center.y) {
 					return true;
 				} else {
 					return false;

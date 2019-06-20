@@ -81,7 +81,7 @@ public class Bot extends Application implements ResponseReceiver {
 	public static boolean ALL_BALLS_COLLECTED = false;
 	
 	public static long RUNTIME_IN_MS = 0;
-	public static final long SEVEN_MINUTES_RUNTIME = 360000;
+	public static final long SEVEN_MINUTES_RUNTIME = 420000;
 	public static int GOAL_POSITION = 0; // 0 = left, 1 = right
 	
 	public static boolean DONE = false;
@@ -119,7 +119,7 @@ public class Bot extends Application implements ResponseReceiver {
 			// Create Connection
 			// 172.20.10.5
 			// 192.168.43.142
-			connection = new Connection("192.168.43.142", 4444);
+			connection = new Connection("192.168.43.142", 44444);
 
 			// Listen for communication from the CAR
 			connection.onResponse(this);

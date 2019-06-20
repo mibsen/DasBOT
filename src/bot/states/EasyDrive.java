@@ -58,8 +58,6 @@ public class EasyDrive extends State {
 			} else if (new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x)))
 					.equals(new Scalar(250, 250, 250))) {
 				 System.out.println("Removed Ball - to close to border");
-			} else if (isBehindObstacle(b.point)) {
-				 System.out.println("Removed Ball - hiding behind obstacle");
 			} else if (isBallOutOfSector(b.point)){
 				 System.out.println("Removed Ball - out of sector");
 			} else {
@@ -118,7 +116,7 @@ public class EasyDrive extends State {
 
 		double deg = -Math.toDegrees(Math.atan2(ball.point.y, ball.point.x));
 
-		if (Math.abs(deg) > 4) {
+		if (Math.abs(deg) > 10) {
 			//System.out.println("correcting moving " + deg + " Deg");
 
 			ActionList list = new ActionList();

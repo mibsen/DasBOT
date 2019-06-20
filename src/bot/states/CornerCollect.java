@@ -57,7 +57,7 @@ public class CornerCollect extends State {
 		// Verify VINKEL!
 		double deg = -Math.toDegrees(Math.atan2(t.y, t.x));
 		
-		if(Math.abs(deg) > 5) {
+		if(Math.abs(deg) > 6) {
 			
 			//System.out.println("correcting moving " + deg +" Deg");
 			

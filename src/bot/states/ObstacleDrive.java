@@ -64,7 +64,9 @@ public class ObstacleDrive extends State {
 					tb.add(b);
 				}
 			}
-
+			
+			System.out.println("TB size: " + tb.size() );
+			
 			if (tb.size() == 0) {
 				System.out.println("THERE IS NO BALLS IN MAP TO COLLECT!!!");
 				nextState(new CirculateDrive(carService, ballService, wallService));
@@ -103,20 +105,6 @@ public class ObstacleDrive extends State {
 			target.x += obstacle.center.x;
 			target.y += obstacle.center.y;			
 			
-			Point dd = map.correctPoint(target);
-			dd.x -= map.center.x;
-			dd.y -= map.center.y;
-			
-			if(isBehindObstacle(dd,  car.width.intValue())) {
-				System.out.println("The Target is behind the obstacle!");
-				nextState(new CirculateDrive(carService, ballService, wallService));
-				return;
-			}
-			
-			//double ratio = (distToPointFromBall + distToBallFromCenter) / distToBallFromCenter;
-			
-			//target = new Point((obstacleCenter.x - targetBall.point.x) * ratio + map.center.x, (obstacleCenter.y - map.center.y) * ratio + map.center.y); 
-
 		}
 
 		// We are at the point!
@@ -136,7 +124,7 @@ public class ObstacleDrive extends State {
 			// Verify VINKEL!
 			double deg = -Math.toDegrees(Math.atan2(p.y, p.x));
 			
-			if(Math.abs(deg) > 5) {
+			if(Math.abs(deg) > 10) {
 				
 				//System.out.println("correcting moving " + deg +" Deg");
 				
