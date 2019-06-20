@@ -65,7 +65,7 @@ public class CornerDrive extends State {
 
 						d = Math.sqrt(Math.pow(p.x - b.point.x, 2) + Math.pow(p.y - b.point.y, 2));
 
-						if (d <= map.car.pickFront.x) {
+						if (d <= Math.sqrt(Math.pow(map.car.backRight.x, 2) + Math.pow(map.car.backRight.y, 2))) {
 							valid = true;
 							break;
 						}

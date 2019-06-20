@@ -76,7 +76,7 @@ public class CornerCollect extends State {
 		
 		
 		// Distance to ball
-		double val = map.car.pickCenter.x;
+		double val = (map.car.pickCenter.x + map.car.pickFront.x) / 2;
 		
 		double r = (d - val) / d;
 		t = new Point(t.x * r, t.y * r);

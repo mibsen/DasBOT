@@ -197,7 +197,7 @@ public class Car {
 		MatOfPoint2f mat2f = new MatOfPoint2f(
 				new Point[] { backRight, frontRight, pickFrontRight, pickFrontLeft, frontLeft, backLeft });
 
-		if (Imgproc.pointPolygonTest(mat2f, ball.point, true) < 0) {
+		if (Imgproc.pointPolygonTest(mat2f, ball.point, true) < -10) {
 			return true;
 		}
 

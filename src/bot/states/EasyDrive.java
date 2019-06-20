@@ -72,7 +72,10 @@ public class EasyDrive extends State {
 
 			if (!map.car.isOutside(b)) {
 				System.out.println("Removed Ball - to close to robot");
-			} else if (new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x)))
+			} else if (isBehindObstacle(b.point)) {
+				System.out.println("Removed Ball - behind obstacle");
+			}
+			else if (new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x)))
 					.equals(new Scalar(250, 250, 250))) {
 				System.out.println("Removed Ball - to close to border");
 			} else {
@@ -143,7 +146,7 @@ public class EasyDrive extends State {
 			return;
 		}
 
-		// System.out.println("Driving to point: " + target.toString());
+		System.out.println("Driving to point: " + target.toString());
 
 		Point targetCM = getPointInCM(destination);
 

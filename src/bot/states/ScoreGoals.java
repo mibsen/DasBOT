@@ -185,12 +185,12 @@ public class ScoreGoals extends State {
 			} else {
 
 				System.out.println("Waypoint was not null");
-
-				if (nearestWaypoint == waypoints[0] || nearestWaypoint == waypoints[1]) {
-					nearestWaypoint = waypoints[2];
-				} else if (nearestWaypoint == waypoints[2] || nearestWaypoint == waypoints[4]) {
+				Point temp = nearestWaypoint;
+				if (nearestWaypoint == waypoints[0]) {
+					nearestWaypoint = waypoints[2];					
+				} else if (nearestWaypoint == waypoints[1] || nearestWaypoint == waypoints[2] || nearestWaypoint == waypoints[4] || nearestWaypoint == waypoints[5]) {
 					nearestWaypoint = waypoints[3];
-				} else if (nearestWaypoint == waypoints[5] || nearestWaypoint == waypoints[6]) {
+				} else if (nearestWaypoint == waypoints[6]) {
 					nearestWaypoint = waypoints[4];
 				} 
 				
@@ -211,6 +211,7 @@ public class ScoreGoals extends State {
 					if (!Bot.test)
 						Connection.SendActions(list);		
 				
+					nearestWaypoint = temp;
 					return;
 				}
 				
