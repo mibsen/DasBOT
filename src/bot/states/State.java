@@ -2,11 +2,14 @@ package bot.states;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 
 import bot.Bot;
 import bot.messages.Messages;
@@ -147,7 +150,7 @@ public abstract class State {
 		WallService.drawWall(m, map.getObstacle(), map.center, new Scalar(250, 250, 250), (int) (car.width * 3));
 
 		Point ballPoint = map.correctPoint(map.getOriginalPoint(point));
-		Point carPoint = map.center;
+		Point carPoint = map.car.center; //changed to map.car.center from map.center
 
 		// System.out.println("Ball : " + ballPoint.toString());
 		// System.out.println("Car : " + carPoint.toString());
@@ -181,6 +184,47 @@ public abstract class State {
 			}
 
 		} else {
+
+		}
+
+		return false;
+	}
+	
+	protected boolean isOppositeObstacleContour(Point point) {
+		
+		Mat m = map.getFrame().clone();
+
+		Point ballPoint = map.correctPoint(map.getOriginalPoint(point));
+		Point carPoint = map.car.center; //changed to map.car.center from map.center
+
+		// System.out.println("Ball : " + ballPoint.toString());
+		// System.out.println("Car : " + carPoint.toString());
+
+		if (carPoint.x > ballPoint.x) {
+
+			double a = (ballPoint.y - carPoint.y) / (ballPoint.x - carPoint.x);
+			double b = (carPoint.y - a * carPoint.x);
+
+			for (int x = (int) ballPoint.x; x < (int) carPoint.x - 5; x++) {
+				double y = a * x + b;
+				
+				if (Imgproc.pointPolygonTest(new MatOfPoint2f(obstacle.contour.toArray()), new Point(x, y), true) > 0) {
+					return true;
+				}
+			}
+
+		} else if (ballPoint.x > carPoint.x) {
+
+			double a = (carPoint.y - ballPoint.y) / (carPoint.x - ballPoint.x);
+			double b = (ballPoint.y - a * ballPoint.x);
+
+			for (int x = (int) carPoint.x; x < (int) ballPoint.x - 5; x++) {
+				double y = a * x + b;
+				
+				if (Imgproc.pointPolygonTest(new MatOfPoint2f(obstacle.contour.toArray()), new Point(x, y), true) > 0) {
+					return true;
+				}
+			}
 
 		}
 

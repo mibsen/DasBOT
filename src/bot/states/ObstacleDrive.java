@@ -19,32 +19,31 @@ import services.BallService;
 import services.CarService;
 import services.WallService;
 
-public class WallDrive extends State {
+public class ObstacleDrive extends State {
 
 	private Ball targetBall;
 	private Point target;
 
-	public WallDrive(CarService carService, BallService ballService, WallService wallService) {
+	public ObstacleDrive(CarService carService, BallService ballService, WallService wallService) {
 		super(carService, ballService, wallService);
 	}
 
 	@Override
 	public void calculate(Mat originalFrame, Mat correctedFrame) {
 
-		System.out.println("WallDrive has begun!");
+		System.out.println("CornerDrive has begun!");
 
 		if (targetBall == null) {
 
 			if (map.balls.size() == 0) {
 				System.out.println("THERE IS NO BALLS IN MAP TO COLLECT!!!");
-				nextState(new CornerDrive(carService, ballService, wallService));
+				nextState(new CirculateDrive(carService, ballService, wallService));
 				return;
 			}
 
 			Mat m = map.getFrame().clone();
 
-			WallService.drawWall(m, map.getWall(), map.center, new Scalar(250, 250, 250),
-					(int) (Math.sqrt(Math.pow(map.car.backRight.x, 2) + Math.pow(map.car.backRight.y, 2)) * 2));
+			WallService.drawWall(m, map.getObstacle(), map.center, new Scalar(250, 250, 250), (int) (Math.sqrt(Math.pow(map.car.backRight.x, 2) + Math.pow(map.car.backRight.y, 2))) * 2);
 
 			// filter balls
 			ArrayList<Ball> tb = new ArrayList<Ball>();
@@ -55,42 +54,17 @@ public class WallDrive extends State {
 
 				if (!new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x)))
 						.equals(new Scalar(250, 250, 250))) {
-
-					System.out.println(
-							new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x))));
-					System.out.println("Removed Ball - to close to border");
-				} else if (isBehindObstacle(b.point)) {
+					System.out.println("Removed Ball - to far away from border");
+				} else if (isOppositeObstacleContour(b.point)) {
 					System.out.println("Removed Ball - hiding behind obstacle");
 				} else {
-
-					boolean valid = true;
-					// Remove stuff to close to border
-					for (Point p : map.getWall().corners) {
-
-						System.out.println(p);
-						System.out.println(b.point);
-
-						d = Math.sqrt(Math.pow(p.x - b.point.x, 2) + Math.pow(p.y - b.point.y, 2));
-
-						System.out.println(d);
-
-						if (d < map.car.pickFront.x) {
-							valid = false;
-							break;
-						}
-					}
-
-					if (valid) {
-						tb.add(b);
-					} else {
-						System.out.println("Removing Ball - To close to border");
-					}
+					tb.add(b);
 				}
 			}
 
 			if (tb.size() == 0) {
-				System.out.println("THERE IS NO BALLS IN MAP TO COLLECT2!!!");
-				nextState(new CornerDrive(carService, ballService, wallService));
+				System.out.println("THERE IS NO BALLS IN MAP TO COLLECT!!!");
+				nextState(new CirculateDrive(carService, ballService, wallService));
 				return;
 			}
 
@@ -113,79 +87,44 @@ public class WallDrive extends State {
 
 			targetBall = new Ball(map.getOriginalPoint(ball.point), ball.area);
 
-			// Calculate target
 
-			// locate the correct Point against the tanget of the Wall
-
-			// We need to locate which wall the ball is against.
-
-			Point[] corners = wallService.getRightOrder(originalFrame, wall.corners);
-
-			// Top ?
-			Point p1 = corners[0];
-			Point p2 = corners[1];
-
-			double dist = getDist(p1, p2, targetBall.point);
-			double distance = map.car.pickFront.x + 10;
-
-			if (dist < car.width * 1.5) {
-				target = new Point(targetBall.point.x, targetBall.point.y + distance);
-			}
-
-			// Right ?
-			p1 = corners[1];
-			p2 = corners[3];
-
-			// Dist from wall
-			dist = getDist(p1, p2, targetBall.point);
-
-			if (dist < car.width * 1.5) {
-				target = new Point(targetBall.point.x - distance, targetBall.point.y);
-			}
-
-			// But ?
-			p1 = corners[2];
-			p2 = corners[3];
-
-			dist = getDist(p1, p2, targetBall.point);
-
-			if (dist < car.width * 1.5) {
-				target = new Point(targetBall.point.x, targetBall.point.y - distance);
-			}
-
-			// Left ?
-			p1 = corners[2];
-			p2 = corners[0];
-
-			dist = getDist(p1, p2, targetBall.point);
-
-			if (dist < car.width * 1.5) {
-				target = new Point(targetBall.point.x + distance, targetBall.point.y);
-			}
-
-			if (target == null) {
-				System.out.println("The ball is NOT at a WALL ??!!!");
-				nextState(new CornerDrive(carService, ballService, wallService));
-				return;
-			} else if (isBehindObstacle(map.correctPoint(target))) {
-
-				System.out.println("The Target is behind the obstacle!");
-				nextState(new CornerDrive(carService, ballService, wallService));
-				return;
-
-			}
+			Point obstacleCenter = obstacle.center;
+			Point np = new Point(targetBall.point.x - obstacleCenter.x, targetBall.point.y - obstacleCenter.y);
+			
+			double distanceCenterToBall = Math.sqrt(Math.pow(np.x, 2) + Math.pow(np.y, 2));
+			double distanceCenterToTarget = distanceCenterToBall + map.car.pickFront.x * 1.2;
+			double ratio = distanceCenterToTarget/distanceCenterToBall;
+			
+			target = new Point(np.x * ratio, np.y * ratio);
+			target.x += obstacle.center.x;
+			target.y += obstacle.center.y;
+			
+			System.out.println(np);
+			System.out.println("Target: " + target);
+			
+			
+			
+			double distToBallFromCenter = 0;
+			double distToPointFromBall = 0;
+			
+			System.out.println("Dist to ball: " + distanceCenterToBall);
+			
+			//double ratio = (distToPointFromBall + distToBallFromCenter) / distToBallFromCenter;
+			
+			//target = new Point((obstacleCenter.x - targetBall.point.x) * ratio + map.center.x, (obstacleCenter.y - map.center.y) * ratio + map.center.y); 
 
 		}
 
 		// We are at the point!
 		if (getDist(car.center, target) < car.width) {
 			System.out.println("We are ready to collect the Ball");
-			WallCollect nextState = new WallCollect(carService, ballService, wallService);
+			ObstacleCollect nextState = new ObstacleCollect(carService, ballService, wallService);
 			nextState.setTarget(targetBall);
 			nextState(nextState);
 			return;
 
 		} else {
+			
 
 			Point p = map.correctPoint(target);
 			p.x -= map.center.x;
@@ -193,20 +132,20 @@ public class WallDrive extends State {
 
 			// Verify VINKEL!
 			double deg = -Math.toDegrees(Math.atan2(p.y, p.x));
-
-			if (Math.abs(deg) > 5) {
-
-				System.out.println("correcting moving " + deg + " Deg");
-
+			
+			if(Math.abs(deg) > 5) {
+				
+				System.out.println("correcting moving " + deg +" Deg");
+				
 				ActionList list = new ActionList();
 				list.add(new TurnAction((long) deg));
 
 				if (!Bot.test)
-					Connection.SendActions(list);
-
+					Connection.SendActions(list);		
+			
 				return;
 			}
-
+			
 			System.out.println("Driving to  point: " + target.toString());
 
 			Point targetCM = getPointInCM(p);
@@ -240,6 +179,7 @@ public class WallDrive extends State {
 	public void drawFrame(Mat originalFrame, Mat correctedFrame) {
 
 		map.drawWall(new Scalar(250, 250, 250), (int) (10));
+		Imgproc.drawMarker(originalFrame, obstacle.center, new Scalar(150, 0, 100));
 
 		if (target != null) {
 			Imgproc.line(correctedFrame, map.center, map.correctPoint(target), new Scalar(88, 214, 141));
