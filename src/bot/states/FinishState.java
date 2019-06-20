@@ -32,6 +32,7 @@ public class FinishState extends State {
 	@Override
 	public void calculate(Mat originalFrame, Mat correctedFrame) {
 
+		// check if times is up
 		if (!Bot.DONE) {
 			List<Ball> balls = new ArrayList<Ball>();
 			double minDistance = map.car.pickFront.x;
@@ -43,7 +44,7 @@ public class FinishState extends State {
 				}
 			}
 
-			if (ballService.removeBallsOutOfBounds(map.getWall(), balls).size() == 0) {
+			if (ballService.removeBallsOutOfBounds(map.getWall(), balls).size() == 0 || (System.currentTimeMillis() - Bot.RUNTIME_IN_MS) > Bot.SEVEN_MINUTES_RUNTIME) {
 				System.out.println("All balls are gone!");
 
 				ActionList list = new ActionList();

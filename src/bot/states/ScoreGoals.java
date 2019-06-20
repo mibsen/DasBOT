@@ -31,7 +31,6 @@ public class ScoreGoals extends State {
 	private Point goalPoint;
 	private int correctedCount = 0;
 	private Point almostTherePoint;
-	private boolean hasScored;
 
 	public ScoreGoals(CarService carService, BallService ballService, WallService wallService) {
 		super(carService, ballService, wallService);
@@ -101,7 +100,7 @@ public class ScoreGoals extends State {
 
 		// Locate IF i am in FinishPoint
 
-		if (!hasScored) {
+		if (!Bot.hasScored) {
 
 			double distance = Math.sqrt(Math.pow((almostTherePoint.x - car.center.x), 2)
 					+ Math.pow((almostTherePoint.y - car.center.y), 2));
@@ -161,7 +160,7 @@ public class ScoreGoals extends State {
 
 					System.out.println("DONE!");
 
-					hasScored = true;
+					Bot.hasScored = true;
 
 				}
 			} else if (nearestWaypoint == null) {
@@ -255,7 +254,7 @@ public class ScoreGoals extends State {
 		if (message.equals(Messages.DONE)) {
 			running = null;
 
-			if (hasScored) {
+			if (Bot.hasScored) {
 				System.out.println("Should change state to FinishState now!");
 				nextState(new FinishState(carService, ballService, wallService));
 			}

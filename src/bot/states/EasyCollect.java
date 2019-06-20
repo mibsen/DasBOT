@@ -76,6 +76,7 @@ public class EasyCollect extends State {
 			return;
 		}
 
+		t = new Point(t.x - map.car.pickBack.x, t.y - map.car.pickBack.y);
 
 		Point targetCM = getPointInCM(t);
 
@@ -84,8 +85,8 @@ public class EasyCollect extends State {
 		double distanceToBall = Math.sqrt(Math.pow(targetCM.x, 2) + Math.pow(targetCM.y, 2));
 
 		ActionList list = new ActionList();
-		list.add(new StartCollectionAction());
 		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.50F,0.3F));
+		list.add(new StartCollectionAction());
 		list.add(new TravelAction(-distanceToBall));
 		list.add(new StopCollectionAction());
 

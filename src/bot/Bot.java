@@ -83,6 +83,8 @@ public class Bot extends Application implements ResponseReceiver {
 	public static int GOAL_POSITION = 0; // 0 = left, 1 = right
 	
 	public static boolean DONE = false;
+	public static boolean hasScored = false;
+
 
 	public Bot(boolean skip) {
 		this.skip = skip;

@@ -1,5 +1,6 @@
 package bot;
 
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -37,8 +38,11 @@ public class Connection {
 			socket = new Socket(ip, port);
 			System.out.println("Client connected");
 
+			socket.setTcpNoDelay(true);
+
 			inputStream = new DataInputStream(socket.getInputStream());
-			outputStream = new ObjectOutputStream(socket.getOutputStream());
+			outputStream = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+			
 
 			Runnable inputGrabber = new Runnable() {
 
@@ -86,6 +90,7 @@ public class Connection {
 		
 		try {
 			connection.outputStream.writeObject(actions);
+			connection.outputStream.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
