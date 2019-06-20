@@ -80,6 +80,8 @@ public class Wall {
 
 	private void locateCenter(MatOfPoint c) {
 
+		
+		//https://www.pyimagesearch.com/2016/02/01/opencv-center-of-contour/
 		Moments m = Imgproc.moments(c);
 		center = new Point();
 		center.x = m.get_m10() / m.get_m00();
