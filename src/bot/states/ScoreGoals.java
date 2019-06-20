@@ -149,12 +149,7 @@ public class ScoreGoals extends State {
 					// Actions
 					ActionList list = new ActionList();
 					list.add(new OpenPortAction());
-					list.add(new ShakeAction());
-					list.add(new ShakeAction());
-					list.add(new ShakeAction());
-					list.add(new WaitAction(3000));
-					list.add(new ClosePortAction());
-
+					
 					if (!Bot.test)
 						Connection.SendActions(list);
 

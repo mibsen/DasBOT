@@ -13,6 +13,7 @@ import bot.Bot;
 import bot.Connection;
 import bot.actions.Action;
 import bot.actions.ActionList;
+import bot.actions.FinishAction;
 import bot.actions.SoundAction;
 import bot.actions.StartCollectionAction;
 import bot.actions.StopCollectionAction;
@@ -48,11 +49,7 @@ public class FinishState extends State {
 				System.out.println("All balls are gone!");
 
 				ActionList list = new ActionList();
-				list.add(new SoundAction(false));
-				list.add(new StartCollectionAction());
-				list.add(new WaitAction(1000));
-				list.add(new StopCollectionAction());
-				list.add(new SoundAction(false));
+				list.add(new FinishAction());
 
 				if (!Bot.test)
 					Connection.SendActions(list);
