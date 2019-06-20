@@ -57,21 +57,19 @@ public class FinishState extends State {
 					Connection.SendActions(list);
 
 				Bot.DONE = true;
+
 				System.out.println();
 				System.out.println("----- DONE -----");
 				System.out.println();
-				System.out.println("Time spent: " + (new Timestamp(System.currentTimeMillis() - Bot.RUNTIME_IN_MS).toLocaleString().substring(14)));
+				System.out.println("Time spent: " + (new Timestamp(System.currentTimeMillis() - Bot.RUNTIME_IN_MS)
+						.toLocaleString().substring(14)));
 				System.out.println();
 				System.out.println("----- DONE -----");
 
 			} else {
 				System.out.println("WE'RE NOT DONE!!!!!!");
-				ActionList list = new ActionList();
-
-				list.add(new WaitAction(1000));
-
-				if (!Bot.test)
-					Connection.SendActions(list);
+				Bot.ALL_BALLS_COLLECTED = false;
+				nextState(new CheckState(carService, ballService, wallService));
 			}
 		}
 
@@ -82,6 +80,15 @@ public class FinishState extends State {
 		// TODO Auto-generated method stub
 		for (Ball ball : map.balls) {
 			Imgproc.drawMarker(originalFrame, map.getOriginalPoint(ball.point), new Scalar(0, 250, 150));
+		}
+	}
+
+	@Override
+	public void handle(String message) {
+		if (message.equals(Messages.DONE)) {
+			if (!Bot.DONE) {
+				nextState(new CheckState(carService, ballService, wallService));
+			}
 		}
 	}
 

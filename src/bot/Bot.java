@@ -14,7 +14,8 @@ import bot.messages.ResponseReceiver;
 import bot.states.EasyCollect;
 import bot.states.EasyDrive;
 import bot.states.FinishState;
-import bot.states.ObstacleDrive;
+import bot.states.CheckState;
+import bot.states.CirculateDrive;
 import bot.states.ScoreGoals;
 import bot.states.StartState;
 import bot.states.State;
@@ -78,7 +79,7 @@ public class Bot extends Application implements ResponseReceiver {
 	public static boolean ALL_BALLS_COLLECTED = false;
 	
 	public static long RUNTIME_IN_MS = 0;
-	public static final long SEVEN_MINUTES_RUNTIME = 300;
+	public static final long SEVEN_MINUTES_RUNTIME = 360000;
 	public static int GOAL_POSITION = 0; // 0 = left, 1 = right
 	
 	public static boolean DONE = false;
@@ -135,10 +136,7 @@ public class Bot extends Application implements ResponseReceiver {
 			@Override
 			public void run() {
 				Mat frame = camera.grabFrame();
-
 				Mat f = state.process(frame).getFrame();
-
-
 				
 				if (f != null) {
 					updateImageView(originalFrame, f);
@@ -201,25 +199,26 @@ public class Bot extends Application implements ResponseReceiver {
 
 	public void beginRobot() {
 		
-		state = new EasyDrive(carService, ballService, wallService);
+		state = new CheckState(carService, ballService, wallService);
 		
 		RUNTIME_IN_MS = System.currentTimeMillis();
-		GOAL_POSITION = (int) goalSlider.getValue();
 
 		System.out.println("GOAL POSITION: " + GOAL_POSITION);
 		System.out.println("GOAL POSITION: " + (GOAL_POSITION == 0 ? "left" : "right"));
 		
 		Utils.changeBtnVisibility(beginBtn, false);
-		Utils.changeLabelVisibility(goalLabel, false);
 		Utils.changeSliderVisibility(goalSlider, false);
 	}
 	
 	public void handleDrag() {
 		System.out.println("SLIDER DRAGGED");
 		System.out.println("Slider value: " + goalSlider.getValue());
+		GOAL_POSITION = goalSlider.getValue() < 0.5 ? 0 : 1;
+
+		Utils.changeLabelText(goalLabel, (GOAL_POSITION == 0 ? "left" : "right"));
 		
-		Utils.changeLabelText(goalLabel, ((int) goalSlider.getValue() == 0 ? "left" : "right"));
-		
+		System.out.println("GOAL POSITION: " + GOAL_POSITION);
+		System.out.println("GOAL POSITION: " + (GOAL_POSITION == 0 ? "left" : "right"));
 	}
 	
 }

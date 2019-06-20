@@ -85,16 +85,6 @@ public final class Utils
 		});
 	}
 	
-	public static void changeLabelVisibility(Label label, boolean visible)
-	{
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				label.setVisible(visible);
-			}
-		});
-	}
-	
 	public static void changeSliderVisibility(Slider slider, boolean visible)
 	{
 		Platform.runLater(new Runnable() {

@@ -45,7 +45,7 @@ public class WallCollect extends State {
 		if (target == null) {
 
 			System.out.println("THERE IS NO CURRENT BALL TO COLLECT!!!");
-			nextState(new EasyDrive(carService, ballService, wallService));
+			nextState(new CheckState(carService, ballService, wallService));
 			return;
 		}
 

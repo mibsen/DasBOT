@@ -7,8 +7,8 @@ import org.opencv.imgproc.Imgproc;
 
 import bot.Bot;
 import bot.Connection;
-import bot.Controls;
 import bot.actions.ActionList;
+import bot.actions.GrepCollectionAction;
 import bot.actions.StartCollectionAction;
 import bot.actions.StopCollectionAction;
 import bot.actions.TravelAction;
@@ -21,17 +21,18 @@ import services.BallService;
 import services.CarService;
 import services.WallService;
 
-public class EasyCollect extends State {
+public class CornerCollect extends State {
 
 	private Ball target;
-	private boolean done;
+	private boolean done = false;
 
-	public EasyCollect(CarService carService, BallService ballService, WallService wallService) {
+	public CornerCollect(CarService carService, BallService ballService, WallService wallService) {
 		super(carService, ballService, wallService);
 		// TODO Auto-generated constructor stub
 	}
 
 	public void setTarget(Ball targetBall) {
+		
 		target = targetBall;
 
 	}
@@ -39,6 +40,7 @@ public class EasyCollect extends State {
 	@Override
 	public void calculate(Mat originalFrame, Mat correctedFrame) {
 
+		System.out.println("WTF?");
 		// Do we have a target?
 		if (target == null) {
 
@@ -46,56 +48,66 @@ public class EasyCollect extends State {
 			nextState(new CheckState(carService, ballService, wallService));
 			return;
 		}
-		
 
-
-		System.out.println("PLANNING EASY COLLECT!");
+		System.out.println("PLANNING WALL COLLECT!");
 
 		Point t = map.correctPoint(target.point);
+		
 		t = new Point(t.x - map.center.x, t.y - map.center.y);
 
-		// We only want to Ball to be into the center of the pick
-		// TODO:
-
-		// center -> target
-
-		// Width imellem center -> pick
-		
-
+		// Verify VINKEL!
 		double deg = -Math.toDegrees(Math.atan2(t.y, t.x));
 		
-		if(Math.abs(deg) > 4) {
+		if(Math.abs(deg) > 5) {
+			
 			System.out.println("correcting moving " + deg +" Deg");
 			
 			ActionList list = new ActionList();
 			list.add(new TurnAction((long) deg));
 
 			if (!Bot.test)
-				Connection.SendActions(list);	
-			
+				Connection.SendActions(list);		
+		
 			return;
 		}
+		
+		
+		// Drive TO
+		double d = Math.sqrt(Math.pow(t.x, 2) + Math.pow(t.y, 2));
+		
+		
+		// Distance to ball
+		double val = map.car.pickCenter.x;
+		
+		double r = (d - val) / d;
+		t = new Point(t.x * r, t.y * r);
 
-
+		ActionList list = new ActionList();
+	
 		Point targetCM = getPointInCM(t);
 
 		System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
-		
-		double distanceToBall = Math.sqrt(Math.pow(targetCM.x, 2) + Math.pow(targetCM.y, 2));
-
-		ActionList list = new ActionList();
-		list.add(new StartCollectionAction());
 		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.50F,0.3F));
-		list.add(new TravelAction(-distanceToBall));
-		list.add(new StopCollectionAction());
 
+	
+		
+		
+		double backDistance = (Math.sqrt(Math.pow(targetCM.x,2) + Math.pow(targetCM.y,2)));
+		
+		System.out.println("driving " + backDistance + " CM back");
+
+		list.add(new GrepCollectionAction());
+		list.add(new TravelAction(-backDistance * 2));
+		list.add(new StartCollectionAction());
+		list.add(new WaitAction(2000));
+		list.add(new StopCollectionAction());
 		if (!Bot.test)
 			Connection.SendActions(list);
 		
-
 		done = true;
 
 	}
+	
 
 	@Override
 	public void drawFrame(Mat originalFrame, Mat correctedFrame) {
@@ -119,9 +131,11 @@ public class EasyCollect extends State {
 		}
 
 	}
-
+	
+	
 	@Override
 	public void handle(String message) {
+
 		// We are done and we are ready for new work!
 		if (message.equals(Messages.DONE)) {
 			running = null;

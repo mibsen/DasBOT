@@ -30,7 +30,7 @@
             </ImageView>
             <ImageView fx:id="maskImage" fitHeight="357.0" fitWidth="573.0" pickOnBounds="true" preserveRatio="true" />
             <Label fx:id="goalLabel" text="Goal side: left" />
-            <Slider fx:id="goalSlider" blockIncrement="1.0" majorTickUnit="1.0" max="1.0" minorTickCount="1" snapToTicks="true" />
+            <Slider fx:id="goalSlider" blockIncrement="1.0" majorTickUnit="1.0" max="1.0" minorTickCount="1" onDragDetected="#handleDrag" snapToTicks="true" />
             <Button fx:id="beginBtn" onMouseClicked="#beginRobot" text="LET'S GO!" textAlignment="CENTER" />
          </children>
       </VBox>

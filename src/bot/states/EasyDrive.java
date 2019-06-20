@@ -35,7 +35,7 @@ public class EasyDrive extends State {
 
 		if (map.balls.size() == 0) {
 			System.out.println("THERE IS NO BALLS IN MAP TO COLLECT!!!");
-			nextState(new ObstacleDrive(carService, ballService, wallService));
+			nextState(new WallDrive(carService, ballService, wallService));
 			return;
 		}
 
@@ -53,7 +53,7 @@ public class EasyDrive extends State {
 		double maxDistance = corner1.y - corner2.y;
 
 		map.drawWall(new Scalar(250, 250, 250),
-				(int) (Math.sqrt(Math.pow(map.car.backRight.x, 2) + Math.pow(map.car.backRight.y, 2)) * 2));
+				(int) (Math.sqrt(Math.pow(map.car.backRight.x, 2) + Math.pow(map.car.backRight.y, 2))));
 
 		Mat m = map.getFrame();
 
@@ -137,7 +137,7 @@ public class EasyDrive extends State {
 		System.out.println("ball point: " + ball.point.toString());
 		double deg = -Math.toDegrees(Math.atan2(ball.point.y, ball.point.x));
 
-		if (deg > 4) {
+		if (Math.abs(deg) > 4) {
 			System.out.println("correcting moving " + deg + " Deg");
 
 			ActionList list = new ActionList();
@@ -156,7 +156,7 @@ public class EasyDrive extends State {
 		System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
 
 		ActionList list = new ActionList();
-		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.60F, 0.3F));
+		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.80F, 0.4F));
 
 		if (!Bot.test)
 			Connection.SendActions(list);

@@ -15,16 +15,15 @@ import services.BallService;
 import services.CarService;
 import services.WallService;
 
-public class ObstacleDrive extends State {
+public class CirculateDrive extends State {
 
 	private Point nearestWaypoint;
 	private Point[] waypoints;
 
-	private Point debug;
 	private Point start;
 	private Point axis;
 
-	public ObstacleDrive(CarService carService, BallService ballService, WallService wallService) {
+	public CirculateDrive(CarService carService, BallService ballService, WallService wallService) {
 		super(carService, ballService, wallService);
 		// TODO Auto-generated constructor stub
 	}
@@ -121,8 +120,6 @@ public class ObstacleDrive extends State {
 			Imgproc.line(originalFrame, car.center, nearestWaypoint, new Scalar(0, 0, 250));
 			Imgproc.line(originalFrame, start, axis, new Scalar(88, 214, 141));
 			Imgproc.line(originalFrame, start, nearestWaypoint, new Scalar(88, 214, 141));
-
-			Imgproc.line(originalFrame, start, debug, new Scalar(88, 214, 141));
 			CarService.drawCar(originalFrame, car);
 		}
 
@@ -142,7 +139,7 @@ public class ObstacleDrive extends State {
 	public void handle(String message) {
 
 		if (message.equals(Messages.DONE)) {
-			nextState(new EasyDrive(carService, ballService, wallService));
+			nextState(new CheckState(carService, ballService, wallService));
 		}
 
 	}

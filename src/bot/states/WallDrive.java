@@ -37,7 +37,7 @@ public class WallDrive extends State {
 
 			if (map.balls.size() == 0) {
 				System.out.println("THERE IS NO BALLS IN MAP TO COLLECT!!!");
-				nextState(new ObstacleDrive(carService, ballService, wallService));
+				nextState(new CornerDrive(carService, ballService, wallService));
 				return;
 			}
 

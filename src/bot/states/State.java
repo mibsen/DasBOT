@@ -65,11 +65,15 @@ public abstract class State {
 		frame = wallService.locateWallsAndCorrectFrame(frame);
 
 		wall = wallService.getWall();
+
 		obstacle = wallService.getObstacle();
+
 		car = carService.getCar(frame);
+		
 		balls = ballService.getBalls(frame);
 
 		if (wall == null || car == null || obstacle == null) {
+			System.out.println("SOMETHING IS NULL");
 			return this;
 		}
 
@@ -81,6 +85,7 @@ public abstract class State {
 
 		if (running == null) {
 
+			System.out.println("CALCULATING");
 			calculate(frame, m);
 
 			running = LocalTime.now();
@@ -98,13 +103,6 @@ public abstract class State {
 	}
 
 	protected void nextState(State state) {
-
-		if (System.currentTimeMillis() - Bot.RUNTIME_IN_MS > Bot.SEVEN_MINUTES_RUNTIME) {
-			state = new ScoreGoals(carService, ballService, wallService);
-		} else if (Bot.ALL_BALLS_COLLECTED) {
-			state = new ScoreGoals(carService, ballService, wallService);
-			System.out.println("All balls are collected! Lets Finish this thing :*");
-		} 
 
 		System.out.println("Changing state: " + state.getClass().toString());
 

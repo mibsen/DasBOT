@@ -31,6 +31,7 @@ public class ScoreGoals extends State {
 	private Point goalPoint;
 	private int correctedCount = 0;
 	private Point almostTherePoint;
+	private boolean hasScored;
 
 	public ScoreGoals(CarService carService, BallService ballService, WallService wallService) {
 		super(carService, ballService, wallService);
@@ -38,7 +39,6 @@ public class ScoreGoals extends State {
 
 	@Override
 	public void calculate(Mat originalFrame, Mat correctedFrame) {
-		System.out.println("Calculating..");
 
 		Point corner1 = null;
 		Point corner2 = null;
@@ -62,118 +62,166 @@ public class ScoreGoals extends State {
 
 		// System.out.println("Car back to center: " + car.backToCenter);
 
-		goalPoint = new Point(width + corner1.x, height / 2 + corner1.y);
-		almostTherePoint = new Point(goalPoint.x - car.backToCenter, goalPoint.y);
 		// finnishPoint = new Point(almostTherePoint.x - (car.backToCenter / 3),
 		// almostTherePoint.y);
 
-		waypoints = new Point[7];
-		waypoints[0] = new Point(width / 4 + corner1.x, height / 4 + corner1.y);
-		waypoints[1] = new Point(width / 2 + corner1.x, height / 4 + corner1.y);
-		waypoints[2] = new Point(width * 3 / 4 + corner1.x, height / 4 + corner1.y);
-		waypoints[3] = almostTherePoint;
-		waypoints[4] = new Point(width * 3 / 4 + corner1.x, height * 3 / 4 + corner1.y);
-		waypoints[5] = new Point(width / 2 + corner1.x, height * 3 / 4 + corner1.y);
-		waypoints[6] = new Point(width / 4 + corner1.x, height * 3 / 4 + corner1.y);
+		if (waypoints == null) {
+			waypoints = new Point[7];
 
-		double minDistance = car.width/2;
+			if (Bot.GOAL_POSITION == 0) {
+
+				goalPoint = new Point(corner1.x, height / 2 + corner1.y);
+				almostTherePoint = new Point(goalPoint.x + car.backToCenter, goalPoint.y);
+
+				waypoints[0] = new Point(width * 3 / 4 + corner1.x, height / 4 + corner1.y);
+				waypoints[1] = new Point(width / 2 + corner1.x, height / 4 + corner1.y);
+				waypoints[2] = new Point(width / 4 + corner1.x, height / 4 + corner1.y);
+				waypoints[3] = almostTherePoint;
+				waypoints[4] = new Point(width / 4 + corner1.x, height * 3 / 4 + corner1.y);
+				waypoints[5] = new Point(width / 2 + corner1.x, height * 3 / 4 + corner1.y);
+				waypoints[6] = new Point(width * 3 / 4 + corner1.x, height * 3 / 4 + corner1.y);
+			}
+			if (Bot.GOAL_POSITION == 1) {
+
+				goalPoint = new Point(width + corner1.x, height / 2 + corner1.y);
+				almostTherePoint = new Point(goalPoint.x - car.backToCenter, goalPoint.y);
+
+				waypoints[0] = new Point(width / 4 + corner1.x, height / 4 + corner1.y);
+				waypoints[1] = new Point(width / 2 + corner1.x, height / 4 + corner1.y);
+				waypoints[2] = new Point(width * 3 / 4 + corner1.x, height / 4 + corner1.y);
+				waypoints[3] = almostTherePoint;
+				waypoints[4] = new Point(width * 3 / 4 + corner1.x, height * 3 / 4 + corner1.y);
+				waypoints[5] = new Point(width / 2 + corner1.x, height * 3 / 4 + corner1.y);
+				waypoints[6] = new Point(width / 4 + corner1.x, height * 3 / 4 + corner1.y);
+
+			}
+		}
+
+		double minDistance = car.width / 2;
 
 		// Locate IF i am in FinishPoint
 
-		double distance = Math.sqrt(
-				Math.pow((almostTherePoint.x - car.center.x), 2) + Math.pow((almostTherePoint.y - car.center.y), 2));
+		if (!hasScored) {
 
-		System.out.println("CorrectedCount: " + correctedCount);
+			double distance = Math.sqrt(Math.pow((almostTherePoint.x - car.center.x), 2)
+					+ Math.pow((almostTherePoint.y - car.center.y), 2));
 
-		// start tree of operations
-		if (distance < minDistance) {
+			System.out.println("CorrectedCount: " + correctedCount);
 
-			// Calculates angle towards goal
+			System.out.println("Nearest waypoint: " + nearestWaypoint);
+			// start tree of operations
+			if (distance < minDistance) {
 
-			Point diff = map.correctPoint(goalPoint);
-			diff = new Point(diff.x - map.center.x, diff.y - map.center.y);
+				// Calculates angle towards goal
 
-			long angleToGoal = Math.round(Math.toDegrees(Math.atan2(diff.y, diff.x)));
-			//// System.out.println("Before: Angle to goal: " + angleToGoal);
-			System.out.println("Abs: Angle to goal: " + angleToGoal);
+				Point diff = map.correctPoint(goalPoint);
+				diff = new Point(diff.x - map.center.x, diff.y - map.center.y);
 
-			//If angle to goal is too big we correct the angle
-			if (180 - Math.abs(angleToGoal) > 2) {
+				long angleToGoal = Math.round(Math.toDegrees(Math.atan2(diff.y, diff.x)));
+				//// System.out.println("Before: Angle to goal: " + angleToGoal);
+				System.out.println("Abs: Angle to goal: " + angleToGoal);
 
-				System.out.println("correcting moving " + angleToGoal + " Deg");
-				long deg = 0;
-				if (angleToGoal >= 0) {
-					deg = 180 - Math.abs(angleToGoal);
+				// If angle to goal is too big we correct the angle
+				if (180 - Math.abs(angleToGoal) > 2) {
+
+					System.out.println("correcting moving " + angleToGoal + " Deg");
+					long deg = 0;
+					if (angleToGoal >= 0) {
+						deg = 180 - Math.abs(angleToGoal);
+					}
+					if (angleToGoal < 0) {
+						deg = -(180 - Math.abs(angleToGoal));
+					}
+
+					System.out.println("Moving degree is: " + deg);
+
+					ActionList list = new ActionList();
+					list.add(new TurnAction((long) deg));
+
+					if (!Bot.test)
+						Connection.SendActions(list);
+
 				}
-				if (angleToGoal < 0) {
-					deg = -(180 - Math.abs(angleToGoal));
+				// Otherwise we'll start to score goals
+				else {
+
+					System.out.println("Opening port!");
+
+					// Actions
+					ActionList list = new ActionList();
+					list.add(new OpenPortAction());
+					list.add(new ShakeAction());
+					list.add(new ShakeAction());
+					list.add(new ShakeAction());
+					list.add(new WaitAction(3000));
+					list.add(new ClosePortAction());
+
+					if (!Bot.test)
+						Connection.SendActions(list);
+
+					System.out.println("DONE!");
+
+					hasScored = true;
+
+				}
+			} else if (nearestWaypoint == null) {
+
+				System.out.println("Waypoint was null");
+				distance = Double.MAX_VALUE;
+
+				for (int i = 0; i < waypoints.length; i++) {
+
+					double currentDistance = Math.sqrt(Math.pow((waypoints[i].x - car.center.x), 2)
+							+ Math.pow((waypoints[i].y - car.center.y), 2));
+
+					if (distance > currentDistance) {
+						distance = currentDistance;
+						nearestWaypoint = waypoints[i];
+					}
 				}
 
-				System.out.println("Moving degree is: " + deg);
+				// Drive to nearestWaypoint
+				Point p = map
+						.rotatePoint(new Point(nearestWaypoint.x - car.center.x, nearestWaypoint.y - car.center.y));
 
-				ActionList list = new ActionList();
-				list.add(new TurnAction((long) deg));
-
-				if (!Bot.test)
-					Connection.SendActions(list);
-
-			} 
-			// Otherwise we'll start to score goals
-			else { 
-				
-				System.out.println("Opening port!");
+				p = getPointInCM(p);
 
 				// Actions
 				ActionList list = new ActionList();
-				list.add(new OpenPortAction());
-				list.add(new ShakeAction());
-				list.add(new ShakeAction());
-				list.add(new ShakeAction());
-				list.add(new WaitAction(3000));
-				list.add(new ClosePortAction());
+				list.add(new WayPointAction(p.x, p.y, 0.90F, 0.40F)); // go to waypoint
 
 				if (!Bot.test)
 					Connection.SendActions(list);
 
-				System.out.println("DONE!");
+			} else {
 
-				try {
-					Thread.sleep(10000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				System.out.println("Waypoint was not null");
+
+				if (nearestWaypoint == waypoints[0]) {
+					nearestWaypoint = waypoints[1];
+				} else if (nearestWaypoint == waypoints[1]) {
+					nearestWaypoint = waypoints[2];
+				} else if (nearestWaypoint == waypoints[2] || nearestWaypoint == waypoints[4]) {
+					nearestWaypoint = waypoints[3];
+				} else if (nearestWaypoint == waypoints[5]) {
+					nearestWaypoint = waypoints[4];
+				} else if (nearestWaypoint == waypoints[6]) {
+					nearestWaypoint = waypoints[5];
 				}
-				System.exit(0);
+
+				// Drive to nearestWaypoint
+				Point p = map
+						.rotatePoint(new Point(nearestWaypoint.x - car.center.x, nearestWaypoint.y - car.center.y));
+
+				p = getPointInCM(p);
+
+				// Actions
+				ActionList list = new ActionList();
+				list.add(new WayPointAction(p.x, p.y, 0.90F, 0.40F)); // go to waypoint
+
+				if (!Bot.test)
+					Connection.SendActions(list);
 			}
-		} else {
-			distance = Double.MAX_VALUE;
-
-			for (int i = 0; i < waypoints.length; i++) {
-
-				double currentDistance = Math.sqrt(
-						Math.pow((waypoints[i].x - car.center.x), 2) + Math.pow((waypoints[i].y - car.center.y), 2));
-
-				if (currentDistance <= minDistance) {
-					nearestWaypoint = waypoints[(i + 1) % waypoints.length];
-					break;
-				} else if (distance > currentDistance) {
-					distance = currentDistance;
-					nearestWaypoint = waypoints[i];
-				}
-			}
-
-			// Drive to nearestWaypoint
-			Point p = map.rotatePoint(new Point(nearestWaypoint.x - car.center.x, nearestWaypoint.y - car.center.y));
-
-			p = getPointInCM(p);
-
-			// Actions
-			ActionList list = new ActionList();
-			list.add(new WayPointAction(p.x, p.y, 0.90F, 0.40F)); // go to waypoint
-
-			if (!Bot.test)
-				Connection.SendActions(list);
-
 		}
 
 	}
@@ -201,4 +249,17 @@ public class ScoreGoals extends State {
 		Imgproc.drawMarker(originalFrame, goalPoint, new Scalar(200, 50, 200), Imgproc.MARKER_CROSS);
 		Imgproc.line(originalFrame, car.center, goalPoint, new Scalar(200, 50, 200));
 	}
+
+	@Override
+	public void handle(String message) {
+		if (message.equals(Messages.DONE)) {
+			running = null;
+
+			if (hasScored) {
+				System.out.println("Should change state to FinishState now!");
+				nextState(new FinishState(carService, ballService, wallService));
+			}
+		}
+	}
+
 }
