@@ -1,6 +1,11 @@
 package models;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
+import org.opencv.imgproc.Imgproc;
 
 import services.WallService;
 
@@ -26,7 +31,7 @@ public class Car {
 	public Point pickFrontLeft;
 	public Point pickCenter;
 	public float backToCenter;
-	
+
 	// Car Build variable
 	public static float widthInCM = 9.2F;
 	public static float carHeightInCM = 24.45F;
@@ -34,56 +39,54 @@ public class Car {
 	public static float maxPicktoMarkerCM = 16F;
 	public static float pickWithCM = 3F;
 	public static float backToMakerCM = 10F;
-	
-	
+
 	public static float radiusLeftCM = 9F;
 	public static float radiusRightCM = 14F;
-	
+
 	public Car(Point front, Point back) {
 
 		this.frontMarker = front;
 		this.backMarker = back;
-		this.width = Math.abs(Math.sqrt(Math.pow(frontMarker.x - backMarker.x, 2) + Math.pow(frontMarker.y - backMarker.y, 2)));
+		this.width = Math
+				.abs(Math.sqrt(Math.pow(frontMarker.x - backMarker.x, 2) + Math.pow(frontMarker.y - backMarker.y, 2)));
 		this.backToCenter = backToMakerCM + widthInCM;
 		this.backToCenter = (float) (this.backToCenter / widthInCM * this.width * 1.5);
 		// ## Build car points ##
-		//this.center = new Point((front.x + back.x) / 2, (front.y + back.y) / 2);
+		// this.center = new Point((front.x + back.x) / 2, (front.y + back.y) / 2);
 		calcuateCenter();
 		calculateParts();
 	}
-	
-	private void calcuateCenter(){
-		center = frontMarker;		
-	}
-	
-	private void calculateParts() {
-		
-		getBack();
-		getFront();
-		
-		getRightSide();
-		getLeftSide();
-		
-		getPick();
-		
+
+	private void calcuateCenter() {
+		center = frontMarker;
 	}
 
-	
+	private void calculateParts() {
+
+		getBack();
+		getFront();
+
+		getRightSide();
+		getLeftSide();
+
+		getPick();
+
+	}
+
 	private void getPick() {
-	
+
 		pickBack = front;
 		getPickFront();
 		getPickRight();
-		
-		
-		pickCenter = new Point(((pickBack.x-pickFront.x)/2)+pickFront.x,((pickBack.y-pickFront.y)/2)+pickFront.y); 
-				
-				
+
+		pickCenter = new Point(((pickBack.x - pickFront.x) / 2) + pickFront.x,
+				((pickBack.y - pickFront.y) / 2) + pickFront.y);
+
 	}
-	
+
 	private void getPickFront() {
-		
-		float factor = maxPicktoMarkerCM/ widthInCM;
+
+		float factor = maxPicktoMarkerCM / widthInCM;
 
 		double x = frontMarker.x - backMarker.x;
 		double y = frontMarker.y - backMarker.y;
@@ -91,19 +94,19 @@ public class Car {
 		double nx = x * factor;
 		double ny = y * factor;
 
-		pickFront = new Point(frontMarker.x + nx, frontMarker.y + ny);	
+		pickFront = new Point(frontMarker.x + nx, frontMarker.y + ny);
 	}
-	
-	private void getPickRight() {
-		
-		float factor = (pickWithCM/2)/ widthInCM;
 
-		double x = backMarker.x - frontMarker.x ;
-		double y = backMarker.y - frontMarker.y ;
+	private void getPickRight() {
+
+		float factor = (pickWithCM / 2) / widthInCM;
+
+		double x = backMarker.x - frontMarker.x;
+		double y = backMarker.y - frontMarker.y;
 
 		double nx = x * factor;
 		double ny = y * factor;
-		
+
 		double radian = Math.toRadians(90);
 
 		double s = Math.sin(radian);
@@ -111,30 +114,28 @@ public class Car {
 
 		double nnx = nx * c + ny * s;
 		double nny = -1 * nx * s + ny * c;
-		
+
 		pickBackRight = new Point(nnx + front.x, nny + front.y);
 		pickFrontRight = new Point(nnx + pickFront.x, nny + pickFront.y);
-		
-		 radian = Math.toRadians(-90);
 
-		 s = Math.sin(radian);
-		 c = Math.cos(radian);
+		radian = Math.toRadians(-90);
 
-		 nnx = nx * c + ny * s;
-		 nny = -1 * nx * s + ny * c;
+		s = Math.sin(radian);
+		c = Math.cos(radian);
+
+		nnx = nx * c + ny * s;
+		nny = -1 * nx * s + ny * c;
 
 		pickBackLeft = new Point(nnx + front.x, nny + front.y);
 		pickFrontLeft = new Point(nnx + pickFront.x, nny + pickFront.y);
-		
-		
+
 	}
-	
-	
+
 	private void getBack() {
-		
-		//float factor =   (widthInCM ) / (backToMakerCM + widthInCM);
-		float factor =   (backToMakerCM) / ( widthInCM);
-		
+
+		// float factor = (widthInCM ) / (backToMakerCM + widthInCM);
+		float factor = (backToMakerCM) / (widthInCM);
+
 		double x = backMarker.x - frontMarker.x;
 		double y = backMarker.y - frontMarker.y;
 
@@ -142,12 +143,12 @@ public class Car {
 		double ny = y * factor;
 
 		back = new Point((backMarker.x) + nx, backMarker.y + +ny);
-		
+
 	}
-	
+
 	private void getRightSide() {
-		
-		float factor = radiusRightCM / widthInCM ;
+
+		float factor = radiusRightCM / widthInCM;
 
 		double x = backMarker.x - frontMarker.x;
 		double y = backMarker.y - frontMarker.y;
@@ -162,16 +163,15 @@ public class Car {
 
 		double nnx = nx * c + ny * s;
 		double nny = -1 * nx * s + ny * c;
-		
+
 		backRight = new Point(nnx + back.x, nny + back.y);
 		frontRight = new Point(nnx + front.x, nny + front.y);
 
-		
 	}
-	
+
 	private void getLeftSide() {
-		
-		float factor = radiusLeftCM / widthInCM ;
+
+		float factor = radiusLeftCM / widthInCM;
 
 		double x = backMarker.x - frontMarker.x;
 		double y = backMarker.y - frontMarker.y;
@@ -186,18 +186,28 @@ public class Car {
 
 		double nnx = nx * c + ny * s;
 		double nny = -1 * nx * s + ny * c;
-		
+
 		backLeft = new Point(nnx + back.x, nny + back.y);
 		frontLeft = new Point(nnx + front.x, nny + front.y);
 
-		
 	}
-	
+
+	public boolean isOutside(Ball ball) {
+
+		MatOfPoint2f mat2f = new MatOfPoint2f(
+				new Point[] { backRight, frontRight, pickFrontRight, pickFrontLeft, frontLeft, backLeft });
+
+		if (Imgproc.pointPolygonTest(mat2f, ball.point, true) > 2) {
+			return true;
+		}
+
+		return false;
+	}
+
 	private void getFront() {
-		
+
 		float factor = frontToMakerCM / widthInCM;
 
-		
 		double x = frontMarker.x - backMarker.x;
 		double y = frontMarker.y - backMarker.y;
 
@@ -205,7 +215,7 @@ public class Car {
 		double ny = y * factor;
 
 		front = new Point(frontMarker.x + nx, frontMarker.y + ny);
-		
+
 	}
 
 	private Point correctPoint(Point point) {
