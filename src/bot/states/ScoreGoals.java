@@ -70,7 +70,7 @@ public class ScoreGoals extends State {
 			if (Bot.GOAL_POSITION == 0) {
 
 				goalPoint = new Point(corner1.x, height / 2 + corner1.y);
-				almostTherePoint = new Point(goalPoint.x + (car.backToCenter * 1.2), goalPoint.y);
+				almostTherePoint = new Point(goalPoint.x + (car.backToCenter * 1.1), goalPoint.y);
 
 				waypoints[0] = new Point(width * 3 / 4 + corner1.x, height / 4 + corner1.y);
 				waypoints[1] = new Point(width / 2 + corner1.x, height / 4 + corner1.y);
@@ -83,7 +83,7 @@ public class ScoreGoals extends State {
 			if (Bot.GOAL_POSITION == 1) {
 
 				goalPoint = new Point(width + corner1.x, height / 2 + corner1.y);
-				almostTherePoint = new Point(goalPoint.x - car.backToCenter, goalPoint.y);
+				almostTherePoint = new Point(goalPoint.x - (car.backToCenter * 1.1), goalPoint.y);
 
 				waypoints[0] = new Point(width / 4 + corner1.x, height / 4 + corner1.y);
 				waypoints[1] = new Point(width / 2 + corner1.x, height / 4 + corner1.y);
@@ -96,7 +96,7 @@ public class ScoreGoals extends State {
 			}
 		}
 
-		double minDistance = car.width / 2.5;
+		double minDistance = car.width / 2;
 
 		// Locate IF i am in FinishPoint
 
@@ -177,7 +177,7 @@ public class ScoreGoals extends State {
 
 				// Actions
 				ActionList list = new ActionList();
-				list.add(new WayPointAction(p.x, p.y, 0.90F, 0.40F)); // go to waypoint
+				list.add(new WayPointAction(p.x, p.y, 0.90F, 0.70F)); // go to waypoint
 
 				if (!Bot.test)
 					Connection.SendActions(list);
@@ -223,7 +223,7 @@ public class ScoreGoals extends State {
 
 				// Actions
 				ActionList list = new ActionList();
-				list.add(new WayPointAction(p.x, p.y, 0.90F, 0.40F)); // go to waypoint
+				list.add(new WayPointAction(p.x, p.y, 0.90F, 0.70F)); // go to waypoint
 
 				if (!Bot.test)
 					Connection.SendActions(list);

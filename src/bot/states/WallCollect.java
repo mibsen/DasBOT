@@ -86,7 +86,7 @@ public class WallCollect extends State {
 		Point targetCM = getPointInCM(t);
 
 		//System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
-		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.50F,0.3F));
+		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.70F,0.5F));
 
 	
 		

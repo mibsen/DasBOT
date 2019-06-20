@@ -196,7 +196,7 @@ public class WallDrive extends State {
 			ActionList list = new ActionList();
 
 			//System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
-			list.add(new WayPointAction(targetCM.x, targetCM.y, 0.90F, 0.6F));
+			list.add(new WayPointAction(targetCM.x, targetCM.y, 0.90F, 0.7F));
 
 			if (!Bot.test)
 				Connection.SendActions(list);
