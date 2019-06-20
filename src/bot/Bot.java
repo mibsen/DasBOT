@@ -10,6 +10,7 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 
 import boot.Utils;
+import bot.messages.Messages;
 import bot.messages.ResponseReceiver;
 import bot.states.EasyCollect;
 import bot.states.EasyDrive;
@@ -161,6 +162,16 @@ public class Bot extends Application implements ResponseReceiver {
 		System.out.println("----- MESSAGE START  ------");
 		System.out.println("Received message: " + message);
 		System.out.println("----- MESSAGE END  ------");
+		
+		if (message.equals(Messages.COLLECTED)) {
+			Bot.BALL_COUNTER++;
+		}
+		if (message.equals(Messages.FINISHED)) {
+			System.out.println("ALL BALLS COLLECTED!");
+			Bot.ALL_BALLS_COLLECTED = true;
+		}
+		
+		
 		state.handle(message);
 	}
 

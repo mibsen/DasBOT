@@ -40,17 +40,6 @@ public class EasyDrive extends State {
 		}
 
 		double minDistance = map.car.pickFront.x;
-		Point corner1 = null;
-		Point corner2 = null;
-
-		for (Point corner : wall.corners) {
-			if (corner.x < car.center.x && corner.y < car.center.y) {
-				corner1 = corner.clone();
-			} else if (corner.x < car.center.x && corner.y > car.center.y) {
-				corner2 = corner.clone();
-			}
-		}
-		double maxDistance = corner1.y - corner2.y;
 
 		map.drawWall(new Scalar(250, 250, 250),
 				(int) (Math.sqrt(Math.pow(map.car.backRight.x, 2) + Math.pow(map.car.backRight.y, 2))));
@@ -65,17 +54,14 @@ public class EasyDrive extends State {
 			double d = Math.sqrt(Math.pow(b.point.x, 2) + Math.pow(b.point.y, 2));
 
 			if (d <= minDistance) {
-				// System.out.println("Removed Ball - to close to robot");
-			}
-			/*
-			 * else if (d >= maxDistance) { //
-			 * System.out.println("Removed Ball - to far away from robot"); }
-			 */
-			else if (new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x)))
+				 System.out.println("Removed Ball - to close to robot");
+			} else if (new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x)))
 					.equals(new Scalar(250, 250, 250))) {
-				// System.out.println("Removed Ball - to close to border");
+				 System.out.println("Removed Ball - to close to border");
 			} else if (isBehindObstacle(b.point)) {
-				// System.out.println("Removed Ball - hiding behind obstacle");
+				 System.out.println("Removed Ball - hiding behind obstacle");
+			} else if (isBallOutOfSector(b.point)){
+				 System.out.println("Removed Ball - out of sector");
 			} else {
 				tb.add(b);
 			}
@@ -124,21 +110,16 @@ public class EasyDrive extends State {
 		if (new Scalar(tmp.get((int) (map.center.y), (int) (map.center.x))).equals(new Scalar(200, 200, 200))) {
 
 			// THE car is inside the circle
-
-			System.out.println("What up bitches");
-
 			EasyCollect nextState = new EasyCollect(carService, ballService, wallService);
 			nextState.setTarget(targetBall);
 			nextState(nextState);
 			return;
 		}
 
-		System.out.println("map center: " + map.center.toString());
-		System.out.println("ball point: " + ball.point.toString());
 		double deg = -Math.toDegrees(Math.atan2(ball.point.y, ball.point.x));
 
 		if (Math.abs(deg) > 4) {
-			System.out.println("correcting moving " + deg + " Deg");
+			//System.out.println("correcting moving " + deg + " Deg");
 
 			ActionList list = new ActionList();
 			list.add(new TurnAction((long) deg));
@@ -149,11 +130,11 @@ public class EasyDrive extends State {
 			return;
 		}
 
-		System.out.println("Driving to  point: " + target.toString());
+		//System.out.println("Driving to  point: " + target.toString());
 
 		Point targetCM = getPointInCM(destination);
 
-		System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
+		//System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
 
 		ActionList list = new ActionList();
 		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.80F, 0.4F));

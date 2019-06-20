@@ -40,7 +40,6 @@ public class WallCollect extends State {
 	@Override
 	public void calculate(Mat originalFrame, Mat correctedFrame) {
 
-		System.out.println("WTF?");
 		// Do we have a target?
 		if (target == null) {
 
@@ -60,7 +59,7 @@ public class WallCollect extends State {
 		
 		if(Math.abs(deg) > 5) {
 			
-			System.out.println("correcting moving " + deg +" Deg");
+			//System.out.println("correcting moving " + deg +" Deg");
 			
 			ActionList list = new ActionList();
 			list.add(new TurnAction((long) deg));
@@ -86,7 +85,7 @@ public class WallCollect extends State {
 	
 		Point targetCM = getPointInCM(t);
 
-		System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
+		//System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
 		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.50F,0.3F));
 
 	
@@ -94,7 +93,7 @@ public class WallCollect extends State {
 		
 		double backDistance = (Math.sqrt(Math.pow(targetCM.x,2) + Math.pow(targetCM.y,2)));
 		
-		System.out.println("driving " + backDistance + " CM back");
+		//System.out.println("driving " + backDistance + " CM back");
 
 		list.add(new GrepCollectionAction());
 		list.add(new TravelAction(-backDistance));

@@ -43,7 +43,7 @@ public class CornerDrive extends State {
 
 			Mat m = map.getFrame().clone();
 
-			WallService.drawWall(m, map.getWall(), map.center, new Scalar(250, 250, 250), (int) (car.width * 4));
+			WallService.drawWall(m, map.getWall(), map.center, new Scalar(250, 250, 250), (int) (Math.sqrt(Math.pow(map.car.backRight.x, 2) + Math.pow(map.car.backRight.y, 2)) * 2));
 
 			// filter balls
 			ArrayList<Ball> tb = new ArrayList<Ball>();
@@ -54,12 +54,11 @@ public class CornerDrive extends State {
 
 				if (!new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x)))
 						.equals(new Scalar(250, 250, 250))) {
-
-					System.out.println(
-							new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x))));
 					System.out.println("Removed Ball - to close to border");
 				} else if (isBehindObstacle(b.point)) {
 					System.out.println("Removed Ball - hiding behind obstacle");
+				} else if (isBallOutOfSector(b.point)) {
+					 System.out.println("Removed Ball - out of sector");
 				} else {
 
 					boolean valid = false;
@@ -68,7 +67,7 @@ public class CornerDrive extends State {
 
 						d = Math.sqrt(Math.pow(p.x - b.point.x, 2) + Math.pow(p.y - b.point.y, 2));
 
-						if (d < map.car.pickFront.x) {
+						if (d <= map.car.pickFront.x) {
 							valid = true;
 							break;
 						}
@@ -121,19 +120,18 @@ public class CornerDrive extends State {
 			double dist = getDist(p1, targetBall.point);
 			double distance = map.car.pickFront.x + 10;
 
-			if (dist <= map.car.pickFront.x ) {
-				System.out.println("IN HERE!");
+			if (dist <= map.car.pickFront.x) {
 				target = new Point(targetBall.point.x + distance, targetBall.point.y + distance);
 			}
 
 			// Top - Right ?
 			p1 = corners[1];
-			
+
 			// Dist from wall
 			dist = getDist(p1, targetBall.point);
 
-			if (dist <= map.car.pickFront.x ) {
-				target = new Point(targetBall.point.x - distance, targetBall.point.y +  distance);
+			if (dist <= map.car.pickFront.x) {
+				target = new Point(targetBall.point.x - distance, targetBall.point.y + distance);
 			}
 
 			// But - left ?
@@ -141,7 +139,7 @@ public class CornerDrive extends State {
 
 			dist = getDist(p1, targetBall.point);
 
-			if (dist <= map.car.pickFront.x ) {
+			if (dist <= map.car.pickFront.x) {
 				target = new Point(targetBall.point.x + distance, targetBall.point.y - distance);
 			}
 
@@ -158,7 +156,13 @@ public class CornerDrive extends State {
 				System.out.println("The ball is NOT at a WALL ??!!!");
 				nextState(new ObstacleDrive(carService, ballService, wallService));
 				return;
-			} else if (isBehindObstacle(map.correctPoint(target))) {
+			}
+
+			Point tt = map.correctPoint(target);
+			tt.x -= map.center.x;
+			tt.y -= map.center.y;
+
+			if (isBehindObstacle(tt)) {
 
 				System.out.println("The Target is behind the obstacle!");
 				nextState(new ObstacleDrive(carService, ballService, wallService));
@@ -170,14 +174,12 @@ public class CornerDrive extends State {
 
 		// We are at the point!
 		if (getDist(car.center, target) < car.width) {
-			System.out.println("We are ready to collect the Ball");
 			CornerCollect nextState = new CornerCollect(carService, ballService, wallService);
 			nextState.setTarget(targetBall);
 			nextState(nextState);
 			return;
 
 		} else {
-			
 
 			Point p = map.correctPoint(target);
 			p.x -= map.center.x;
@@ -185,29 +187,27 @@ public class CornerDrive extends State {
 
 			// Verify VINKEL!
 			double deg = -Math.toDegrees(Math.atan2(p.y, p.x));
-			
-			if(Math.abs(deg) > 5) {
-				
-				System.out.println("correcting moving " + deg +" Deg");
-				
+
+			if (Math.abs(deg) > 5) {
+
+				//System.out.println("correcting moving " + deg + " Deg");
+
 				ActionList list = new ActionList();
 				list.add(new TurnAction((long) deg));
 
 				if (!Bot.test)
-					Connection.SendActions(list);		
-			
+					Connection.SendActions(list);
+
 				return;
 			}
-			
-			
-			
-			System.out.println("Driving to  point: " + target.toString());
+
+			//System.out.println("Driving to  point: " + target.toString());
 
 			Point targetCM = getPointInCM(p);
 
 			ActionList list = new ActionList();
 
-			System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
+			//System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
 			list.add(new WayPointAction(targetCM.x, targetCM.y, 0.90F, 0.6F));
 
 			if (!Bot.test)

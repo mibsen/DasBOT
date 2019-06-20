@@ -65,7 +65,7 @@ public class EasyCollect extends State {
 		double deg = -Math.toDegrees(Math.atan2(t.y, t.x));
 		
 		if(Math.abs(deg) > 4) {
-			System.out.println("correcting moving " + deg +" Deg");
+			//System.out.println("correcting moving " + deg +" Deg");
 			
 			ActionList list = new ActionList();
 			list.add(new TurnAction((long) deg));
@@ -80,7 +80,7 @@ public class EasyCollect extends State {
 
 		Point targetCM = getPointInCM(t);
 
-		System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
+		//System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
 		
 		double distanceToBall = Math.sqrt(Math.pow(targetCM.x, 2) + Math.pow(targetCM.y, 2));
 

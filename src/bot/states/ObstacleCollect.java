@@ -40,7 +40,6 @@ public class ObstacleCollect extends State {
 	@Override
 	public void calculate(Mat originalFrame, Mat correctedFrame) {
 
-		System.out.println("WTF?");
 		// Do we have a target?
 		if (target == null) {
 
@@ -49,7 +48,7 @@ public class ObstacleCollect extends State {
 			return;
 		}
 
-		System.out.println("PLANNING WALL COLLECT!");
+		System.out.println("PLANNING OBSTACLE COLLECT!");
 
 		Point t = map.correctPoint(target.point);
 		
@@ -60,7 +59,7 @@ public class ObstacleCollect extends State {
 		
 		if(Math.abs(deg) > 3) {
 			
-			System.out.println("correcting moving " + deg +" Deg");
+			//System.out.println("correcting moving " + deg +" Deg");
 			
 			ActionList list = new ActionList();
 			list.add(new TurnAction((long) deg));
@@ -86,12 +85,12 @@ public class ObstacleCollect extends State {
 	
 		Point targetCM = getPointInCM(t);
 
-		System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
+		//System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
 		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.50F,0.3F));
 
 		double backDistance = (Math.sqrt(Math.pow(targetCM.x,2) + Math.pow(targetCM.y,2)));
 		
-		System.out.println("driving " + backDistance + " CM back");
+		//System.out.println("driving " + backDistance + " CM back");
 
 		list.add(new GrepCollectionAction());
 		list.add(new TravelAction(-backDistance));

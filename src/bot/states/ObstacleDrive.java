@@ -24,6 +24,8 @@ public class ObstacleDrive extends State {
 	private Ball targetBall;
 	private Point target;
 
+	ArrayList<Ball> temp = new ArrayList<Ball>();
+
 	public ObstacleDrive(CarService carService, BallService ballService, WallService wallService) {
 		super(carService, ballService, wallService);
 	}
@@ -31,7 +33,7 @@ public class ObstacleDrive extends State {
 	@Override
 	public void calculate(Mat originalFrame, Mat correctedFrame) {
 
-		System.out.println("CornerDrive has begun!");
+		System.out.println("ObstacleDrive has begun!");
 
 		if (targetBall == null) {
 
@@ -55,9 +57,10 @@ public class ObstacleDrive extends State {
 				if (!new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x)))
 						.equals(new Scalar(250, 250, 250))) {
 					System.out.println("Removed Ball - to far away from border");
-				} else if (isOppositeObstacleContour(b.point)) {
-					System.out.println("Removed Ball - hiding behind obstacle");
-				} else {
+				}  else if (isBallOutOfSector(b.point)){
+					 System.out.println("Removed Ball - out of sector");
+				}
+				else {
 					tb.add(b);
 				}
 			}
@@ -84,6 +87,7 @@ public class ObstacleDrive extends State {
 			});
 
 			Ball ball = tb.get(0);
+			temp = tb;
 
 			targetBall = new Ball(map.getOriginalPoint(ball.point), ball.area);
 
@@ -97,17 +101,17 @@ public class ObstacleDrive extends State {
 			
 			target = new Point(np.x * ratio, np.y * ratio);
 			target.x += obstacle.center.x;
-			target.y += obstacle.center.y;
+			target.y += obstacle.center.y;			
 			
-			System.out.println(np);
-			System.out.println("Target: " + target);
+			Point dd = map.correctPoint(target);
+			dd.x -= map.center.x;
+			dd.y -= map.center.y;
 			
-			
-			
-			double distToBallFromCenter = 0;
-			double distToPointFromBall = 0;
-			
-			System.out.println("Dist to ball: " + distanceCenterToBall);
+			if(isBehindObstacle(dd,  car.width.intValue())) {
+				System.out.println("The Target is behind the obstacle!");
+				nextState(new CirculateDrive(carService, ballService, wallService));
+				return;
+			}
 			
 			//double ratio = (distToPointFromBall + distToBallFromCenter) / distToBallFromCenter;
 			
@@ -117,7 +121,6 @@ public class ObstacleDrive extends State {
 
 		// We are at the point!
 		if (getDist(car.center, target) < car.width) {
-			System.out.println("We are ready to collect the Ball");
 			ObstacleCollect nextState = new ObstacleCollect(carService, ballService, wallService);
 			nextState.setTarget(targetBall);
 			nextState(nextState);
@@ -135,7 +138,7 @@ public class ObstacleDrive extends State {
 			
 			if(Math.abs(deg) > 5) {
 				
-				System.out.println("correcting moving " + deg +" Deg");
+				//System.out.println("correcting moving " + deg +" Deg");
 				
 				ActionList list = new ActionList();
 				list.add(new TurnAction((long) deg));
@@ -146,13 +149,13 @@ public class ObstacleDrive extends State {
 				return;
 			}
 			
-			System.out.println("Driving to  point: " + target.toString());
+			//System.out.println("Driving to  point: " + target.toString());
 
 			Point targetCM = getPointInCM(p);
 
 			ActionList list = new ActionList();
 
-			System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
+			//System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
 			list.add(new WayPointAction(targetCM.x, targetCM.y, 0.90F, 0.6F));
 
 			if (!Bot.test)
@@ -197,5 +200,6 @@ public class ObstacleDrive extends State {
 			Imgproc.circle(originalFrame, targetBall.point, (int) (car.width * 2.5), new Scalar(200, 200, 200), 10);
 
 		}
+		
 	}
 }

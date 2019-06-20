@@ -55,31 +55,23 @@ public class WallDrive extends State {
 
 				if (!new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x)))
 						.equals(new Scalar(250, 250, 250))) {
-
-					System.out.println(
-							new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x))));
 					System.out.println("Removed Ball - to close to border");
 				} else if (isBehindObstacle(b.point)) {
 					System.out.println("Removed Ball - hiding behind obstacle");
+				}  else if (isBallOutOfSector(b.point)){
+					System.out.println("Removed Ball - out of sector");
 				} else {
 
 					boolean valid = true;
 					// Remove stuff to close to border
 					for (Point p : map.getWall().corners) {
-
-						System.out.println(p);
-						System.out.println(b.point);
-
 						d = Math.sqrt(Math.pow(p.x - b.point.x, 2) + Math.pow(p.y - b.point.y, 2));
-
-						System.out.println(d);
 
 						if (d < map.car.pickFront.x) {
 							valid = false;
 							break;
 						}
 					}
-
 					if (valid) {
 						tb.add(b);
 					} else {
@@ -167,7 +159,13 @@ public class WallDrive extends State {
 				System.out.println("The ball is NOT at a WALL ??!!!");
 				nextState(new CornerDrive(carService, ballService, wallService));
 				return;
-			} else if (isBehindObstacle(map.correctPoint(target))) {
+			} 
+			
+			Point tt = map.correctPoint(target);
+			tt.x -= map.center.x;
+			tt.y -= map.center.y;
+				
+			if (isBehindObstacle(tt)) {
 
 				System.out.println("The Target is behind the obstacle!");
 				nextState(new CornerDrive(carService, ballService, wallService));
@@ -179,7 +177,6 @@ public class WallDrive extends State {
 
 		// We are at the point!
 		if (getDist(car.center, target) < car.width) {
-			System.out.println("We are ready to collect the Ball");
 			WallCollect nextState = new WallCollect(carService, ballService, wallService);
 			nextState.setTarget(targetBall);
 			nextState(nextState);
@@ -196,7 +193,7 @@ public class WallDrive extends State {
 
 			if (Math.abs(deg) > 5) {
 
-				System.out.println("correcting moving " + deg + " Deg");
+				//System.out.println("correcting moving " + deg + " Deg");
 
 				ActionList list = new ActionList();
 				list.add(new TurnAction((long) deg));
@@ -207,13 +204,13 @@ public class WallDrive extends State {
 				return;
 			}
 
-			System.out.println("Driving to  point: " + target.toString());
+			//System.out.println("Driving to  point: " + target.toString());
 
 			Point targetCM = getPointInCM(p);
 
 			ActionList list = new ActionList();
 
-			System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
+			//System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
 			list.add(new WayPointAction(targetCM.x, targetCM.y, 0.90F, 0.6F));
 
 			if (!Bot.test)
