@@ -37,7 +37,7 @@ public class CornerDrive extends State {
 
 			if (map.balls.size() == 0) {
 				System.out.println("THERE IS NO BALLS IN MAP TO COLLECT!!!");
-				nextState(new CirculateDrive(carService, ballService, wallService));
+				nextState(new ObstacleDrive(carService, ballService, wallService));
 				return;
 			}
 
@@ -84,7 +84,7 @@ public class CornerDrive extends State {
 
 			if (tb.size() == 0) {
 				System.out.println("THERE IS NO BALLS IN MAP TO COLLECT2!!!");
-				nextState(new CirculateDrive(carService, ballService, wallService));
+				nextState(new ObstacleDrive(carService, ballService, wallService));
 				return;
 			}
 
@@ -156,12 +156,12 @@ public class CornerDrive extends State {
 
 			if (target == null) {
 				System.out.println("The ball is NOT at a WALL ??!!!");
-				nextState(new CirculateDrive(carService, ballService, wallService));
+				nextState(new ObstacleDrive(carService, ballService, wallService));
 				return;
 			} else if (isBehindObstacle(map.correctPoint(target))) {
 
 				System.out.println("The Target is behind the obstacle!");
-				nextState(new CirculateDrive(carService, ballService, wallService));
+				nextState(new ObstacleDrive(carService, ballService, wallService));
 				return;
 
 			}
