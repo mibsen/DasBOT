@@ -113,7 +113,9 @@ public class BallService {
 
 				MatOfPoint2f approxCurve = new MatOfPoint2f();
 				Imgproc.approxPolyDP(c2f, approxCurve, ap, true);
-	   		
+	
+				
+				
 				if (approxCurve.toArray().length <= 8 || approxCurve.toArray().length >= 23){
 			        continue;
 				}
@@ -127,9 +129,9 @@ public class BallService {
 					continue;
 				}
 				
-				System.out.println("area: " + area + " radius" + radius[0] + " approx:" + approxCurve.toArray().length);
 
-				balls.add(new Ball(center, area));
+				RotatedRect box = Imgproc.minAreaRect(new MatOfPoint2f(c.toArray()));
+				balls.add(new Ball(box.center, area));
 			}
 		}
 
