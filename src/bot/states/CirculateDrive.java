@@ -99,7 +99,7 @@ public class CirculateDrive extends State {
 
 		ActionList list = new ActionList();
 		p = getPointInCM(p);
-		list.add(new WayPointAction(p.x, p.y, 0.90F, 0.4F)); // go to waypoint
+		list.add(new WayPointAction(p.x, p.y, 1.0F, 0.7F)); // go to waypoint
 
 		if (!Bot.test)
 			Connection.SendActions(list);

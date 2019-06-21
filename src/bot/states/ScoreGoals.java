@@ -70,7 +70,7 @@ public class ScoreGoals extends State {
 			if (Bot.GOAL_POSITION == 0) {
 
 				goalPoint = new Point(corner1.x, height / 2 + corner1.y);
-				almostTherePoint = new Point(goalPoint.x + (car.backToCenter * 1.2), goalPoint.y);
+				almostTherePoint = new Point(goalPoint.x + (car.backToCenter * 1.1), goalPoint.y);
 
 				waypoints[0] = new Point(width * 3 / 4 + corner1.x, height / 4 + corner1.y);
 				waypoints[1] = new Point(width / 2 + corner1.x, height / 4 + corner1.y);
@@ -83,7 +83,7 @@ public class ScoreGoals extends State {
 			if (Bot.GOAL_POSITION == 1) {
 
 				goalPoint = new Point(width + corner1.x, height / 2 + corner1.y);
-				almostTherePoint = new Point(goalPoint.x - car.backToCenter, goalPoint.y);
+				almostTherePoint = new Point(goalPoint.x - (car.backToCenter * 1.1), goalPoint.y);
 
 				waypoints[0] = new Point(width / 4 + corner1.x, height / 4 + corner1.y);
 				waypoints[1] = new Point(width / 2 + corner1.x, height / 4 + corner1.y);
@@ -96,7 +96,7 @@ public class ScoreGoals extends State {
 			}
 		}
 
-		double minDistance = car.width / 2.5;
+		double minDistance = car.width / 2;
 
 		// Locate IF i am in FinishPoint
 
@@ -177,7 +177,7 @@ public class ScoreGoals extends State {
 
 				// Actions
 				ActionList list = new ActionList();
-				list.add(new WayPointAction(p.x, p.y, 0.90F, 0.40F)); // go to waypoint
+				list.add(new WayPointAction(p.x, p.y, 0.90F, 0.70F)); // go to waypoint
 
 				if (!Bot.test)
 					Connection.SendActions(list);
@@ -185,12 +185,12 @@ public class ScoreGoals extends State {
 			} else {
 
 				System.out.println("Waypoint was not null");
-
-				if (nearestWaypoint == waypoints[0] || nearestWaypoint == waypoints[1]) {
-					nearestWaypoint = waypoints[2];
-				} else if (nearestWaypoint == waypoints[2] || nearestWaypoint == waypoints[4]) {
+				Point temp = nearestWaypoint;
+				if (nearestWaypoint == waypoints[0]) {
+					nearestWaypoint = waypoints[2];					
+				} else if (nearestWaypoint == waypoints[1] || nearestWaypoint == waypoints[2] || nearestWaypoint == waypoints[4] || nearestWaypoint == waypoints[5]) {
 					nearestWaypoint = waypoints[3];
-				} else if (nearestWaypoint == waypoints[5] || nearestWaypoint == waypoints[6]) {
+				} else if (nearestWaypoint == waypoints[6]) {
 					nearestWaypoint = waypoints[4];
 				} 
 				
@@ -201,7 +201,7 @@ public class ScoreGoals extends State {
 				// Verify VINKEL!
 				double deg = -Math.toDegrees(Math.atan2(p.y, p.x));
 				
-				if(Math.abs(deg) > 5) {
+				if(Math.abs(deg) > 3) {
 					
 					//System.out.println("correcting moving " + deg +" Deg");
 					
@@ -211,6 +211,7 @@ public class ScoreGoals extends State {
 					if (!Bot.test)
 						Connection.SendActions(list);		
 				
+					nearestWaypoint = temp;
 					return;
 				}
 				
@@ -223,7 +224,7 @@ public class ScoreGoals extends State {
 
 				// Actions
 				ActionList list = new ActionList();
-				list.add(new WayPointAction(p.x, p.y, 0.90F, 0.40F)); // go to waypoint
+				list.add(new WayPointAction(p.x, p.y, 0.90F, 0.70F)); // go to waypoint
 
 				if (!Bot.test)
 					Connection.SendActions(list);

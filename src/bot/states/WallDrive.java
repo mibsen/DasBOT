@@ -3,6 +3,7 @@ package bot.states;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -40,6 +41,22 @@ public class WallDrive extends State {
 				nextState(new CornerDrive(carService, ballService, wallService));
 				return;
 			}
+			
+			// filter balls
+			List<Ball> ta = new ArrayList<Ball>();
+			// Remove close balls and balls close to border
+
+			for (Ball ball : map.balls) {
+				if (isBallOutOfSector(ball.point)) {
+					System.out.println("Removed Ball - out of sector");
+				} else {
+					ta.add(ball);
+				}
+			}
+
+			if (ta.size() == 0) {
+				ta = map.balls;
+			}
 
 			Mat m = map.getFrame().clone();
 
@@ -49,15 +66,15 @@ public class WallDrive extends State {
 			// filter balls
 			ArrayList<Ball> tb = new ArrayList<Ball>();
 			// Remove close balls and balls not close to border
-			for (Ball b : map.balls) {
+			for (Ball b : ta) {
 
 				double d = Math.sqrt(Math.pow(b.point.x, 2) + Math.pow(b.point.y, 2));
 
 				if (!new Scalar(m.get((int) (b.point.y + map.center.y), (int) (b.point.x + map.center.x)))
 						.equals(new Scalar(250, 250, 250))) {
 					System.out.println("Removed Ball - to close to border");
-				} else if (isBallOutOfSector(b.point)){
-					System.out.println("Removed Ball - out of sector");
+				} else if (isBehindObstacle(b.point)){
+					System.out.println("Removed Ball - begind obstacle");
 				} else {
 
 					boolean valid = true;
@@ -65,7 +82,7 @@ public class WallDrive extends State {
 					for (Point p : map.getWall().corners) {
 						d = Math.sqrt(Math.pow(p.x - b.point.x, 2) + Math.pow(p.y - b.point.y, 2));
 
-						if (d < map.car.pickFront.x) {
+						if (d < Math.sqrt(Math.pow(map.car.backRight.x, 2) + Math.pow(map.car.backRight.y, 2))) {
 							valid = false;
 							break;
 						}
@@ -118,7 +135,7 @@ public class WallDrive extends State {
 			double dist = getDist(p1, p2, targetBall.point);
 			double distance = map.car.pickFront.x + 10;
 
-			if (dist < car.width * 1.5) {
+			if (dist <= Math.sqrt(Math.pow(map.car.backRight.x, 2) + Math.pow(map.car.backRight.y, 2))) {
 				target = new Point(targetBall.point.x, targetBall.point.y + distance);
 			}
 
@@ -129,7 +146,7 @@ public class WallDrive extends State {
 			// Dist from wall
 			dist = getDist(p1, p2, targetBall.point);
 
-			if (dist < car.width * 1.5) {
+			if (dist <= Math.sqrt(Math.pow(map.car.backRight.x, 2) + Math.pow(map.car.backRight.y, 2))) {
 				target = new Point(targetBall.point.x - distance, targetBall.point.y);
 			}
 
@@ -139,7 +156,7 @@ public class WallDrive extends State {
 
 			dist = getDist(p1, p2, targetBall.point);
 
-			if (dist < car.width * 1.5) {
+			if (dist <= Math.sqrt(Math.pow(map.car.backRight.x, 2) + Math.pow(map.car.backRight.y, 2))) {
 				target = new Point(targetBall.point.x, targetBall.point.y - distance);
 			}
 
@@ -149,7 +166,7 @@ public class WallDrive extends State {
 
 			dist = getDist(p1, p2, targetBall.point);
 
-			if (dist < car.width * 1.5) {
+			if (dist < Math.sqrt(Math.pow(map.car.backRight.x, 2) + Math.pow(map.car.backRight.y, 2))) {
 				target = new Point(targetBall.point.x + distance, targetBall.point.y);
 			}
 
@@ -158,7 +175,21 @@ public class WallDrive extends State {
 				nextState(new CornerDrive(carService, ballService, wallService));
 				return;
 			} 
+			
+			Point p = map.correctPoint(target);
+			p.x -= map.center.x;
+			p.y -= map.center.y;
+			
+			if(isBehindObstacle(p)) {
+				System.out.println("The target is begind the Obstacle");
+				nextState(new CornerDrive(carService, ballService, wallService));
+				target = null;
+				targetBall = null;
+				return;
+			}
 		}
+		
+		
 
 		// We are at the point!
 		if (getDist(car.center, target) < car.width) {
@@ -176,7 +207,7 @@ public class WallDrive extends State {
 			// Verify VINKEL!
 			double deg = -Math.toDegrees(Math.atan2(p.y, p.x));
 
-			if (Math.abs(deg) > 10) {
+			if (Math.abs(deg) > 6) {
 
 				//System.out.println("correcting moving " + deg + " Deg");
 
@@ -196,7 +227,7 @@ public class WallDrive extends State {
 			ActionList list = new ActionList();
 
 			//System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
-			list.add(new WayPointAction(targetCM.x, targetCM.y, 0.90F, 0.6F));
+			list.add(new WayPointAction(targetCM.x, targetCM.y, 0.90F, 0.7F));
 
 			if (!Bot.test)
 				Connection.SendActions(list);

@@ -57,7 +57,7 @@ public class WallCollect extends State {
 		// Verify VINKEL!
 		double deg = -Math.toDegrees(Math.atan2(t.y, t.x));
 		
-		if(Math.abs(deg) > 6) {
+		if(Math.abs(deg) > 4) {
 			
 			//System.out.println("correcting moving " + deg +" Deg");
 			
@@ -86,7 +86,7 @@ public class WallCollect extends State {
 		Point targetCM = getPointInCM(t);
 
 		//System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
-		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.50F,0.3F));
+		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.70F,0.5F));
 
 	
 		

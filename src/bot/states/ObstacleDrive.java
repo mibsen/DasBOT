@@ -124,7 +124,7 @@ public class ObstacleDrive extends State {
 			// Verify VINKEL!
 			double deg = -Math.toDegrees(Math.atan2(p.y, p.x));
 			
-			if(Math.abs(deg) > 10) {
+			if(Math.abs(deg) > 6) {
 				
 				//System.out.println("correcting moving " + deg +" Deg");
 				
@@ -144,7 +144,7 @@ public class ObstacleDrive extends State {
 			ActionList list = new ActionList();
 
 			//System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
-			list.add(new WayPointAction(targetCM.x, targetCM.y, 0.90F, 0.6F));
+			list.add(new WayPointAction(targetCM.x, targetCM.y, 0.9F, 0.7F));
 
 			if (!Bot.test)
 				Connection.SendActions(list);

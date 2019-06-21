@@ -64,7 +64,7 @@ public class EasyCollect extends State {
 
 		double deg = -Math.toDegrees(Math.atan2(t.y, t.x));
 		
-		if(Math.abs(deg) > 6) {
+		if(Math.abs(deg) > 4) {
 			//System.out.println("correcting moving " + deg +" Deg");
 			
 			ActionList list = new ActionList();
@@ -76,7 +76,7 @@ public class EasyCollect extends State {
 			return;
 		}
 
-		t = new Point(t.x - map.car.pickBack.x, t.y - map.car.pickBack.y);
+		t = new Point(t.x - map.car.pickCenter.x, t.y - map.car.pickCenter.y);
 
 		Point targetCM = getPointInCM(t);
 
@@ -85,7 +85,7 @@ public class EasyCollect extends State {
 		double distanceToBall = Math.sqrt(Math.pow(targetCM.x, 2) + Math.pow(targetCM.y, 2));
 
 		ActionList list = new ActionList();
-		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.50F,0.3F));
+		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.70F,0.5F));
 		list.add(new StartCollectionAction());
 		list.add(new TravelAction(-distanceToBall));
 		list.add(new StopCollectionAction());

@@ -36,11 +36,8 @@ public class FinishState extends State {
 		// check if times is up
 		if (!Bot.DONE) {
 			List<Ball> balls = new ArrayList<Ball>();
-			double minDistance = map.car.pickFront.x;
-
 			for (Ball ball : map.balls) {
-				double distance = Math.sqrt(Math.pow(ball.point.x, 2) + Math.pow(ball.point.y, 2));
-				if (distance > minDistance) {
+				if (!map.car.isOutside(ball)) {
 					balls.add(ball);
 				}
 			}

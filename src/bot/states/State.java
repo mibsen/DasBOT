@@ -217,10 +217,10 @@ public abstract class State {
 	protected boolean isBehindObstacle(Point point) {
 		Mat m = map.getFrame().clone();
 
-		WallService.drawWall(m, map.getObstacle(), map.center, new Scalar(250, 250, 250), (int) (car.width * 3));
+		WallService.drawWall(m, map.getObstacle(), map.center, new Scalar(245, 245, 245), (int) (car.width * 2.5));
 
 		Point ballPoint = map.correctPoint(map.getOriginalPoint(point));
-		Point carPoint = map.car.center; // changed to map.car.center from map.center
+		Point carPoint = map.center; // changed to map.car.center from map.center
 
 		// System.out.println("Ball : " + ballPoint.toString());
 		// System.out.println("Car : " + carPoint.toString());
@@ -235,7 +235,7 @@ public abstract class State {
 				// System.out.println("1: Color of point (" + x + ", " + y + "): " + new
 				// Scalar(m.get((int) y, (int) x)).toString());
 
-				if (new Scalar(m.get((int) (y), (int) (x))).equals(new Scalar(250, 250, 250))) {
+				if (new Scalar(m.get((int) (y), (int) (x))).equals(new Scalar(245, 245, 245))) {
 					return true;
 				}
 
@@ -250,7 +250,7 @@ public abstract class State {
 				double y = a * x + b;
 				// System.out.println("2: Color of point (" + x + ", " + y + "): " + new
 				// Scalar(m.get((int) y, (int) x)).toString());
-				if (new Scalar(m.get((int) (y), (int) (x))).equals(new Scalar(250, 250, 250))) {
+				if (new Scalar(m.get((int) (y), (int) (x))).equals(new Scalar(245, 245, 245))) {
 					return true;
 				}
 			}
