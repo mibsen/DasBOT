@@ -91,23 +91,37 @@ public class BallService {
 		List<MatOfPoint> contours = new ArrayList<>();
 		Mat hierarchy = new Mat();
 		ArrayList<Ball> balls = new ArrayList<Ball>();
-
+		
 		// find contours
 		Imgproc.findContours(ballFrame, contours, hierarchy, Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
 
+		
 		// if any contour exist...
 		if (hierarchy.size().height > 0 && hierarchy.size().width > 0) {
 
 			for (MatOfPoint c : contours) {
 
+				Point center = new Point();
+				float[] radius = new float[1];
+				MatOfPoint2f c2f = new MatOfPoint2f(c.toArray());
+				Imgproc.minEnclosingCircle(c2f, center, radius);
+				
+				
 				double area = Imgproc.contourArea(c);
+
+				
 				if (area > settings.max || area < settings.min) {
 					continue;
 				}
+				
+				if (radius[0] > settings.radiusMax || radius[0] < settings.radiusMin) {
+					continue;
+				}
+				
+				System.out.println(area);
+				System.out.println(radius[0]);
 
-				RotatedRect box = Imgproc.minAreaRect(new MatOfPoint2f(c.toArray()));
-
-				balls.add(new Ball(box.center, area));
+				balls.add(new Ball(center, area));
 			}
 		}
 

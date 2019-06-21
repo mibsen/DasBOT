@@ -52,6 +52,12 @@ public class BallPreviewController extends BaseController {
 	Slider max;
 	
 	@FXML
+	Slider radiusMin;
+
+	@FXML
+	Slider radiusMax;
+	
+	@FXML
 	TextArea bugValues;
 
 	private BallSettings settings;
@@ -78,6 +84,10 @@ public class BallPreviewController extends BaseController {
 
 		min.setValue(settings.min);
 		max.setValue(settings.max);
+		
+
+		radiusMin.setValue(settings.radiusMin);
+		radiusMax.setValue(settings.radiusMax);
 
 		if (this.camera.init()) {
 
@@ -104,6 +114,10 @@ public class BallPreviewController extends BaseController {
 					
 					settings.min = min.getValue();
 					settings.max = max.getValue();
+					
+
+					settings.radiusMin = radiusMin.getValue();
+					settings.radiusMax = radiusMax.getValue();
 
 					BallService ballService = new BallService(settings);
 
