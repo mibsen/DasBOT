@@ -108,7 +108,16 @@ public class BallService {
 				
 				
 				double area = Imgproc.contourArea(c);
+				
+				double ap = Imgproc.arcLength(c2f, true) * 0.01;
 
+				MatOfPoint2f approxCurve = new MatOfPoint2f();
+				Imgproc.approxPolyDP(c2f, approxCurve, ap, true);
+	   		
+				if (approxCurve.toArray().length <= 8 || approxCurve.toArray().length >= 23){
+			        continue;
+				}
+				
 				
 				if (area > settings.max || area < settings.min) {
 					continue;
@@ -118,8 +127,7 @@ public class BallService {
 					continue;
 				}
 				
-				System.out.println(area);
-				System.out.println(radius[0]);
+				System.out.println("area: " + area + " radius" + radius[0] + " approx:" + approxCurve.toArray().length);
 
 				balls.add(new Ball(center, area));
 			}
