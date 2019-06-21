@@ -57,7 +57,7 @@ public class CornerCollect extends State {
 		// Verify VINKEL!
 		double deg = -Math.toDegrees(Math.atan2(t.y, t.x));
 		
-		if(Math.abs(deg) > 6) {
+		if(Math.abs(deg) > 4) {
 			
 			//System.out.println("correcting moving " + deg +" Deg");
 			
@@ -77,7 +77,8 @@ public class CornerCollect extends State {
 		
 		// Distance to ball
 		double val = (map.car.pickCenter.x + map.car.pickFront.x) / 2;
-		
+		 val = map.car.pickFront.x;
+			
 		double r = (d - val) / d;
 		t = new Point(t.x * r, t.y * r);
 

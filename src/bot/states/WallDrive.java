@@ -135,7 +135,7 @@ public class WallDrive extends State {
 			double dist = getDist(p1, p2, targetBall.point);
 			double distance = map.car.pickFront.x + 10;
 
-			if (dist < car.width * 1.5) {
+			if (dist <= Math.sqrt(Math.pow(map.car.backRight.x, 2) + Math.pow(map.car.backRight.y, 2))) {
 				target = new Point(targetBall.point.x, targetBall.point.y + distance);
 			}
 
@@ -146,7 +146,7 @@ public class WallDrive extends State {
 			// Dist from wall
 			dist = getDist(p1, p2, targetBall.point);
 
-			if (dist < car.width * 1.5) {
+			if (dist <= Math.sqrt(Math.pow(map.car.backRight.x, 2) + Math.pow(map.car.backRight.y, 2))) {
 				target = new Point(targetBall.point.x - distance, targetBall.point.y);
 			}
 
@@ -156,7 +156,7 @@ public class WallDrive extends State {
 
 			dist = getDist(p1, p2, targetBall.point);
 
-			if (dist < car.width * 1.5) {
+			if (dist <= Math.sqrt(Math.pow(map.car.backRight.x, 2) + Math.pow(map.car.backRight.y, 2))) {
 				target = new Point(targetBall.point.x, targetBall.point.y - distance);
 			}
 
@@ -166,7 +166,7 @@ public class WallDrive extends State {
 
 			dist = getDist(p1, p2, targetBall.point);
 
-			if (dist < car.width * 1.5) {
+			if (dist < Math.sqrt(Math.pow(map.car.backRight.x, 2) + Math.pow(map.car.backRight.y, 2))) {
 				target = new Point(targetBall.point.x + distance, targetBall.point.y);
 			}
 
@@ -207,7 +207,7 @@ public class WallDrive extends State {
 			// Verify VINKEL!
 			double deg = -Math.toDegrees(Math.atan2(p.y, p.x));
 
-			if (Math.abs(deg) > 10) {
+			if (Math.abs(deg) > 6) {
 
 				//System.out.println("correcting moving " + deg + " Deg");
 

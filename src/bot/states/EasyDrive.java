@@ -134,7 +134,7 @@ public class EasyDrive extends State {
 
 		double deg = -Math.toDegrees(Math.atan2(ball.point.y, ball.point.x));
 
-		if (Math.abs(deg) > 10) {
+		if (Math.abs(deg) > 6) {
 			// System.out.println("correcting moving " + deg + " Deg");
 
 			ActionList list = new ActionList();

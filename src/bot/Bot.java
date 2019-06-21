@@ -81,7 +81,7 @@ public class Bot extends Application implements ResponseReceiver {
 	public static boolean ALL_BALLS_COLLECTED = false;
 	
 	public static long RUNTIME_IN_MS = 0;
-	public static final long SEVEN_MINUTES_RUNTIME = 420000;
+	public static final long SEVEN_MINUTES_RUNTIME = 360000;
 	public static int GOAL_POSITION = 0; // 0 = left, 1 = right
 	
 	public static boolean DONE = false;

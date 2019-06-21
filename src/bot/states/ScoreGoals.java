@@ -201,7 +201,7 @@ public class ScoreGoals extends State {
 				// Verify VINKEL!
 				double deg = -Math.toDegrees(Math.atan2(p.y, p.x));
 				
-				if(Math.abs(deg) > 5) {
+				if(Math.abs(deg) > 3) {
 					
 					//System.out.println("correcting moving " + deg +" Deg");
 					
