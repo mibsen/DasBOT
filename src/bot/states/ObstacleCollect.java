@@ -88,7 +88,7 @@ public class ObstacleCollect extends State {
 		//System.out.println("Driving to: " + targetCM.x + " : " + targetCM.y);
 		list.add(new WayPointAction(targetCM.x, targetCM.y, 0.7F,0.5F));
 
-		double backDistance = (Math.sqrt(Math.pow(targetCM.x,2) + Math.pow(targetCM.y,2)));
+		double backDistance = (Math.sqrt(Math.pow(targetCM.x,2) + Math.pow(targetCM.y,2)) * 1.2);
 		
 		//System.out.println("driving " + backDistance + " CM back");
 

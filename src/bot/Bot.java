@@ -212,10 +212,11 @@ public class Bot extends Application implements ResponseReceiver {
 	}
 
 	public void beginRobot() {
+
+		RUNTIME_IN_MS = System.currentTimeMillis();
 		
 		state = new CheckState(carService, ballService, wallService);
 		
-		RUNTIME_IN_MS = System.currentTimeMillis();
 
 		System.out.println("GOAL POSITION: " + GOAL_POSITION);
 		System.out.println("GOAL POSITION: " + (GOAL_POSITION == 0 ? "left" : "right"));

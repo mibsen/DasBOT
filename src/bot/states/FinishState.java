@@ -37,13 +37,17 @@ public class FinishState extends State {
 		if (!Bot.DONE) {
 			List<Ball> balls = new ArrayList<Ball>();
 			for (Ball ball : map.balls) {
-				if (!map.car.isOutside(ball)) {
+				if (map.car.isOutside(ball)) {
 					balls.add(ball);
 				}
 			}
 
+			System.out.println("Current time: " + System.currentTimeMillis());
+			System.out.println("Runtime time: " + Bot.RUNTIME_IN_MS);
+			System.out.println("Balls: " + ballService.removeBallsOutOfBounds(map.getWall(), balls).size());
 			if (ballService.removeBallsOutOfBounds(map.getWall(), balls).size() == 0 || (System.currentTimeMillis() - Bot.RUNTIME_IN_MS) > Bot.SEVEN_MINUTES_RUNTIME) {
 				System.out.println("All balls are gone!");
+				
 
 				ActionList list = new ActionList();
 				list.add(new FinishAction());
